@@ -1,4 +1,45 @@
 <resources>
     <string name="app_name">ימות המשיח</string>
-    <string name="title_activity_login">ימות המשיח</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Preference Titles -->
+    <string name="preferences_header">Preferences</string>
+    <string name="advanced">advanced</string>
+
+    <!-- Messages Preferences -->
+    <string name="language_title">language</string>
+    <string name="default_lang">default</string>
+    <string name="ask">Ask before action</string>
+    <string name="paste_later_copy_move">paste later copy / move</string>
+    <string name="delete">delete</string>
+    <string name="logout">logout</string>
+    <string name="login">login</string>
+    <string name="system_number">system number</string>
+    <string name="password">password</string>
+    <string name="loading">loading…</string>
+    <string name="orgination">Organization name</string>
+    <string name="calls">calls</string>
+    <string name="camp">campaigns</string>
+    <string name="camp_card">Active campaigns | Scheduled campaigns</string>
+    <string name="minutes">minutes</string>
+    <string name="units">units</string>
+    <string name="change_manger_password">Change management password</string>
+    <string name="ext_explorer">Explorer extensions</string>
+    <string name="customer_name">customer name</string>
+    <string name="mail">mail</string>
+    <string name="telephone">telephone</string>
+    <string name="fax">fax</string>
+    <string name="orgination_name">Organization name</string>
+    <string name="contact_name">Contact name</string>
+    <string name="Invoice_name">Invoice in the name of</string>
+    <string name="address_to_send_Invoice">Invoice delivery address</string>
+    <string name="access_password">access password</string>
+    <string name="recording_password">recording password</string>
+    <string name="save">save</string>
+    <string name="home_menu">home</string>
+    <string name="system_details_menu">system details</string>
+    <string name="open_navigation">open</string>
+    <string name="close_navigation">close</string>
+
+
 </resources>

@@ -1,4 +1,4 @@
-package com.mordechay.yemotapp;
+package com.mordechay.yemotapp.ui.programmatically.list;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,8 +8,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.mordechay.yemotapp.R;
+
 import java.util.ArrayList;
 
 public class CustomAdapter extends ArrayAdapter<DataModel> {
@@ -40,32 +44,32 @@ public class CustomAdapter extends ArrayAdapter<DataModel> {
         // then according to the position of the view assign the desired image for the same
         ImageView numbersImage = currentItemView.findViewById(R.id.imageView);
         assert currentNumberPosition != null;
-        numbersImage.setImageResource((Integer) currentNumberPosition.getImage());
+        numbersImage.setImageResource(currentNumberPosition.getImage());
         LinearLayout lnr = currentItemView.findViewById(R.id.lnr_in_list);
         ArrayList<TextView> txtArray = new ArrayList<TextView>();
         txtArray.add(null);
 
-            for (int a = 1; a < currentNumberPosition.ary.size(); a++) {
-                if (currentItemView.findViewById(555555 + a) == null){
-                    txtArray.add(new TextView(getContext()));
-                    txtArray.get(a).setId(555555 + a);
-                    lnr.addView(txtArray.get(a));
-                }else{
-                    txtArray.add(currentItemView.findViewById(555555 + a));
-                }
+        for (int a = 1; a < currentNumberPosition.ary.size(); a++) {
+            if (currentItemView.findViewById(555555 + a) == null) {
+                txtArray.add(new TextView(getContext()));
+                txtArray.get(a).setId(555555 + a);
+                lnr.addView(txtArray.get(a));
+            } else {
+                txtArray.add(currentItemView.findViewById(555555 + a));
             }
+        }
 
 
-    for (int a = 1; a < currentNumberPosition.ary.size(); a++) {
-        txtArray.get(a).setText(currentNumberPosition.ary.get(a).toString());
-        txtArray.get(a).setTextSize(18);
+        for (int a = 1; a < currentNumberPosition.ary.size(); a++) {
+            txtArray.get(a).setText(currentNumberPosition.ary.get(a).toString());
+            txtArray.get(a).setTextSize(18);
 
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT, 1);
-        layoutParams.setMargins(10, 10, 10, 10);
-        txtArray.get(a).setLayoutParams(layoutParams);
-}
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT, 1);
+            layoutParams.setMargins(10, 10, 10, 10);
+            txtArray.get(a).setLayoutParams(layoutParams);
+        }
         // then return the recyclable view
         return currentItemView;
     }

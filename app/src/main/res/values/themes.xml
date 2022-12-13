@@ -1,9 +1,10 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.YemotApp" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.YemotApp" parent="Theme.Material3.Light.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorPrimaryVariant">#FF3700B3</item>
+        <item name="colorPrimary">#FF3700B3</item>
+
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
@@ -12,5 +13,17 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+        <item name="actionModeBackground">@color/black</item>
+
+
     </style>
+    <style name="ShapeAppearanceOverlay.Nav.Square" parent="">
+        <item name="cornerSize">0dp</item>
+    </style>
+    <style name="Theme.YemotApp.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+    <style name="Theme.YemotApp.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Theme.YemotApp.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

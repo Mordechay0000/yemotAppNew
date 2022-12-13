@@ -1,4 +1,27 @@
-<?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-
+<?xml version= "1.0" encoding= "utf-8" ?>
+<menu xmlns:android = "http://schemas.android.com/apk/res/android"
+    xmlns:tools = "http://schemas.android.com/tools"
+    tools:showIn= "navigation_view" >
+    <group android:checkableBehavior= "single" >
+        <item
+            android:id= "@+id/nav_home"
+            android:icon= "@drawable/ic_baseline_call_24"
+            android:title= "@string/home_menu" />
+        <item
+            android:id= "@+id/nav_info"
+            android:icon= "@drawable/ic_baseline_call_24"
+            android:title= "@string/system_details_menu" />
+        <item
+            android:id= "@+id/nav_explorer"
+            android:icon= "@drawable/ic_baseline_call_24"
+            android:title= "@string/ext_explorer" />
+        <item
+            android:id= "@+id/nav_call"
+            android:icon= "@drawable/ic_baseline_call_24"
+            android:title= "שיחות במערכת" />
+        <item
+            android:id= "@+id/nav_sms"
+            android:icon= "@drawable/ic_baseline_sms_24"
+            android:title= "סמס" />
+    </group>
 </menu>

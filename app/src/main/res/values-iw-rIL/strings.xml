@@ -1,3 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">ימות המשיח</string>
+    <string name="title_activity_settings">הגדרות</string>
+    <string name="preferences_header">העדפות</string>
+    <string name="advanced">מתקדם</string>
+    <string name="language_title">שפה</string>
+    <string name="default_lang">ברירת מחדל</string>
+    <string name="ask">שאל לפני ביצוע פעולה</string>
+    <string name="paste_later_copy_move">בהדבקה לאחר העתקה / העברה</string>
+    <string name="delete">מחיקה</string>
+    <string name="logout">התנתקות</string>
+    <string name="login">התחברות</string>
+    <string name="system_number">מספר מערכת</string>
+    <string name="password">סיסמה</string>
+    <string name="loading">טוען...</string>
+    <string name="orgination">שם הארגון</string>
+    <string name="calls">שיחות</string>
+    <string name="camp">קמפיינים</string>
+    <string name="camp_card">קמפיינים פעילים | קמפיינים מתוזמנים</string>
+    <string name="minutes">דקות</string>
+    <string name="save">שמור</string>
+    <string name="recording_password">סיסמת הקלטה</string>
+    <string name="access_password">סיסמת גישה</string>
+    <string name="address_to_send_Invoice">כתבות למשלוח החשבונית</string>
+    <string name="Invoice_name">חשבונית על שם</string>
+    <string name="contact_name">שם איש קשר</string>
+    <string name="orgination_name">שם ארגון</string>
+    <string name="fax">פקס</string>
+    <string name="telephone">טלפון</string>
+    <string name="mail">מייל</string>
+    <string name="customer_name">שם לקוח</string>
+    <string name="ext_explorer">סייר שלוחות</string>
+    <string name="change_manger_password">שינוי סיסמת ניהול</string>
+    <string name="units">יחידות</string>
+    <string name="home_menu">ביית</string>
+    <string name="system_details_menu">פרטי המערכת</string>
 </resources>

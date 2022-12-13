@@ -1,6 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
-             android:id="@+id/nav_graph">
-
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/nav_home">
+    <fragment
+        android:id="@id/nav_home"
+        android:name="com.mordechay.yemotapp.ui.fragments.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" />
+    <fragment
+        android:id="@id/nav_explorer"
+        android:name="com.mordechay.yemotapp.ui.fragments.filseExplorerFragment"
+        android:label="fragment_filse_explorer"
+        tools:layout="@layout/fragment_filse_explorer" />
+    <fragment
+        android:id="@id/nav_info"
+        android:name="com.mordechay.yemotapp.ui.fragments.InformationFragment"
+        android:label="fragment_information"
+        tools:layout="@layout/fragment_information" />
+    <fragment
+        android:id="@id/nav_call"
+        android:name="com.mordechay.yemotapp.ui.fragments.CallInSystemFragment"
+        android:label="fragment_call_in_system"
+        tools:layout="@layout/fragment_call_in_system" />
+    <fragment
+        android:id="@id/nav_sms"
+        android:name="com.mordechay.yemotapp.ui.fragments.smsMessagesFragment"
+        android:label="fragment_sms_messages"
+        tools:layout="@layout/fragment_sms_messages" />
 </navigation>
