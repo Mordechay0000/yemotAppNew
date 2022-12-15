@@ -100,7 +100,7 @@ public class sendApiRequest implements testIsExitsUser.RespondsListener{
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        // dismiss the progress dialog after receiving data from API
+                        // dismiss the progress dialog after receiving Constants from API
                         if(progressDialog != null) progressDialog.dismiss();
 
                         sendApiRequest.this.type = type;
@@ -117,7 +117,7 @@ public class sendApiRequest implements testIsExitsUser.RespondsListener{
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // dismiss the progress dialog after receiving data from API
+                        // dismiss the progress dialog after receiving Constants from API
                         if(progressDialog != null) progressDialog.dismiss();
                         try {
                             NetworkResponse response = error.networkResponse;
@@ -153,6 +153,7 @@ public class sendApiRequest implements testIsExitsUser.RespondsListener{
                         }
                     }
                 });
+
 try{
         jsObjRequest.setRetryPolicy(new DefaultRetryPolicy(
                 1000,

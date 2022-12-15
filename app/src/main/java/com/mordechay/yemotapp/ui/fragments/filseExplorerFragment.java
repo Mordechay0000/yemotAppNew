@@ -3,11 +3,9 @@ package com.mordechay.yemotapp.ui.fragments;
 import static android.app.Activity.RESULT_OK;
 
 import android.app.DownloadManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -30,12 +28,11 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.android.volley.NetworkResponse;
-import com.android.volley.VolleyError;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.mordechay.yemotapp.data.data;
-import com.mordechay.yemotapp.network.VolleyCallback;
+import com.mordechay.yemotapp.data.Constants;
+import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.network.uploadFile;
+import com.mordechay.yemotapp.ui.activitys.OpenFileActivity;
 import com.mordechay.yemotapp.ui.programmatically.list.CustomAdapter;
 import com.mordechay.yemotapp.ui.programmatically.list.DataModel;
 import com.mordechay.yemotapp.R;
@@ -72,8 +69,6 @@ public class filseExplorerFragment extends Fragment implements AdapterView.OnIte
     String whatList;
 
     boolean isCopy = false;
-
-    SharedPreferences sp;
 
     ListView list;
     ArrayList<DataModel> adapter;
@@ -121,8 +116,7 @@ public class filseExplorerFragment extends Fragment implements AdapterView.OnIte
         View v = inflater.inflate(R.layout.fragment_filse_explorer, container, false);
 
         setHasOptionsMenu(true);
-        sp = getActivity().getSharedPreferences("User", 0);
-        token = sp.getString("token", "");
+        token = DataTransfer.getToken();
 
         swprl = v.findViewById(R.id.swipeRefresh);
         swprl.setOnRefreshListener(this);
@@ -166,7 +160,10 @@ public class filseExplorerFragment extends Fragment implements AdapterView.OnIte
             thisWhatStack.add(thisWhat);
             refresh();
         } else {
-            downloadFile(data.URL_DOWNLOAD_FILE + aryWhat.get(i));
+            DataTransfer.setFileUrl(Constants.URL_DOWNLOAD_FILE + aryWhat.get(i));
+            DataTransfer.setFileType("mp3");
+            startActivity(new Intent(getActivity(), OpenFileActivity.class));
+            //downloadFile(Constants.URL_DOWNLOAD_FILE + aryWhat.get(i));
         }
     }
 

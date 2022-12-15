@@ -1,6 +1,5 @@
 package com.mordechay.yemotapp.ui.fragments;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -17,6 +16,7 @@ import android.widget.ListView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mordechay.yemotapp.R;
+import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.network.sendApiRequest;
 import com.mordechay.yemotapp.ui.programmatically.list.DataModel;
 
@@ -42,8 +42,6 @@ public class sipCallsFragment extends Fragment implements sendApiRequest.Respond
     String whatList;
 
     boolean isCopy = false;
-
-    SharedPreferences sp;
 
     ListView list;
     ArrayList<DataModel> adapter;
@@ -86,8 +84,7 @@ public class sipCallsFragment extends Fragment implements sendApiRequest.Respond
         swprl.setOnRefreshListener(this);
         swprl.setRefreshing(true);
 
-        sp = getActivity().getSharedPreferences("User", 0);
-        token = sp.getString("token", "");
+        token = DataTransfer.getToken();
 
 
         urlHome = "https://www.call2all.co.il/ym/api/GetSipAccountsInCustomer?token=" + token;

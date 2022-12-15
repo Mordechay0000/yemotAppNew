@@ -3,7 +3,6 @@ package com.mordechay.yemotapp.ui.fragments;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -19,6 +18,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.mordechay.yemotapp.R;
+import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.network.sendApiRequest;
 import com.mordechay.yemotapp.ui.programmatically.errors.errorHandler;
 
@@ -36,8 +36,6 @@ public class InformationFragment extends Fragment implements View.OnClickListene
     String token;
     String url;
 
-    SharedPreferences sp;
-    SharedPreferences.Editor sped;
     ProgressDialog progressDialog;
 
     EditText edtSystemNumber;
@@ -75,12 +73,10 @@ public class InformationFragment extends Fragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_information, container, false);
-        sp = getActivity().getSharedPreferences("User", 0);
-        sped = sp.edit();
 
-        token = sp.getString("token", "");
-        number = sp.getString("number","");
-        password = sp.getString("password","");
+        token = DataTransfer.getToken();
+        number = DataTransfer.getInfoNumber();
+        password = DataTransfer.getInfoPassword();
 
         edtSystemNumber = v.findViewById(R.id.editTextPhone);
         edtClientName = v.findViewById(R.id.editTextPhone2);
@@ -95,17 +91,17 @@ public class InformationFragment extends Fragment implements View.OnClickListene
         edtPassRecording = v.findViewById(R.id.editTextPhone9);
 
 
-        edtSystemNumber.setText(sp.getString("number", ""));
-        edtClientName.setText(sp.getString("name", ""));
-        edtMail.setText(sp.getString("email", ""));
-        edtNameOrg.setText(sp.getString("organization", ""));
-        edtContactName.setText(sp.getString("contactName", ""));
-        edtPhone.setText(sp.getString("phones", ""));
-        edtInvName.setText(sp.getString("invoiceName", ""));
-        edtInvAddress.setText(sp.getString("invoiceAddress", ""));
-        edtFax.setText(sp.getString("fax", ""));
-        edtPassAccess.setText(sp.getString("accessPassword", ""));
-        edtPassRecording.setText(sp.getString("recordPassword", ""));
+        edtSystemNumber.setText(DataTransfer.getInfoNumber());
+        edtClientName.setText(DataTransfer.getInfoName());
+        edtMail.setText(DataTransfer.getInfoEmail());
+        edtNameOrg.setText(DataTransfer.getInfoOrganization());
+        edtContactName.setText(DataTransfer.getInfoContactName());
+        edtPhone.setText(DataTransfer.getInfoPhones());
+        edtInvName.setText(DataTransfer.getInfoInvoiceName());
+        edtInvAddress.setText(DataTransfer.getInfoInvoiceAddress());
+        edtFax.setText(DataTransfer.getInfoFax());
+        edtPassAccess.setText(DataTransfer.getInfoAccessPassword());
+        edtPassRecording.setText(DataTransfer.getInfoRecordPassword());
 
         saveInfo = v.findViewById(R.id.button3);
         saveInfo.setOnClickListener(this);
@@ -171,10 +167,10 @@ public class InformationFragment extends Fragment implements View.OnClickListene
         try {
             JSONObject jsonObject = new JSONObject(result);
             if(jsonObject.getString("message").equals("OK")){
-                sped.putString("password", newPassword);
+                DataTransfer.setInfoPassword(newPassword);
                 password = newPassword;
                 token = number + ":" + password;
-                sped.putString("token", token);
+                DataTransfer.setToken(token);
 
                 AlertDialog.Builder al = new AlertDialog.Builder(getActivity());
                 al.setTitle("הצלחה!");

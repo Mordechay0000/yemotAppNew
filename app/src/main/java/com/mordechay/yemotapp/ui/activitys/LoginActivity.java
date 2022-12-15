@@ -19,6 +19,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.jpardogo.android.googleprogressbar.library.GoogleProgressBar;
 import com.mordechay.yemotapp.*;
+import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.network.sendApiRequest;
 import com.mordechay.yemotapp.ui.programmatically.errors.errorHandler;
 
@@ -46,7 +47,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor sped = sp.edit();
         
         String lang = sp.getString("language", "default");
         Configuration config;
@@ -113,11 +113,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         try {
             JSONObject jsonObject = new JSONObject(result);
             if(jsonObject.getString("responseStatus").equals("OK")) {
-                SharedPreferences.Editor sp = getSharedPreferences("User", 0).edit();
-                sp.putString("number", Number);
-                sp.putString("password", Password);
-                sp.putString("token", Number + ":" + Password);
-                sp.commit();
+                DataTransfer.setInfoNumber(Number);
+                DataTransfer.setInfoPassword(Password);
+                DataTransfer.setToken(Number + ":" + Password);
                 Intent inet = new Intent(LoginActivity.this, homeActivity.class);
                 inet.addFlags(Intent.FLAG_ACTIVITY_TASK_ON_HOME);
                 startActivity(inet);

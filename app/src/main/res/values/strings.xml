@@ -40,6 +40,8 @@
     <string name="system_details_menu">system details</string>
     <string name="open_navigation">open</string>
     <string name="close_navigation">close</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

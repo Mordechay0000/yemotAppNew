@@ -67,7 +67,7 @@ public class testIsExitsUser {
                     @Override
                     public void onResponse(String response) {
 
-                        // dismiss the progress dialog after receiving data from API
+                        // dismiss the progress dialog after receiving Constants from API
                         if(progressDialog != null) progressDialog.dismiss();
 
                         respondsListener.onSuccess(response, type);
@@ -76,7 +76,7 @@ public class testIsExitsUser {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // dismiss the progress dialog after receiving data from API
+                        // dismiss the progress dialog after receiving Constants from API
                         if(progressDialog != null) progressDialog.dismiss();
                         try {
                             NetworkResponse response = error.networkResponse;

@@ -1,6 +1,5 @@
 package com.mordechay.yemotapp.ui.fragments;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
@@ -19,6 +18,7 @@ import android.widget.ListView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.mordechay.yemotapp.R;
+import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.network.sendApiRequest;
 import com.mordechay.yemotapp.ui.programmatically.list.CustomAdapter;
 import com.mordechay.yemotapp.ui.programmatically.list.DataModel;
@@ -57,8 +57,6 @@ public class smsMessagesFragment extends Fragment implements SwipeRefreshLayout.
     String whatList;
 
     boolean isCopy = false;
-
-    SharedPreferences sp;
 
     ListView list;
     ArrayList<DataModel> adapter;
@@ -105,9 +103,8 @@ private EditText edtFrom;
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_sms_messages, container, false);
 
-        sp = getActivity().getSharedPreferences("User", 0);
 
-        token = sp.getString("token", "");
+        token = DataTransfer.getToken();
 
 
         swprl = v.findViewById(R.id.swipeRefresh_sms);

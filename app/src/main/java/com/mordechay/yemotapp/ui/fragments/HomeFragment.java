@@ -1,6 +1,5 @@
 package com.mordechay.yemotapp.ui.fragments;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.cardview.widget.CardView;
@@ -20,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mordechay.yemotapp.R;
+import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.network.sendApiRequest;
 import com.mordechay.yemotapp.ui.programmatically.errors.errorHandler;
 
@@ -48,8 +48,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, send
 
     String newPassword;
 
-    SharedPreferences sp;
-    SharedPreferences.Editor sped;
     TextView txtvNumber;
     TextView txtvOrg;
     TextView txtvCall;
@@ -90,8 +88,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, send
         swprl.setOnRefreshListener(this);
         swprl.setRefreshing(true);
 
-        sp = getActivity().getSharedPreferences("User", 0);
-        sped = sp.edit();
 
         crdH = v.findViewById(R.id.cardView);
         crdH.setOnClickListener(this);
@@ -103,9 +99,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, send
         txtvMinu=  v.findViewById(R.id.textView31);
         txtvUnits= v.findViewById(R.id.textView36);
 
-        number = sp.getString("number","");
-        password = sp.getString("password","");
-        token = number + ":" + password;
+        number = DataTransfer.getInfoNumber();
+        password = DataTransfer.getInfoPassword();
+        token = DataTransfer.getToken();
 
         urlInfo = URL_HOME + "GetSession" +"?token="+token;
         urlCall = URL_HOME + "GetIncomingCalls" +"?token="+token;
@@ -229,25 +225,23 @@ public class HomeFragment extends Fragment implements View.OnClickListener, send
             JSONObject jsonObject = new JSONObject(result);
 
             if(jsonObject.getString("responseStatus").equals("OK")) {
-                sped.putString("name", jsonObject.getString("name"));
-                sped.putString("organization", jsonObject.getString("organization"));
-                sped.putString("contactName", jsonObject.getString("contactName"));
-                sped.putString("phones", jsonObject.getString("phones"));
-                sped.putString("invoiceName", jsonObject.getString("invoiceName"));
-                sped.putString("invoiceAddress", jsonObject.getString("invoiceAddress"));
-                sped.putString("fax", jsonObject.getString("fax"));
-                sped.putString("email", jsonObject.getString("email"));
-                sped.putString("creditFile", jsonObject.getString("creditFile"));
-                sped.putString("accessPassword", jsonObject.getString("accessPassword"));
-                sped.putString("recordPassword", jsonObject.getString("recordPassword"));
+                DataTransfer.setInfoName(jsonObject.getString("name"));
+                DataTransfer.setInfoOrganization(jsonObject.getString("organization"));
+                DataTransfer.setInfoContactName(jsonObject.getString("contactName"));
+                DataTransfer.setInfoPhones(jsonObject.getString("phones"));
+                DataTransfer.setInfoInvoiceName(jsonObject.getString("invoiceName"));
+                DataTransfer.setInfoInvoiceAddress(jsonObject.getString("invoiceAddress"));
+                DataTransfer.setInfoFax(jsonObject.getString("fax"));
+                DataTransfer.setInfoEmail(jsonObject.getString("email"));
+                DataTransfer.setInfoCreditFile(jsonObject.getString("creditFile"));
+                DataTransfer.setInfoAccessPassword(jsonObject.getString("accessPassword"));
+                DataTransfer.setInfoRecordPassword(jsonObject.getString("recordPassword"));
+                DataTransfer.setInfoUnits(String.valueOf(jsonObject.getDouble("units")));
+                DataTransfer.setInfoUnitsExpireDate(jsonObject.getString("unitsExpireDate"));
 
-            sped.putString("units", String.valueOf(jsonObject.getDouble("units")));
-            sped.putString("unitsExpireDate", jsonObject.getString("unitsExpireDate"));
-            sped.commit();
-
-            txtvNumber.setText(sp.getString("number", ""));
-            txtvOrg.setText(sp.getString("organization", ""));
-            txtvUnits.setText(sp.getString("units", ""));
+                txtvNumber.setText(DataTransfer.getInfoNumber());
+                txtvOrg.setText(DataTransfer.getInfoOrganization());
+                txtvUnits.setText(DataTransfer.getInfoUnits());
             }else{
                 Toast.makeText(getActivity(), "שגיאה: " + jsonObject.getString("responseStatus"), Toast.LENGTH_SHORT).show();
             }

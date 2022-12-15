@@ -1,6 +1,5 @@
 package com.mordechay.yemotapp.ui.fragments;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -18,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.ui.programmatically.list.CustomAdapter;
 import com.mordechay.yemotapp.ui.programmatically.list.DataModel;
 import com.mordechay.yemotapp.R;
@@ -52,8 +52,6 @@ public class CallInSystemFragment extends Fragment implements AbsListView.MultiC
     String whatList;
 
     boolean isCopy = false;
-
-    SharedPreferences sp;
 
     ListView list;
     ArrayList<DataModel> adapter;
@@ -97,9 +95,7 @@ String titleApp;
         View v = inflater.inflate(R.layout.fragment_call_in_system, container, false);
 
 
-
-        sp = getActivity().getSharedPreferences("User", 0);
-        token = sp.getString("token", "");
+        token = DataTransfer.getToken();
 
 
         urlHome = "https://www.call2all.co.il/ym/api/GetIncomingCalls?token=" + token;

@@ -62,7 +62,7 @@
                 android:ems="10"
                 android:gravity="center|center_horizontal|center_vertical"
                 android:inputType="number"
-                android:text="0799416355" />
+                android:text="0774669406" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Space
@@ -84,7 +84,7 @@
                 android:ems="25"
                 android:gravity="center|center_horizontal|center_vertical"
                 android:inputType="numberPassword"
-                android:text="12345678" />
+                android:text="0548572998" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.jpardogo.android.googleprogressbar.library.GoogleProgressBar
