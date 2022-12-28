@@ -18,6 +18,7 @@ import android.widget.ListView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.mordechay.yemotapp.R;
+import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.network.sendApiRequest;
 import com.mordechay.yemotapp.ui.programmatically.list.CustomAdapter;
@@ -47,8 +48,6 @@ public class smsMessagesFragment extends Fragment implements SwipeRefreshLayout.
     String urlInfo;
     String urlStart;
     String url;
-    String urlHomeSendSMS;
-    String urlSendSMS;
 
     ArrayList<String> urlStack;
     String thisWhat = "/";
@@ -118,8 +117,6 @@ private EditText edtFrom;
 
         urlHome = "https://www.call2all.co.il/ym/api/GetSmsOutLog?token=" + token;
         url = urlHome;
-
-        urlHomeSendSMS = "https://www.call2all.co.il/ym/api/SendSms?token=" + token;
 
 
         list = v.findViewById(R.id.list1111);
@@ -280,8 +277,6 @@ refresh();
                                     "כמה הודעות נשלחו: " + strSendCount + "\n" +
                                     "תשלום: " + strBilling + "\n");
                     dialog.setPositiveButton("אישור", null);
-
-                    dialog.show();
                 }catch (JSONException e) {
                     e.printStackTrace();
                     Log.e("error parse json", e.getMessage());
@@ -331,7 +326,7 @@ refresh();
             boolean flash = swmFlash.isChecked();
             String phones = edtPhones.getText().toString();
 
-            urlSendSMS = urlHomeSendSMS + "&from=" + URLEncoder.encode(from) + "&message=" + URLEncoder.encode(message) + "&sendFlashMessage=" + flash + "&phones=" + URLEncoder.encode(phones);
+            String urlSendSMS = Constants.URL_SEND_SMS + "&from=" + URLEncoder.encode(from) + "&message=" + URLEncoder.encode(message) + "&sendFlashMessage=" + flash + "&phones=" + URLEncoder.encode(phones);
             new sendApiRequest(getActivity(), this, "send_sms", urlSendSMS);
         }
     }

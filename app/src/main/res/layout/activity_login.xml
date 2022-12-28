@@ -117,7 +117,7 @@
             android:layout_margin="5dp"
             android:gravity="center|center_horizontal|center_vertical"
             android:text="@string/logout"
-            app:backgroundTint="#FF0F0F"
+            app:backgroundTint="#ef6874 "
             app:cornerRadius="5dp" />
 
 

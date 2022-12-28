@@ -10,15 +10,20 @@
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" />
     <fragment
-        android:id="@id/nav_explorer"
-        android:name="com.mordechay.yemotapp.ui.fragments.filseExplorerFragment"
-        android:label="fragment_filse_explorer"
-        tools:layout="@layout/fragment_filse_explorer" />
-    <fragment
         android:id="@id/nav_info"
         android:name="com.mordechay.yemotapp.ui.fragments.InformationFragment"
         android:label="fragment_information"
         tools:layout="@layout/fragment_information" />
+    <fragment
+        android:id="@id/nav_units"
+        android:name="com.mordechay.yemotapp.ui.fragments.UnitsFragment"
+        android:label="fragment_units"
+        tools:layout="@layout/fragment_units" />
+    <fragment
+        android:id="@id/nav_explorer"
+        android:name="com.mordechay.yemotapp.ui.fragments.filseExplorerFragment"
+        android:label="fragment_filse_explorer"
+        tools:layout="@layout/fragment_filse_explorer" />
     <fragment
         android:id="@id/nav_call"
         android:name="com.mordechay.yemotapp.ui.fragments.CallInSystemFragment"
@@ -29,4 +34,19 @@
         android:name="com.mordechay.yemotapp.ui.fragments.smsMessagesFragment"
         android:label="fragment_sms_messages"
         tools:layout="@layout/fragment_sms_messages" />
+    <fragment
+        android:id="@id/nav_fax"
+        android:name="com.mordechay.yemotapp.ui.fragments.faxSendFragment"
+        android:label="fragment_fax"
+        tools:layout="@layout/fragment_fax_send" />
+    <fragment
+        android:id="@id/nav_sec"
+        android:name="com.mordechay.yemotapp.ui.fragments.securingFragment"
+        android:label="fragment_security_system"
+        tools:layout="@layout/fragment_securing" />
+    <fragment
+        android:id="@id/nav_sip"
+        android:name="com.mordechay.yemotapp.ui.fragments.sipCallsFragment"
+        android:label="fragment_sip_list"
+        tools:layout="@layout/fragment_sip_calls" />
 </navigation>

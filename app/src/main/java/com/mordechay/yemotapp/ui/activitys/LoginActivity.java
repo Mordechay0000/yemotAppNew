@@ -19,6 +19,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.jpardogo.android.googleprogressbar.library.GoogleProgressBar;
 import com.mordechay.yemotapp.*;
+import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.network.sendApiRequest;
 import com.mordechay.yemotapp.ui.programmatically.errors.errorHandler;
@@ -28,15 +29,14 @@ import java.util.Locale;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, sendApiRequest.RespondsListener {
 
 
-    final String URL_HOME = "https://www.call2all.co.il/ym/api/";
-    String Number;
-    String Password;
-    EditText edtNumber;
-    String url;
-    Button btnLogin;
-    Button btnLogout;
-    GoogleProgressBar gpb;
-    FirebaseAuth mAuth;
+    private String Number;
+    private String Password;
+    private EditText edtNumber;
+    private String url;
+    private Button btnLogin;
+    private Button btnLogout;
+    private GoogleProgressBar gpb;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,42 +44,23 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login);
 
 
+        // Initialize Firebase Auth
+    mAuth = FirebaseAuth.getInstance();
 
+        if(mAuth.getCurrentUser() == null){
+            startActivity(new Intent(LoginActivity.this, loginToServerActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            finish();
+        }else {
 
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        
-        String lang = sp.getString("language", "default");
-        Configuration config;
-        config = getBaseContext().getResources().getConfiguration();
-        Locale locale;
-        if (!lang.equals("default")) {
+            btnLogin = findViewById(R.id.login_button);
+            btnLogin.setOnClickListener(this);
+            btnLogout = findViewById(R.id.logout_button);
+            btnLogout.setOnClickListener(this);
 
-
-            locale = new Locale(lang);
-
-        } else {
-            locale = new Locale(Locale.getDefault().getLanguage());
-
+            gpb = findViewById(R.id.google_progress);
         }
-        Locale.setDefault(locale);
-        config.setLocale(locale);
 
-        getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
-
-
-        mAuth = FirebaseAuth.getInstance();
-
-        btnLogin = findViewById(R.id.login_button);
-        btnLogin.setOnClickListener(this);
-        btnLogout = findViewById(R.id.logout_button);
-        btnLogout.setOnClickListener(this);
-
-        gpb = findViewById(R.id.google_progress);
-
-
-
-    }
-
+}
 
 
     public String getData(){
@@ -87,7 +68,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         Number = edtNumber.getText().toString();
         edtNumber = findViewById(R.id.editTextTextPassword);
         Password = edtNumber.getText().toString();
-        url = URL_HOME + "Login?username=" +Number +"&password=" +Password;
+        url = Constants.URL_HOME + "Login?username=" +Number +"&password=" +Password;
         return url;
     }
 
@@ -101,7 +82,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }else if(view == btnLogout){
             Intent inet = new Intent(this, loginToServerActivity.class)
                     .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            getSharedPreferences("User", 0).edit().clear().commit();
+            getSharedPreferences(Constants.DEFAULT_SHARED_PREFERENCES, 0).edit().clear().commit();
             mAuth.signOut();
             startActivity(inet);
         }
@@ -128,7 +109,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 else if(jsonObject.getString("message").equals("bruteforce protection - account locked"))
                     Toast.makeText(LoginActivity.this, "המערכת חסומה, יש להיכנס לאתר הניהול של ימות המשיח על מנת לשחרר את החסימה.", Toast.LENGTH_LONG).show();
             }else
-                Toast.makeText(LoginActivity.this,  "שגיאה לא ידוע, לא ניתן להתחבר." + "\n" + "השגיאה היא:"+  "\n" + jsonObject.getString("message"), Toast.LENGTH_LONG).show();
+                Toast.makeText(LoginActivity.this,  "שגיאה לא ידועה, לא ניתן להתחבר." + "\n" + "השגיאה היא:"+  "\n" + jsonObject.getString("message"), Toast.LENGTH_LONG).show();
         } catch (JSONException e) {
             new errorHandler(this, e, result);
         }
@@ -148,10 +129,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onStart() {
         super.onStart();
 
-        // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser == null){
             startActivity(new Intent(LoginActivity.this, loginToServerActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            finish();
         }
     }
     }

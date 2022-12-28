@@ -7,7 +7,8 @@
     <string name="language_title">שפה</string>
     <string name="default_lang">ברירת מחדל</string>
     <string name="ask">שאל לפני ביצוע פעולה</string>
-    <string name="paste_later_copy_move">בהדבקה לאחר העתקה / העברה</string>
+    <string name="later_paste">הדבקה</string>
+    <string name="paste_later_copy_move_summary">הדבקה לאחר העתקה / העברה</string>
     <string name="delete">מחיקה</string>
     <string name="logout">התנתקות</string>
     <string name="login">התחברות</string>
@@ -35,4 +36,8 @@
     <string name="units">יחידות</string>
     <string name="home_menu">ביית</string>
     <string name="system_details_menu">פרטי המערכת</string>
+    <string name="agree_not_yemot">אני מאשר/ת שאני מדוע/ת לכך שהאפליקציה לא פותחה על ידי חברת \'ימות המשיח\' ו\'ימות המשיח\' לא נותנים תמיכה לאפליקציה ולא לוקחים אחריות באם יתבצע נזק באופן ישיר או עקיף מהאפליקציה.</string>
+    <string name="agree_terms">אני מאשר/ת את תנאי השימוש.</string>
+    <string name="terms">terms</string>
+    <string name="copyright">דוגמא, אין להעבירת, להעתיק , להסריט, פותח על ידי office@y-fox.com</string>
 </resources>

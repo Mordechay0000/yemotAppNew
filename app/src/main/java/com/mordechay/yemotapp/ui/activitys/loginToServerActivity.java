@@ -16,14 +16,12 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.mordechay.yemotapp.R;
-
-
+import com.mordechay.yemotapp.data.DataTransfer;
 
 
 public class loginToServerActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
-    private final String TAG = "loginToServerActivity";
     private EditText emailEditText;
     private EditText passwordEditText;
     private Button loginButton;
@@ -52,13 +50,12 @@ public class loginToServerActivity extends AppCompatActivity {
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
                                     // Sign in success, update UI with the signed-in user's information
-                                    Log.d(TAG, "signInWithEmail:success");
                                     FirebaseUser user = mAuth.getCurrentUser();
                                     updateUI(user);
                                 } else {
                                     // If sign in fails, display a message to the user.
-                                    Log.w(TAG, "signInWithEmail:failure", task.getException());
-                                    Toast.makeText(loginToServerActivity.this, "האימות נכשל.",
+                                    // TODO: test is task result Returns as expected
+                                    Toast.makeText(loginToServerActivity.this, "האימות נכשל. הסיבה:  " + task.getResult(),
                                             Toast.LENGTH_SHORT).show();
                                     updateUI(null);
                                 }
@@ -73,7 +70,9 @@ public class loginToServerActivity extends AppCompatActivity {
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser != null){
-            startActivity(new Intent(loginToServerActivity.this, LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            DataTransfer.setUsername(currentUser.getEmail());
+            DataTransfer.setUid(currentUser.getUid());
+            startActivity(new Intent(loginToServerActivity.this, LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
         }
     }
 
@@ -82,7 +81,9 @@ public class loginToServerActivity extends AppCompatActivity {
 
     private void updateUI(FirebaseUser currentUser) {
         if(currentUser != null){
-            startActivity(new Intent(loginToServerActivity.this, LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            DataTransfer.setUsername(currentUser.getEmail());
+            DataTransfer.setUid(currentUser.getUid());
+            startActivity(new Intent(loginToServerActivity.this, LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
         }
     }
 

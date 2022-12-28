@@ -1,25 +1,36 @@
 package com.mordechay.yemotapp.ui.programmatically.media;
 
+import android.app.Notification;
+
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.Build;
-import android.os.IBinder;
-import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.session.MediaControllerCompat;
-import android.support.v4.media.session.MediaSessionCompat;
-import android.util.Log;
-import android.widget.Toast;
 
-import androidx.annotation.Nullable;
+import androidx.core.app.NotificationChannelCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+
+
+import android.graphics.Bitmap;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.session.MediaController;
+import android.media.session.MediaSession;
+import android.media.session.PlaybackState;
+import android.net.Uri;
+import android.os.Handler;
+import android.os.IBinder;
+import android.media.MediaMetadata;
+import android.media.session.MediaController;
+import android.media.session.MediaSession;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
+
+
+import androidx.annotation.Nullable;
 import androidx.media.session.MediaButtonReceiver;
 
 import com.mordechay.yemotapp.R;
@@ -31,81 +42,128 @@ public class VoicePlay extends Service {
     // MediaPlayer instance
 
     private MediaPlayer mediaPlayer;
-    private MediaSessionCompat mediaSession;
+    private MediaSession mediaSession;
+
+    private NotificationChannel notificationChannel;
 
     // Notification builder
     private NotificationCompat.Builder builder;
 
     // Notification ID
     private static final int NOTIFICATION_ID = 1;
+    private static final String MY_CHANNEL_ID = "com.mordechay.yemotapp.voiceplay1";
+
+    // Handler to update the progress of the notification
+    Handler notificationHandler = new Handler();
+
+    // Runnable to update the progress of the notification
+    Runnable notificationRunnable = new Runnable() {
+        @Override
+        public void run() {
+            // Update the progress of the notification
+            builder.setProgress(mediaPlayer.getDuration(), mediaPlayer.getCurrentPosition(), false);
+            // Update the notification
+            startForeground(NOTIFICATION_ID, builder.build());
+            // Run the Runnable again after 100 milliseconds
+            notificationHandler.postDelayed(this, 100);
+        }
+    };
+
+
 
 
     @Override
     public void onCreate() {
 
 
-        // Create a new MediaPlayer instance
-        mediaPlayer = MediaPlayer.create(this, Uri.parse(DataTransfer.getFileUrl()));
+        if(DataTransfer.getFileUrl() == null){
+            Log.e("tagggggg", "null");
+
+        }else {
 
 
-        mediaSession = new MediaSessionCompat(this, "yemot_app_media");
-        mediaSession.setActive(true);
-        mediaSession.setCallback(new MediaSessionCallback());
+            Log.e("tagggggg", DataTransfer.getFileUrl());
+            // Create a new MediaPlayer instance
+            mediaPlayer = MediaPlayer.create(this, Uri.parse(DataTransfer.getFileUrl()));
 
-        // Set the media session metadata
-        MediaMetadataCompat metadata = new MediaMetadataCompat.Builder()
-                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, DataTransfer.getFileName())
-                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, "מושמע מתוך המערכת מספר: " + DataTransfer.getInfoNumber() )
-                .build();
-        mediaSession.setMetadata(metadata);
+            mediaSession = new MediaSession(this, "yemot_app_media");
+            mediaSession.setActive(true);
+            mediaSession.setCallback(new MediaSessionCallback());
 
-        // Set the media session's play/pause button intent
-        MediaControllerCompat controller = mediaSession.getController();
-        controller.getTransportControls().play();
+            // Set the media session metadata
+            MediaMetadata metadata = new MediaMetadata.Builder()
+                    .putString(MediaMetadata.METADATA_KEY_TITLE, DataTransfer.getFileName())
+                    .putString(MediaMetadata.METADATA_KEY_ARTIST, "מושמע מתוך המערכת מספר: " + DataTransfer.getInfoNumber())
+                    .build();
+            mediaSession.setMetadata(metadata);
 
-        // Set the media session's media button receiver
-        mediaSession.setMediaButtonReceiver(
-                PendingIntent.getBroadcast(this, 0, new Intent(this, MediaButtonReceiver.class), 0));
 
-        // Build the notification
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "my_channel_id")
-                .setSmallIcon(R.drawable.ic_baseline_audio_file_24)
-                .setContentTitle("My Music")
-                .setContentText("Now playing: My Song")
-                .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
-                        .setShowActionsInCompactView(0)
-                        .setMediaSession(mediaSession.getSessionToken()));
+            PlaybackState.Builder stateBuilder = new PlaybackState.Builder()
+                    .setActions(
+                            PlaybackState.ACTION_PLAY |
+                                    PlaybackState.ACTION_PAUSE |
+                                    PlaybackState.ACTION_PLAY_PAUSE
+                    );
+            mediaSession.setMediaButtonReceiver(null);
 
-        // Display the notification
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        notificationManager.notify(1, builder.build());
+            // Set the media session's play/pause button intent
+            MediaController controller = mediaSession.getController();
+            controller.getTransportControls().play();
 
+            // Set the media session's media button receiver
+            mediaSession.setMediaButtonReceiver(
+                    PendingIntent.getBroadcast(this, 0, new Intent(this, MediaButtonReceiver.class), PendingIntent.FLAG_MUTABLE));
+
+            notificationChannel = new NotificationChannel(MY_CHANNEL_ID, "my chanle name", NotificationManager.IMPORTANCE_DEFAULT);
+
+
+            // Build the notification
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, MY_CHANNEL_ID)
+                    .setSmallIcon(R.drawable.ic_baseline_audio_file_24)
+                    .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
+                            .setMediaSession(MediaSessionCompat.Token.fromToken(mediaSession.getSessionToken())));
+
+
+            // Display the notification
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+            notificationManager.createNotificationChannel(notificationChannel);
+            notificationManager.notify(NOTIFICATION_ID, builder.build());
+        }
 
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
         // Set the audio stream and volume
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
         // Start the media player
         mediaPlayer.start();
 
+        notificationHandler.post(notificationRunnable);
+
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public void onDestroy() {
-        // Stop playback
+        // Stop the audio
         mediaPlayer.stop();
 
-        // Release the media player
+        // Stop the Runnable
+        notificationHandler.removeCallbacks(notificationRunnable);
+        // Release the MediaPlayer instance
         mediaPlayer.release();
+        // Release the MediaSession instance
+        mediaSession.release();
 
         // Cancel the notification
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.cancel(NOTIFICATION_ID);
+
+        super.onDestroy();
     }
 
     @Nullable
@@ -115,7 +173,7 @@ public class VoicePlay extends Service {
     }
 
 
-    private class MediaSessionCallback extends MediaSessionCompat.Callback {
+    private class MediaSessionCallback extends MediaSession.Callback {
         @Override
         public void onPlay() {
             super.onPlay();

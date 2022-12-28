@@ -1,13 +1,14 @@
 package com.mordechay.yemotapp.ui.fragments;
 
+import static com.mordechay.yemotapp.data.Constants.URL_HOME;
+
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.network.sendApiRequest;
@@ -29,15 +31,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 
-public class InformationFragment extends Fragment implements View.OnClickListener, sendApiRequest.RespondsListener {
+public class InformationFragment extends Fragment implements View.OnClickListener, sendApiRequest.RespondsListener, SwipeRefreshLayout.OnRefreshListener {
 
 
-    final String URL_HOME = "https://www.call2all.co.il/ym/api/";
     String token;
     String url;
 
-    ProgressDialog progressDialog;
-
+    SwipeRefreshLayout swipeRefreshLayout;
     EditText edtSystemNumber;
     EditText edtClientName;
     EditText edtMail;
@@ -50,12 +50,12 @@ public class InformationFragment extends Fragment implements View.OnClickListene
     EditText edtPassAccess;
     EditText edtPassRecording;
 
-    Button saveInfo;
+    Button btnSaveInfo;
     private String number;
     private String password;
     private String newPassword;
     private String urlCustom;
-    private View changePass;
+    private View btnChangePass;
 
 
     public InformationFragment() {
@@ -74,10 +74,12 @@ public class InformationFragment extends Fragment implements View.OnClickListene
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_information, container, false);
 
+
         token = DataTransfer.getToken();
         number = DataTransfer.getInfoNumber();
         password = DataTransfer.getInfoPassword();
 
+        swipeRefreshLayout = v.findViewById(R.id.info_swipeRefresh);
         edtSystemNumber = v.findViewById(R.id.editTextPhone);
         edtClientName = v.findViewById(R.id.editTextPhone2);
         edtMail = v.findViewById(R.id.editTextTextEmailAddress);
@@ -90,75 +92,81 @@ public class InformationFragment extends Fragment implements View.OnClickListene
         edtPassAccess = v.findViewById(R.id.editTextPhone8);
         edtPassRecording = v.findViewById(R.id.editTextPhone9);
 
+        swipeRefreshLayout.setRefreshing(true);
 
-        edtSystemNumber.setText(DataTransfer.getInfoNumber());
-        edtClientName.setText(DataTransfer.getInfoName());
-        edtMail.setText(DataTransfer.getInfoEmail());
-        edtNameOrg.setText(DataTransfer.getInfoOrganization());
-        edtContactName.setText(DataTransfer.getInfoContactName());
-        edtPhone.setText(DataTransfer.getInfoPhones());
-        edtInvName.setText(DataTransfer.getInfoInvoiceName());
-        edtInvAddress.setText(DataTransfer.getInfoInvoiceAddress());
-        edtFax.setText(DataTransfer.getInfoFax());
-        edtPassAccess.setText(DataTransfer.getInfoAccessPassword());
-        edtPassRecording.setText(DataTransfer.getInfoRecordPassword());
+        btnSaveInfo = v.findViewById(R.id.button3);
+        btnSaveInfo.setOnClickListener(this);
+        btnChangePass = v.findViewById(R.id.button333);
+        btnChangePass.setOnClickListener(this);
 
-        saveInfo = v.findViewById(R.id.button3);
-        saveInfo.setOnClickListener(this);
-        changePass = v.findViewById(R.id.button333);
-        changePass.setOnClickListener(this);
+        swipeRefreshLayout.setOnRefreshListener(this);
+        String urlInfo = URL_HOME + "GetSession" + "?token=" + token;
+        new sendApiRequest(getActivity(), this, "info", urlInfo);
 
         return v;
     }
 
     @Override
     public void onClick(View view) {
-        try {
-            url = URL_HOME + "SetCustomerDetails?token=" + token +
-                    "&name=" + URLEncoder.encode(edtClientName.getText().toString(), "utf-8") +
-                    "&email=" + URLEncoder.encode(edtMail.getText().toString(), "utf-8") +
-                    "&organization=" + URLEncoder.encode(edtNameOrg.getText().toString(), "utf-8") +
-                    "&contactName=" + URLEncoder.encode(edtContactName.getText().toString(), "utf-8") +
-                    "&phones=" + URLEncoder.encode(edtPhone.getText().toString(), "utf-8") +
-                    "&invoiceName=" + URLEncoder.encode(edtInvName.getText().toString(), "utf-8") +
-                    "&invoiceAddress=" + URLEncoder.encode(edtInvAddress.getText().toString(), "utf-8") +
-                    "&fax=" + URLEncoder.encode(edtFax.getText().toString(), "utf-8") +
-                    "&accessPassword=" + URLEncoder.encode(edtPassAccess.getText().toString(), "utf-8") +
-                    "&recordPassword=" + URLEncoder.encode(edtPassRecording.getText().toString(), "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        if (view == btnSaveInfo) {
+            try {
+                url = URL_HOME + "SetCustomerDetails?token=" + token +
+                        "&name=" + URLEncoder.encode(edtClientName.getText().toString(), "utf-8") +
+                        "&email=" + URLEncoder.encode(edtMail.getText().toString(), "utf-8") +
+                        "&organization=" + URLEncoder.encode(edtNameOrg.getText().toString(), "utf-8") +
+                        "&contactName=" + URLEncoder.encode(edtContactName.getText().toString(), "utf-8") +
+                        "&phones=" + URLEncoder.encode(edtPhone.getText().toString(), "utf-8") +
+                        "&invoiceName=" + URLEncoder.encode(edtInvName.getText().toString(), "utf-8") +
+                        "&invoiceAddress=" + URLEncoder.encode(edtInvAddress.getText().toString(), "utf-8") +
+                        "&fax=" + URLEncoder.encode(edtFax.getText().toString(), "utf-8") +
+                        "&accessPassword=" + URLEncoder.encode(edtPassAccess.getText().toString(), "utf-8") +
+                        "&recordPassword=" + URLEncoder.encode(edtPassRecording.getText().toString(), "utf-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
 
-        Log.e("url", url);
-        new sendApiRequest(getActivity(), this, "url", url);
+            Log.e("url", url);
+            new sendApiRequest(getActivity(), this, "url", url);
+        }else if(view == btnChangePass){
+            setPassword();
+        }
     }
 
 
     @Override
     public void onSuccess(String result, String type) {
-        if (type.equals("url")){
-        NavController nvc = Navigation.findNavController(getActivity(), R.id.nvgv_fragment);
-        nvc.navigate(R.id.nav_home);
+        switch (type) {
+            case "info":
+                infoActiv(result);
+                break;
+            case "url":
 
-        try {
-            JSONObject jsonObject = new JSONObject(result);
-            if (!jsonObject.getString("responseStatus").equals("OK")) {
-                Toast.makeText(getActivity(), "שגיאה בשמירת הנתונים", Toast.LENGTH_SHORT).show();
-            }
-        } catch (JSONException e) {
-            new errorHandler(getActivity(), e, result);
-        }}else if(type.equals("pass")){
+                NavController nvc = Navigation.findNavController(requireActivity(), R.id.nvgv_fragment);
 
+                nvc.navigate(R.id.nav_home);
+
+                try {
+                    JSONObject jsonObject = new JSONObject(result);
+                    if (!jsonObject.getString("responseStatus").equals("OK")) {
+                        Toast.makeText(getActivity(), "שגיאה בשמירת הנתונים", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    new errorHandler(getActivity(), e, result);
+                }
+                break;
+            case "pass":
 
 
                 setPassActiv(result);
 
+                break;
         }
     }
 
 
     @Override
     public void onFailure(int responseCode, String responseMessage) {
+        swipeRefreshLayout.setRefreshing(false);
         Log.e(String.valueOf(responseCode), responseMessage);
     }
 
@@ -166,15 +174,20 @@ public class InformationFragment extends Fragment implements View.OnClickListene
     public void setPassActiv(String result){
         try {
             JSONObject jsonObject = new JSONObject(result);
-            if(jsonObject.getString("message").equals("OK")){
+            if(jsonObject.getString("message").equals("ok")){
                 DataTransfer.setInfoPassword(newPassword);
                 password = newPassword;
                 token = number + ":" + password;
                 DataTransfer.setToken(token);
 
-                AlertDialog.Builder al = new AlertDialog.Builder(getActivity());
+                MaterialAlertDialogBuilder al = new MaterialAlertDialogBuilder(requireActivity());
                 al.setTitle("הצלחה!");
                 al.setMessage("שינוי הסיסמה ל \"" +newPassword +"\" בוצע בהצלחה");
+                al.show();
+            }else{
+                MaterialAlertDialogBuilder al = new MaterialAlertDialogBuilder(requireActivity());
+                al.setTitle("שגיאה!");
+                al.setMessage("שינוי הסיסמה נכשל" + "\n" + "השגיאה היא: \n \n" + jsonObject.getString("message"));
                 al.show();
             }
         } catch (JSONException e) {
@@ -198,23 +211,71 @@ public class InformationFragment extends Fragment implements View.OnClickListene
 
         alert.setView(edittext);
 
-        alert.setPositiveButton("אישור", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                newPassword = edittext.getText().toString();
-                urlCustom = URL_HOME + "SetPassword" +"?token="+token + "&password=" + password + "&newPassword=" + newPassword;
-                Log.e("url set pass", urlCustom);
-                new sendApiRequest(getActivity(), InformationFragment.this, "pass", urlCustom);
-            }
+        alert.setPositiveButton("אישור", (dialog, whichButton) -> {
+            newPassword = edittext.getText().toString();
+            urlCustom = URL_HOME + "SetPassword" +"?token="+token + "&password=" + password + "&newPassword=" + newPassword;
+            Log.e("url set pass", urlCustom);
+            new sendApiRequest(getActivity(), InformationFragment.this, "pass", urlCustom);
         });
 
-        alert.setNegativeButton("ביטול", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                // what ever you want to do with No option.
-            }
-        });
+        alert.setNegativeButton("ביטול", null);
 
         alert.show();
     }
 
 
+
+
+    public void infoActiv(String result) {
+        try {
+            JSONObject jsonObject = new JSONObject(result);
+
+            if(jsonObject.getString("responseStatus").equals("OK")) {
+                DataTransfer.setInfoName(jsonObject.getString("name"));
+                DataTransfer.setInfoOrganization(jsonObject.getString("organization"));
+                DataTransfer.setInfoContactName(jsonObject.getString("contactName"));
+                DataTransfer.setInfoPhones(jsonObject.getString("phones"));
+                DataTransfer.setInfoInvoiceName(jsonObject.getString("invoiceName"));
+                DataTransfer.setInfoInvoiceAddress(jsonObject.getString("invoiceAddress"));
+                DataTransfer.setInfoFax(jsonObject.getString("fax"));
+                DataTransfer.setInfoEmail(jsonObject.getString("email"));
+                DataTransfer.setInfoCreditFile(jsonObject.getString("creditFile"));
+                DataTransfer.setInfoAccessPassword(jsonObject.getString("accessPassword"));
+                DataTransfer.setInfoRecordPassword(jsonObject.getString("recordPassword"));
+                DataTransfer.setInfoUnits(String.valueOf(jsonObject.getDouble("units")));
+                DataTransfer.setInfoUnitsExpireDate(jsonObject.getString("unitsExpireDate"));
+
+
+                edtSystemNumber.setText(DataTransfer.getInfoNumber());
+                edtClientName.setText(DataTransfer.getInfoName());
+                edtMail.setText(DataTransfer.getInfoEmail());
+                edtNameOrg.setText(DataTransfer.getInfoOrganization());
+                edtContactName.setText(DataTransfer.getInfoContactName());
+                edtPhone.setText(DataTransfer.getInfoPhones());
+                edtInvName.setText(DataTransfer.getInfoInvoiceName());
+                edtInvAddress.setText(DataTransfer.getInfoInvoiceAddress());
+                edtFax.setText(DataTransfer.getInfoFax());
+                edtPassAccess.setText(DataTransfer.getInfoAccessPassword());
+                edtPassRecording.setText(DataTransfer.getInfoRecordPassword());
+            }else{
+                Toast.makeText(getActivity(), "שגיאה: " + jsonObject.getString("responseStatus"), Toast.LENGTH_SHORT).show();
+            }
+
+        } catch (JSONException e) {
+            new errorHandler(getActivity(), e);
+        }
+
+
+        swipeRefreshLayout.setRefreshing(false);
+    }
+
+
+    @Override
+    public void onRefresh() {refresh();}
+
+    private void refresh() {
+        swipeRefreshLayout.setOnRefreshListener(this);
+        String urlInfo = URL_HOME + "GetSession" + "?token=" + token;
+        new sendApiRequest(getActivity(), this, "info", urlInfo);
+    }
 }

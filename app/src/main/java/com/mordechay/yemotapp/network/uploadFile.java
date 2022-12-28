@@ -1,5 +1,5 @@
 package com.mordechay.yemotapp.network;
-
+/*
 import android.content.Context;
 
 import java.io.File;
@@ -18,7 +18,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 public class uploadFile {
     public static void uploadFile(String token, String path, File file) throws IOException {
-        String yemotUrl;
+            String yemotUrl;
 
         yemotUrl = "https://www.call2all.co.il/ym/api/";
         URL url = new URL(yemotUrl + "UploadFile");
@@ -40,3 +40,5 @@ public class uploadFile {
 
     }
 }
+
+ */

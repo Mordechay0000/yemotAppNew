@@ -32,14 +32,13 @@
             android:id="@+id/textView12"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="דוגמא, אין להעבירת, להעתיק , להסריט, פותח על ידי office@y-fox.com"
+            android:text="@string/copyright"
             android:textSize="20sp"
             android:textStyle="bold" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#25CAD0FF">
+        android:layout_height="match_parent">
 
         <fragment
             android:id="@+id/nvgv_fragment"

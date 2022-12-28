@@ -12,6 +12,10 @@
             android:icon= "@drawable/ic_baseline_call_24"
             android:title= "@string/system_details_menu" />
         <item
+            android:id= "@+id/nav_units"
+            android:icon= "@drawable/ic_baseline_call_24"
+            android:title= "יחידות" />
+        <item
             android:id= "@+id/nav_explorer"
             android:icon= "@drawable/ic_baseline_call_24"
             android:title= "@string/ext_explorer" />
@@ -23,5 +27,17 @@
             android:id= "@+id/nav_sms"
             android:icon= "@drawable/ic_baseline_sms_24"
             android:title= "סמס" />
+        <item
+            android:id= "@+id/nav_fax"
+            android:icon= "@drawable/ic_baseline_fax_24"
+            android:title= "פקס" />
+        <item
+            android:id= "@+id/nav_sec"
+            android:icon= "@drawable/ic_baseline_security_24"
+            android:title= "אבטחה" />
+        <item
+            android:id= "@+id/nav_sip"
+            android:icon= "@drawable/ic_baseline_dialer_sip_24"
+            android:title= "sip" />
     </group>
 </menu>

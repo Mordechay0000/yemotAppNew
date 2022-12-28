@@ -2,6 +2,16 @@ package com.mordechay.yemotapp.data;
 
 public class DataTransfer {
 
+
+    /*
+    server login
+     */
+    private static String username;
+    private static String uid;
+
+
+
+
     /*
     system information and login
      */
@@ -37,6 +47,23 @@ public class DataTransfer {
     private static String fileType;
 
 
+
+
+    public static String getUsername() {
+        return username;
+    }
+
+    public static void setUsername(String username) {
+        DataTransfer.username = username;
+    }
+
+    public static String getUid() {
+        return uid;
+    }
+
+    public static void setUid(String uid) {
+        DataTransfer.uid = uid;
+    }
 
     public static String getInfoName() {
         return infoName;
@@ -167,7 +194,7 @@ public class DataTransfer {
     }
 
     public static String getFileUrl() {
-        return fileUrl;
+        return DataTransfer.fileUrl;
     }
 
 public static void setFileUrl(String fileUrl) {
@@ -175,7 +202,7 @@ public static void setFileUrl(String fileUrl) {
     }
 
     public static String getFileName() {
-        return fileName;
+        return DataTransfer.fileName;
     }
 
     public static void setFileName(String fileName) {
@@ -183,7 +210,7 @@ public static void setFileUrl(String fileUrl) {
     }
 
     public static String getFileType() {
-        return fileType;
+        return DataTransfer.fileType;
     }
 
     public static void setFileType(String fileType) {

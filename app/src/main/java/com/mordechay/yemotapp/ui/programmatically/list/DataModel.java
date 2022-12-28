@@ -19,11 +19,7 @@ public class DataModel {
     // getter method for returning the ID of the imageview
     public int getImage() {
         if (ary.get(0) == null)
-            return R.drawable.ic_baseline_delete_24;
-
-        for (int i = 0; i < ary.size(); i++) {
-            Log.e("tag", String.valueOf(ary.get(i)));
-        }
+            return R.drawable.watermark_text_foreground;
         return Integer.parseInt((String) ary.get(0));
     }
 

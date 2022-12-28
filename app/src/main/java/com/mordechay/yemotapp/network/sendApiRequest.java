@@ -37,11 +37,11 @@ public class sendApiRequest implements testIsExitsUser.RespondsListener{
     private String responseString;
 
     @Override
-    public void onSuccess(String result, String type) {
+    public void onSuccess(String result) {
         if(result.equals("ok")){
             respondsListener.onSuccess(this.responseString, this.type);
         }else if (result.equals("block")) {
-            Toast.makeText(act, "המשתמש נחסם!!!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(act, "המשתמש נחסם!", Toast.LENGTH_SHORT).show();
 
             mAuth.signOut();
             act.startActivity(new Intent(act, LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
@@ -111,7 +111,7 @@ public class sendApiRequest implements testIsExitsUser.RespondsListener{
                         String pass = mAuth.getUid();
 
 
-                        new testIsExitsUser(act, sendApiRequest.this, "test", "https://topbx.app/yemotapp770999/?username="+mail +"&password="+pass);
+                        new testIsExitsUser(act, sendApiRequest.this, mail, pass);
                     }
                 },
                 new Response.ErrorListener() {
@@ -119,38 +119,31 @@ public class sendApiRequest implements testIsExitsUser.RespondsListener{
                     public void onErrorResponse(VolleyError error) {
                         // dismiss the progress dialog after receiving Constants from API
                         if(progressDialog != null) progressDialog.dismiss();
-                        try {
                             NetworkResponse response = error.networkResponse;
                             if (response != null) {
                                 int code = response.statusCode;
 
                                 String errorMsg = new String(response.data);
-                                Log.e("response", "response" + errorMsg);
-                                try {
-                                    jsonObject = new JSONObject(errorMsg);
-                                } catch (JSONException e) {
-                                    new errorHandler(act, e, errorMsg);
-                                }
-                                try {
-                                    jsonObject = new JSONObject(errorMsg);
-                                } catch (JSONException e) {
-                                    new errorHandler(act, e, errorMsg);
-                                }
-                                if(jsonObject != null){
+                                    try {
+                                        jsonObject = new JSONObject(errorMsg);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+
+                                    if(jsonObject != null){
                                 if (!jsonObject.isNull("message")) {
                                     String msg = jsonObject.optString("message");
                                     respondsListener.onFailure(code, msg);
                                 }
                                 }
 
+
                             } else {
                                 String errorMsg = error.getMessage();
-                                Toast.makeText(act, "אנא בדקו את החיבור ונסו שוב", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(act, "אנא בדקו את החיבור לאינטרנט ונסו שוב", Toast.LENGTH_LONG).show();
                                     respondsListener.onFailure(0, errorMsg);
                                 }
-                        } catch (Exception e) {
-                            new errorHandler(act, e);
-                        }
                     }
                 });
 

@@ -42,6 +42,26 @@
     <string name="close_navigation">close</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="terms">terms</string>
+    <string name="agree_not_yemot">I agree that this application was not developed by \'ימות המשיח\' and \'ימות המשיח\' does not provide support for the application and is not responsible for any direct or indirect damage caused by the application.</string>
+    <string name="agree_terms">I agree to the terms of use.</string>
+    <string name="copyright">דוגמא, אין להעבירת, להעתיק , להסריט, פותח על ידי office@y-fox.com</string>
+    <string name="later_paste">paste</string>
+    <string name="paste_later_copy_move_summary">Paste after copying / moving</string>
 
 
 </resources>

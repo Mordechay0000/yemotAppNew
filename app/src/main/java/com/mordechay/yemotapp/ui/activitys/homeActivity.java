@@ -3,22 +3,18 @@ package com.mordechay.yemotapp.ui.activitys;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import androidx.appcompat.app.ActionBar;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.MenuProvider;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
-import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 import androidx.preference.PreferenceManager;
@@ -28,23 +24,21 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.mordechay.yemotapp.R;
-import com.mordechay.yemotapp.interfaces.IOnBackPressed;
+import com.mordechay.yemotapp.data.Constants;
+import com.mordechay.yemotapp.data.DataTransfer;
+import com.mordechay.yemotapp.interfaces.onBackPressedFilesExplorer;
 
 import java.util.List;
 import java.util.Locale;
 
 
-public class homeActivity extends AppCompatActivity {
+public class homeActivity extends AppCompatActivity implements MenuProvider {
 
 
     NavController nvc;
     NavigationView nvgv;
-    static Menu menu;
-    Fragment fragment;
-    NavDestination fil;
     Fragment fr;
     DrawerLayout drw;
-    ActionBar actb;
     ActionBarDrawerToggle actionBarDrawerToggle;
     private FirebaseAuth mAuth;
 
@@ -60,8 +54,11 @@ public class homeActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
+        addMenuProvider(this);
+
         nvgv = findViewById(R.id.nvgv);
         nvgv.setItemIconTintList(null);
+
         nvc = Navigation.findNavController(this, R.id.nvgv_fragment);
         NavigationUI.setupWithNavController(nvgv, nvc);
         drw = findViewById(R.id.drw);
@@ -100,7 +97,7 @@ public class homeActivity extends AppCompatActivity {
     public void onBackPressed() {
         if(drw.isDrawerOpen(nvgv)){
             drw.closeDrawer(nvgv);
-        } else if (!(findFragmentInstance() instanceof IOnBackPressed) || !((IOnBackPressed) findFragmentInstance()).onBackPressed()) {
+        } else if (!(findFragmentInstance() instanceof onBackPressedFilesExplorer) || !((onBackPressedFilesExplorer) findFragmentInstance()).onBackPressedFilesExplorer()) {
             super.onBackPressed();
         }
 
@@ -116,35 +113,6 @@ public class homeActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_action_bar, menu);
-        menu.getItem(0).setVisible(false);
-        menu.getItem(1).setVisible(false);
-        menu.getItem(2).setVisible(false);
-
-        return super.onCreateOptionsMenu(menu);
-
-    }
-
-
-    // handle button activities
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.logout:
-                logout();
-                break;
-            case R.id.settings:
-                startActivity(new Intent(this, SettingsActivity.class));
-                break;
-        }
-        if(actionBarDrawerToggle.onOptionsItemSelected(item))
-            return true;
-
-        return super.onOptionsItemSelected(item);
-    }
-
 
     @Override
     protected void onStart() {
@@ -153,19 +121,47 @@ public class homeActivity extends AppCompatActivity {
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser == null){
-            startActivity(new Intent(homeActivity.this, loginToServerActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            startActivity(new Intent(homeActivity.this, loginToServerActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+        }else{
+            DataTransfer.setUsername(currentUser.getEmail());
+            DataTransfer.setUid(currentUser.getUid());
         }
     }
 
     private void logout() {
         Intent inet = new Intent(this, loginToServerActivity.class)
-                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        getSharedPreferences("User", 0).edit().clear().commit();
+                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        getSharedPreferences(Constants.DEFAULT_SHARED_PREFERENCES, 0).edit().clear().commit();
         mAuth.signOut();
         startActivity(inet);
     }
 
 
+    @Override
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+        getMenuInflater().inflate(R.menu.menu_action_bar, menu);
+        menu.getItem(0).setVisible(false);
+        menu.getItem(1).setVisible(false);
+        menu.getItem(2).setVisible(false);
+    }
+
+    @Override
+    public boolean onMenuItemSelected(@NonNull MenuItem item) {
+        if(actionBarDrawerToggle.onOptionsItemSelected(item))
+            return true;
+        switch (item.getItemId()) {
+            case R.id.logout:
+                logout();
+                return true;
+            case R.id.settings:
+                startActivity(new Intent(this, SettingsActivity.class));
+                return true;
+            default:
+                return false;
+        }
+
+
+    }
 }
 
 

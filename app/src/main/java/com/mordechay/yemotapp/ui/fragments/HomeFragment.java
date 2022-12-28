@@ -1,5 +1,7 @@
 package com.mordechay.yemotapp.ui.fragments;
 
+import static com.mordechay.yemotapp.data.Constants.URL_HOME;
+
 import android.os.Bundle;
 
 import androidx.cardview.widget.CardView;
@@ -35,7 +37,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, send
 
 
 
-    final String URL_HOME = "https://www.call2all.co.il/ym/api/";
     String token;
     String number;
     String password;

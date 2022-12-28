@@ -5,19 +5,21 @@ import android.content.Context;
 import android.util.Log;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.mordechay.yemotapp.data.Constants;
+import com.mordechay.yemotapp.data.DataTransfer;
+import com.mordechay.yemotapp.network.SendErrorLogToUrl;
 import com.mordechay.yemotapp.network.sendApiRequest;
 import com.mordechay.yemotapp.ui.activitys.LoginActivity;
 
 import org.json.JSONException;
 
-public class errorHandler implements sendApiRequest.RespondsListener{
+public class errorHandler {
 
     public errorHandler(Activity cntx, Exception e) {
         Log.e("Error", e.getMessage());
         e.printStackTrace();
 
-        // TODO: send error to server, set url to send error
-        new sendApiRequest(cntx, this, "error", "http://yemotapp.com/api/exception.php?message=" + e.getMessage());
+
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(cntx);
         builder.setTitle("Error");
         builder.setMessage("שגיאה חמורה באפליקציה לחץ אישור ליציאה"+ "\n" +"השגיאה:"+"\n\n" + e.getMessage());
@@ -26,6 +28,7 @@ public class errorHandler implements sendApiRequest.RespondsListener{
             cntx.finish();
         });
         builder.show();
+        new SendErrorLogToUrl(cntx, e.getMessage());
 
 
     }
@@ -34,8 +37,7 @@ public class errorHandler implements sendApiRequest.RespondsListener{
         Log.e("Error", e.getMessage());
         e.printStackTrace();
 
-        // TODO: send error to server, set url to send error
-        new sendApiRequest(cntx, this, "error", "http://yemotapp.com/api/exception.php?message=" + e.getMessage());
+
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(cntx);
         builder.setTitle("Error");
         builder.setMessage("שגיאה חמורה באפליקציה לחץ אישור ליציאה"+ "\n" +"השגיאה:"+"\n\n" + e.getMessage());
@@ -44,6 +46,7 @@ public class errorHandler implements sendApiRequest.RespondsListener{
             cntx.finish();
         });
         builder.show();
+        new SendErrorLogToUrl(cntx, e.getMessage());
 
      }
 
@@ -51,8 +54,7 @@ public class errorHandler implements sendApiRequest.RespondsListener{
         Log.e("Error", e.getMessage());
         e.printStackTrace();
 
-        // TODO: send error to server, set url to send error
-        new sendApiRequest(cntx, this, "error", "http://yemotapp.com/api/exception.php?message=" + e.getMessage() + "&result " + result, "שגיאה, אנא המתן בזמן שהמערכת שולוחת את הלוג לשרת.");
+
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(cntx);
         builder.setTitle("Error");
         builder.setMessage("שגיאה ניתוח תגובת שרת לחץ אישור ליציאה"+ "\n" +"השגיאה:"+"\n\n" + e.getMessage());
@@ -61,16 +63,8 @@ public class errorHandler implements sendApiRequest.RespondsListener{
             cntx.finish();
         });
         builder.show();
+        new SendErrorLogToUrl(cntx,  e.getMessage() + "\n\n\n result: \n" +result);
     }
 
-    @Override
-    public void onSuccess( String result, String type) {
-
-    }
-
-    @Override
-    public void onFailure( int responseCode, String responseMessage) {
-
-    }
 }
 

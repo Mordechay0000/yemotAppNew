@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -28,29 +30,25 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
-import com.mordechay.yemotapp.network.uploadFile;
-import com.mordechay.yemotapp.ui.activitys.OpenFileActivity;
 import com.mordechay.yemotapp.ui.programmatically.list.CustomAdapter;
 import com.mordechay.yemotapp.ui.programmatically.list.DataModel;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.ui.programmatically.list.newList;
 import com.mordechay.yemotapp.network.sendApiRequest;
-import com.mordechay.yemotapp.interfaces.IOnBackPressed;
+import com.mordechay.yemotapp.interfaces.onBackPressedFilesExplorer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 
-
-public class filseExplorerFragment extends Fragment implements AdapterView.OnItemClickListener, AbsListView.MultiChoiceModeListener, sendApiRequest.RespondsListener, SwipeRefreshLayout.OnRefreshListener, DialogInterface.OnClickListener, IOnBackPressed {
-
+public class filseExplorerFragment extends Fragment implements MenuProvider, AdapterView.OnItemClickListener, AbsListView.MultiChoiceModeListener, sendApiRequest.RespondsListener, SwipeRefreshLayout.OnRefreshListener, DialogInterface.OnClickListener, onBackPressedFilesExplorer {
 
 
     String urlHome;
@@ -61,6 +59,7 @@ public class filseExplorerFragment extends Fragment implements AdapterView.OnIte
     String urlAction;
     String urlUpdateExtFolder;
     String urlHomeUploadFile;
+
 
     ArrayList<String> urlStack;
     String thisWhat = "/";
@@ -90,24 +89,21 @@ public class filseExplorerFragment extends Fragment implements AdapterView.OnIte
 
 
     Menu menu;
-    boolean onBack;
-    private MaterialAlertDialogBuilder rnmDialog;
     private EditText edtRenameDialog;
     private String renameWhatString;
     private ArrayList<Integer> renameWhatList;
 
     long downloadID;
+    private MaterialToolbar toolbar;
 
 
-    public filseExplorerFragment() {
+        public filseExplorerFragment() {
         // Required empty public constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
     }
 
     @Override
@@ -115,8 +111,10 @@ public class filseExplorerFragment extends Fragment implements AdapterView.OnIte
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_filse_explorer, container, false);
 
-        setHasOptionsMenu(true);
         token = DataTransfer.getToken();
+
+        toolbar = requireActivity().findViewById(R.id.topAppBar);
+        requireActivity().addMenuProvider(this);
 
         swprl = v.findViewById(R.id.swipeRefresh);
         swprl.setOnRefreshListener(this);
@@ -129,9 +127,9 @@ public class filseExplorerFragment extends Fragment implements AdapterView.OnIte
         urlHomeUploadFile = "https://www.call2all.co.il/ym/api/UploadFile?token=" + token;
 
         url = urlStart;
-        urlStack = new ArrayList();
+        urlStack = new ArrayList<>();
         urlStack.add(url);
-        thisWhatStack = new ArrayList();
+        thisWhatStack = new ArrayList<>();
         thisWhatStack.add(thisWhat);
         list = v.findViewById(R.id.list1111);
         list.setOnItemClickListener(this);
@@ -160,137 +158,148 @@ public class filseExplorerFragment extends Fragment implements AdapterView.OnIte
             thisWhatStack.add(thisWhat);
             refresh();
         } else {
-            DataTransfer.setFileUrl(Constants.URL_DOWNLOAD_FILE + aryWhat.get(i));
-            DataTransfer.setFileType("mp3");
-            startActivity(new Intent(getActivity(), OpenFileActivity.class));
-            //downloadFile(Constants.URL_DOWNLOAD_FILE + aryWhat.get(i));
+            //DataTransfer.setFileUrl(Constants.URL_DOWNLOAD_FILE  +"&path="+ aryWhat.get(i));
+            //DataTransfer.setFileName("000 music");
+            //DataTransfer.setFileType("mp3");
+            //startActivity(new Intent(getActivity(), OpenFileActivity.class));
+            downloadFile(Constants.URL_DOWNLOAD_FILE +"&path=" + aryWhat.get(i));
         }
     }
 
 
     @Override
     public void onSuccess(String result, String type) {
-        if (type.equals("url")) {
-            if (actMode != null) {
-                actMode.finish();
-            }
-            adapter = new ArrayList();
-            try {
-                aryImage = new ArrayList();
-                aryName = new ArrayList();
-                aryExtType = new ArrayList();
-                aryExtTitle = new ArrayList();
-                aryFileType = new ArrayList();
-                aryWhat = new ArrayList();
-                aryTypeFile = new ArrayList<>();
+        switch (type) {
+            case "url":
+                if (actMode != null) {
+                    actMode.finish();
+                }
+                adapter = new ArrayList<>();
+                try {
+                    aryImage = new ArrayList<>();
+                    aryName = new ArrayList<>();
+                    aryExtType = new ArrayList<>();
+                    aryExtTitle = new ArrayList<>();
+                    aryFileType = new ArrayList<>();
+                    aryWhat = new ArrayList<>();
+                    aryTypeFile = new ArrayList<>();
 
 
-                JSONObject jsonObject = new JSONObject(result);
+                    JSONObject jsonObject = new JSONObject(result);
 
-                if (!jsonObject.isNull("dirs") | !jsonObject.isNull("files")) {
-                    if (!jsonObject.isNull("dirs")) {
-                        JSONArray jsonArray = jsonObject.getJSONArray("dirs");
+                    if (!jsonObject.isNull("dirs") | !jsonObject.isNull("files")) {
+                        if (!jsonObject.isNull("dirs")) {
+                            JSONArray jsonArray = jsonObject.getJSONArray("dirs");
 
-                        for (int i = 1; i <= jsonArray.length(); i++) {
-                            JSONObject jsonObject1 = jsonArray.getJSONObject(i - 1);
-                            aryImage.add(String.valueOf(R.drawable.ic_baseline_folder_open_24));
-                            if (!jsonObject1.isNull("name")) {
-                                aryName.add(jsonObject1.getString("name"));
-                            } else {
-                                aryName.add("");
-                            }
-                            if (!jsonObject1.isNull("extType")) {
-                                aryExtType.add(jsonObject1.getString("extType"));
-                            } else {
-                                aryExtType.add("");
-                            }
-                            if (!jsonObject1.isNull("extTitle")) {
-                                aryExtTitle.add(jsonObject1.getString("extTitle"));
-                            } else {
-                                aryExtTitle.add("");
-                            }
-                            if (!jsonObject1.isNull("fileType")) {
-                                aryFileType.add(jsonObject1.getString("fileType"));
-                            } else {
-                                aryFileType.add("");
-                            }
-                            if (!jsonObject1.isNull("what")) {
-                                aryWhat.add(jsonObject1.getString("what"));
-                            } else {
-                                aryWhat.add("");
-                            }
-                            aryTypeFile.add("DIR");
-
-
-                        }
-                    }
+                            for (int i = 1; i <= jsonArray.length(); i++) {
+                                JSONObject jsonObject1 = jsonArray.getJSONObject(i - 1);
+                                aryImage.add(String.valueOf(R.drawable.ic_baseline_folder_open_24));
+                                if (!jsonObject1.isNull("name")) {
+                                    aryName.add(jsonObject1.getString("name"));
+                                } else {
+                                    aryName.add("");
+                                }
+                                if (!jsonObject1.isNull("extType")) {
+                                    aryExtType.add(jsonObject1.getString("extType"));
+                                } else {
+                                    aryExtType.add("");
+                                }
+                                if (!jsonObject1.isNull("extTitle")) {
+                                    aryExtTitle.add(jsonObject1.getString("extTitle"));
+                                } else {
+                                    aryExtTitle.add("");
+                                }
+                                if (!jsonObject1.isNull("fileType")) {
+                                    aryFileType.add(jsonObject1.getString("fileType"));
+                                } else {
+                                    aryFileType.add("");
+                                }
+                                if (!jsonObject1.isNull("what")) {
+                                    aryWhat.add(jsonObject1.getString("what"));
+                                } else {
+                                    aryWhat.add("");
+                                }
+                                aryTypeFile.add("DIR");
 
 
-                    if (!jsonObject.isNull("files")) {
-                        JSONArray jsonArray = jsonObject.getJSONArray("files");
-
-                        for (int i = 1; i <= jsonArray.length(); i++) {
-                            JSONObject jsonObject1 = jsonArray.getJSONObject(i - 1);
-                            aryImage.add(String.valueOf(R.drawable.ic_baseline_audio_file_24));
-
-
-                            if (!jsonObject1.isNull("name")) {
-                                aryName.add(jsonObject1.getString("name"));
-                            } else {
-                                aryName.add("");
-                            }
-                            if (!jsonObject1.isNull("fileType")) {
-                                aryExtType.add(jsonObject1.getString("fileType"));
-                            } else {
-                                aryExtType.add("");
-                            }
-                            if (!jsonObject1.isNull("what")) {
-                                aryWhat.add(jsonObject1.getString("what"));
-                            } else {
-                                aryWhat.add("");
-                            }
-
-                            if(aryExtType.get(i-1).equals("") || aryExtType.get(i-1).isEmpty()){
-                            aryTypeFile.add("FILE");
-                            }else{
-                                aryTypeFile.add(aryExtType.get(i-1));
                             }
                         }
+
+
+                        if (!jsonObject.isNull("files")) {
+                            JSONArray jsonArray = jsonObject.getJSONArray("files");
+
+                            for (int i = 1; i <= jsonArray.length(); i++) {
+                                JSONObject jsonObject1 = jsonArray.getJSONObject(i - 1);
+                                aryImage.add(String.valueOf(R.drawable.ic_baseline_audio_file_24));
+
+
+                                if (!jsonObject1.isNull("name")) {
+                                    aryName.add(jsonObject1.getString("name"));
+                                } else {
+                                    aryName.add("");
+                                }
+                                if (!jsonObject1.isNull("fileType")) {
+                                    aryExtType.add(jsonObject1.getString("fileType"));
+                                } else {
+                                    aryExtType.add("");
+                                }
+                                if (!jsonObject1.isNull("what")) {
+                                    aryWhat.add(jsonObject1.getString("what"));
+                                } else {
+                                    aryWhat.add("");
+                                }
+
+                                if (aryExtType.get(i - 1).equals("") || aryExtType.get(i - 1).isEmpty()) {
+                                    aryTypeFile.add("FILE");
+                                } else {
+                                    aryTypeFile.add(aryExtType.get(i - 1));
+                                }
+                            }
+                        }
+
+                        ArrayList<ArrayList<String>> aryyyyyyy = new ArrayList<>();
+                        aryyyyyyy.add(aryImage);
+                        aryyyyyyy.add(aryName);
+                        aryyyyyyy.add(aryExtType);
+                        aryyyyyyy.add(aryExtTitle);
+                        aryyyyyyy.add(aryFileType);
+                        aryyyyyyy.add(aryWhat);
+
+
+                        CustomAdapter csta = new CustomAdapter(requireActivity(),  new newList().getAdapter(getActivity(), aryyyyyyy));
+                        list.setAdapter(csta);
+
                     }
-
-                    ArrayList<ArrayList<String>> aryyyyyyy = new ArrayList<ArrayList<String>>();
-                    aryyyyyyy.add(aryImage);
-                    aryyyyyyy.add(aryName);
-                    aryyyyyyy.add(aryExtType);
-                    aryyyyyyy.add(aryExtTitle);
-                    aryyyyyyy.add(aryFileType);
-                    aryyyyyyy.add(aryWhat);
-
-
-
-
-                    CustomAdapter csta = new CustomAdapter(this.getContext(), new newList().getAdapter(getActivity(), aryyyyyyy));
-                    list.setAdapter(csta);
-
+                } catch (JSONException e) {
+                    Log.e("error json parse", result + "|" + urlInfo);
+                    e.printStackTrace();
                 }
-            } catch (JSONException e) {
-                Log.e("error json parse", result + "|" + urlInfo);
-                e.printStackTrace();
-            }
-        } else if (type.equals("action")) {
-            try {
-                JSONObject jsonObject = new JSONObject(result);
-                if (jsonObject.getBoolean("success")) {
-                    Toast.makeText(getActivity(), "הפעולה בוצעה בהצלחה", Toast.LENGTH_LONG).show();
-                    refresh();
+                break;
+            case "action":
+                try {
+                    JSONObject jsonObject = new JSONObject(result);
+                    if (!jsonObject.isNull("success") && jsonObject.getBoolean("success")) {
+                        Toast.makeText(getActivity(), "הפעולה בוצעה בהצלחה", Toast.LENGTH_LONG).show();
+                        refresh();
+                    }else if (!jsonObject.isNull("message") && jsonObject.getString("meddsge").equals("simultaneous file operation rejected")){
+                        Toast.makeText(getActivity(), "פעולת קובץ בו-זמנית נדחתה", Toast.LENGTH_LONG).show();
+                    }else if(!jsonObject.isNull("message")){
+                        Toast.makeText(getActivity(), "שגיאה: \n \n " + jsonObject.getString("message"), Toast.LENGTH_LONG).show();
+                    }else{
+                        Toast.makeText(getActivity(), "שגיאה לא ידועה: \n \n " + jsonObject.getString("responseStatus"), Toast.LENGTH_LONG).show();
+                    }
+                } catch (JSONException e) {
+                    Log.e("error json parse", result + "|" + urlInfo);
+                    e.printStackTrace();
                 }
-            } catch (JSONException e) {
-                Log.e("error json parse", result + "|" + urlInfo);
-                e.printStackTrace();
-            }
-            refresh();
-        }else if(type.equals("urlDownloadFile")){
+                refresh();
+                break;
 
+
+            case "urlDownloadFile":
+
+                break;
         }
         swprl.setRefreshing(false);
     }
@@ -305,21 +314,26 @@ public class filseExplorerFragment extends Fragment implements AdapterView.OnIte
     public void action(String action) {
         String whatString = createWhatString();
         if (!whatString.isEmpty()) {
-            if (action.equals("delete")) {
-                String _urlAction = urlAction + "&action=delete" + whatString;
-                Log.e("urlAction", _urlAction);
-                swprl.setRefreshing(true);
-                new sendApiRequest(getActivity(), this, "action", _urlAction);
-            } else if (action.equals("move")) {
-                whatList = whatString;
-                isCopy = false;
-                menu.getItem(2).setVisible(true);
-            } else if (action.equals("copy")) {
-                whatList = whatString;
-                isCopy = true;
-                menu.getItem(2).setVisible(true);
-            } else if (action.equals("rename")) {
-                rename(getArrayListSelected());
+            switch (action) {
+                case "delete":
+                    String _urlAction = urlAction + "&action=delete" + whatString;
+                    Log.e("urlAction", _urlAction);
+                    swprl.setRefreshing(true);
+                    new sendApiRequest(getActivity(), this, "action", _urlAction);
+                    break;
+                case "move":
+                    whatList = whatString;
+                    isCopy = false;
+                    menu.getItem(2).setVisible(true);
+                    break;
+                case "copy":
+                    whatList = whatString;
+                    isCopy = true;
+                    menu.getItem(2).setVisible(true);
+                    break;
+                case "rename":
+                    rename(getArrayListSelected());
+                    break;
             }
         }
         if (action.equals("paste")) {
@@ -343,27 +357,6 @@ public class filseExplorerFragment extends Fragment implements AdapterView.OnIte
         }
     }
 
-
-
-
-    // handle button activities
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.upload_file:
-                uploadFile();
-
-                break;
-            case R.id.created_folder:
-                createFolderDialog();
-                break;
-            case R.id.paste:
-                action("paste");
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     private void uploadFile() {
         Intent intent = new Intent();
         intent.setType("*/*");
@@ -379,12 +372,15 @@ public class filseExplorerFragment extends Fragment implements AdapterView.OnIte
             String selectedFilePath = selectedFileUri.getPath();
             String urlUpload = urlHomeUploadFile + "&path=" + "ivr2:"+thisWhat + "abc.txt";
             Log.e("urlUpload", urlUpload);
+            /*
             File fl = new File(selectedFilePath);
             try {
                 uploadFile.uploadFile(token, thisWhat, new File(selectedFilePath));
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+             */
         }
     }
 
@@ -397,7 +393,7 @@ public class filseExplorerFragment extends Fragment implements AdapterView.OnIte
 
 
     public ArrayList<Integer> getArrayListSelected() {
-        ArrayList listArray = new ArrayList<Integer>();
+        ArrayList<Integer> listArray = new ArrayList<>();
 
 
         SparseBooleanArray checked = list.getCheckedItemPositions();
@@ -412,22 +408,22 @@ public class filseExplorerFragment extends Fragment implements AdapterView.OnIte
     }
 
     public String createWhatString() {
-        ArrayList listArray = getArrayListSelected();
-        String whatListString = "";
+        ArrayList<Integer> listArray = getArrayListSelected();
+        StringBuilder whatListString = new StringBuilder();
 
         for (int i = 0; i < listArray.size(); i++) {
 
-            whatListString = whatListString + "&what" + i + "=" + aryWhat.get((Integer) listArray.get(i));
+            whatListString.append("&what").append(i).append("=").append(aryWhat.get(listArray.get(i)));
 
         }
-        Log.e("list", whatListString);
-        return whatListString;
+        Log.e("list", whatListString.toString());
+        return whatListString.toString();
     }
 
 
     public void createFolderDialog() {
         edtDialog = new EditText(getActivity());
-        dialog = new MaterialAlertDialogBuilder(getActivity())
+        dialog = new MaterialAlertDialogBuilder(requireActivity())
                 .setTitle("יצירת תיקייה")
                 .setMessage("אנא הזן שם לתיקייה")
                 .setView(edtDialog)
@@ -442,16 +438,11 @@ public class filseExplorerFragment extends Fragment implements AdapterView.OnIte
         renameWhatString = createWhatString();
         edtRenameDialog = new EditText(getActivity());
         edtRenameDialog.setText(String.valueOf(aryName.get(what.get(0))));
-        rnmDialog = new MaterialAlertDialogBuilder(getActivity())
+        MaterialAlertDialogBuilder rnmDialog = new MaterialAlertDialogBuilder(requireActivity())
                 .setTitle("שינוי שם")
-                .setMessage("נבחרו " + what.size() + " קבצים לשינוי שם." + "\n" +"\n" + "אנא הזן שם:")
+                .setMessage("נבחרו " + what.size() + " קבצים לשינוי שם." + "\n" + "\n" + "אנא הזן שם:")
                 .setView(edtRenameDialog)
-                .setPositiveButton("אישור", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        applyRename();
-                    }
-                })
+                .setPositiveButton("אישור", (dialogInterface, i) -> applyRename())
                 .setNegativeButton("ביטול", null);
         rnmDialog.show();
     }
@@ -484,7 +475,7 @@ public class filseExplorerFragment extends Fragment implements AdapterView.OnIte
         // Here you can do something when items are selected/de-selected,
         // such as update the title in the CAB
         ArrayList<Integer> cob = getArrayListSelected();
-        mode.setTitle(String.valueOf(cob.size()) + " נבחרו");
+        mode.setTitle(cob.size() + " נבחרו");
     }
 
     @Override
@@ -512,39 +503,35 @@ public class filseExplorerFragment extends Fragment implements AdapterView.OnIte
         }
     }
 
+
+
     @Override
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
         // Inflate the menu for the CAB
         MenuInflater inflater = mode.getMenuInflater();
         inflater.inflate(R.menu.menu_action_bar_cab, menu);
         actMode = mode;
+        toolbar.setVisibility(View.GONE);
         return true;
     }
 
     @Override
-    public void onDestroyActionMode(ActionMode mode) {
+    public void onDestroyActionMode(ActionMode actionMode) {
         // Here you can make any necessary updates to the activity when
         // the CAB is removed. By default, selected items are deselected/unchecked.
+        actionMode.finish();
+        toolbar.setVisibility(View.VISIBLE);
+        actMode = null;
     }
 
+
     @Override
-    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-        // Here you can perform updates to the CAB due to
-        // an <code><a href="/reference/android/view/ActionMode.html#invalidate()">invalidate()</a></code> request
+    public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
         return false;
     }
 
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        menu.getItem(0).setVisible(true);
-        menu.getItem(1).setVisible(true);
-        this.menu = menu;
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-
-    public boolean onBackPressed() {
+    public boolean onBackPressedFilesExplorer() {
         if (urlStack.size() <= 1) {
 return false;
         } else {
@@ -559,9 +546,10 @@ return true;
     }
 
 
+
     public void downloadFile(String url) {
         Toast.makeText(getActivity(), "ההורדה מתבצעת.", Toast.LENGTH_SHORT).show();
-        DownloadManager manager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
+        DownloadManager manager = (DownloadManager) requireActivity().getSystemService(Context.DOWNLOAD_SERVICE);
         Uri Download_Uri = Uri.parse(url);
         DownloadManager.Request request = new DownloadManager.Request(Download_Uri);
 
@@ -579,10 +567,34 @@ return true;
 
         //set the notification visibility to VISIBILITY_VISIBLE_NOTIFY_COMPLETED. This will ensure that the download shows in the notifications while it's in progress, and that it is automatically removed from the notification drawer once it has been completed.
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-        request.setShowRunningNotification(true);
 
         request.setMimeType("audio/*");
 
         downloadID =manager.enqueue(request);
 }
+
+    @Override
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+        menu.getItem(0).setVisible(true);
+        menu.getItem(1).setVisible(true);
+        this.menu = menu;
+    }
+
+    @Override
+    public boolean onMenuItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.upload_file:
+                uploadFile();
+                return true;
+            case R.id.created_folder:
+                createFolderDialog();
+                return true;
+            case R.id.paste:
+                action("paste");
+                return true;
+            default:
+                return false;
+        }
+    }
+
 }
