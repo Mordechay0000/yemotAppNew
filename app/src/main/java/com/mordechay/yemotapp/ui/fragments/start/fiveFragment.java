@@ -1,6 +1,7 @@
 package com.mordechay.yemotapp.ui.fragments.start;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.gms.common.util.SharedPreferencesUtils;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.mordechay.yemotapp.R;
@@ -55,6 +57,7 @@ public class fiveFragment extends Fragment implements CompoundButton.OnCheckedCh
     @Override
     public void onClick(View view) {
         if(chbAgreeTerms.isChecked() && chbAgreeNotYemot.isChecked()){
+            requireActivity().getSharedPreferences("agrrement", 0).edit().putBoolean("agrrement", true).apply();
             startActivity(new Intent(getActivity(), LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
         }else {
             Toast.makeText(getActivity(), "אנא סמן את כל התיבות", Toast.LENGTH_SHORT).show();

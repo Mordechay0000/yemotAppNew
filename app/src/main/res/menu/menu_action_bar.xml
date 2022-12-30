@@ -23,18 +23,9 @@
         app:showAsAction="always" />
 
 
-
-
-
-
-
-
-
-
     <item
         android:id="@+id/logout"
-        android:title="התנתקות"
-         />
+        android:title="התנתקות מהמערכת" />
     <item
         android:id="@+id/settings"
         android:title="הגדרות"

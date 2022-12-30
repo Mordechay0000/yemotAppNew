@@ -1,5 +1,7 @@
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <PreferenceCategory app:title="@string/preferences_header">
 
@@ -37,6 +39,23 @@
             app:key="logout"
             app:summary="בלחיצה על התנתקות"
             app:title="@string/logout" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="בטא">
+
+
+        <SwitchPreferenceCompat
+            app:key="beta"
+            app:title="הפעלת אפשרויות הבטא"
+            app:summary="הצגת תכונות נסיוניות" />
+
+
+        <SwitchPreferenceCompat
+            app:key="customize_app"
+            app:title="התאמה אישית בעזרת בינה מלאכותית"
+            app:summary="תכונת התאמה אישית באמצעות בינה מלאכותית מאפשרת לאפליקציה להתאים את התנאים למשתמש על־פי זיהוי ההדפות שלו. זו פונקציות בטא משמעותית שמסייעת לאפליקציה לעבוד בצורה יותר מתאימה ונוחה עבור המשתמש."
+            app:dependency="beta"/>
+
     </PreferenceCategory>
 
 </PreferenceScreen>

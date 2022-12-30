@@ -62,6 +62,7 @@
     <string name="copyright">דוגמא, אין להעבירת, להעתיק , להסריט, פותח על ידי office@y-fox.com</string>
     <string name="later_paste">paste</string>
     <string name="paste_later_copy_move_summary">Paste after copying / moving</string>
+    <string name="selected">\" נבחרו\"</string>
 
 
 </resources>

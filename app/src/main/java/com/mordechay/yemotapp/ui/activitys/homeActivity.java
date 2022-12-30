@@ -3,10 +3,19 @@ package com.mordechay.yemotapp.ui.activitys;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -19,6 +28,11 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 import androidx.preference.PreferenceManager;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,11 +42,16 @@ import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.interfaces.onBackPressedFilesExplorer;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 import java.util.Locale;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 
-public class homeActivity extends AppCompatActivity implements MenuProvider {
+
+public class homeActivity extends AppCompatActivity implements MenuProvider, View.OnClickListener {
 
 
     NavController nvc;
@@ -41,6 +60,9 @@ public class homeActivity extends AppCompatActivity implements MenuProvider {
     DrawerLayout drw;
     ActionBarDrawerToggle actionBarDrawerToggle;
     private FirebaseAuth mAuth;
+    private TextView txtUserName;
+    private CircleImageView imgUserImage;
+    private Button btnLogout;
 
 
     @Override
@@ -63,6 +85,15 @@ public class homeActivity extends AppCompatActivity implements MenuProvider {
         NavigationUI.setupWithNavController(nvgv, nvc);
         drw = findViewById(R.id.drw);
 
+        txtUserName = nvgv.getHeaderView(0).findViewById(R.id.header_user_name);
+        txtUserName.setText(mAuth.getCurrentUser().getEmail());
+
+        imgUserImage = nvgv.getHeaderView(0).findViewById(R.id.header_user_image);
+        downloadAndSetImage(mAuth.getCurrentUser().getPhotoUrl().toString());
+
+        btnLogout = nvgv.getHeaderView(0).findViewById(R.id.header_user_logout_button);
+        btnLogout.setOnClickListener(this);
+
         MaterialToolbar mtb = findViewById(R.id.topAppBar);
         setSupportActionBar(mtb);
 
@@ -73,14 +104,11 @@ public class homeActivity extends AppCompatActivity implements MenuProvider {
         // to make the Navigation drawer icon always appear on the action bar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
         String lang = sp.getString("language", "default");
         Configuration config;
         config = getBaseContext().getResources().getConfiguration();
         Locale locale;
         if (!lang.equals("default")) {
-
-
             locale = new Locale(lang);
 
         } else {
@@ -128,12 +156,18 @@ public class homeActivity extends AppCompatActivity implements MenuProvider {
         }
     }
 
-    private void logout() {
-        Intent inet = new Intent(this, loginToServerActivity.class)
-                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        getSharedPreferences(Constants.DEFAULT_SHARED_PREFERENCES, 0).edit().clear().commit();
-        mAuth.signOut();
-        startActivity(inet);
+    private void logout(boolean isAccountsLogout) {
+        if(isAccountsLogout) {
+            Intent inet = new Intent(this, loginToServerActivity.class)
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            getSharedPreferences(Constants.DEFAULT_SHARED_PREFERENCES, 0).edit().clear().commit();
+            mAuth.signOut();
+            startActivity(inet);
+        } else {
+            Intent inet = new Intent(this, LoginActivity.class)
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(inet);
+        }
     }
 
 
@@ -151,7 +185,7 @@ public class homeActivity extends AppCompatActivity implements MenuProvider {
             return true;
         switch (item.getItemId()) {
             case R.id.logout:
-                logout();
+                logout(false);
                 return true;
             case R.id.settings:
                 startActivity(new Intent(this, SettingsActivity.class));
@@ -162,7 +196,38 @@ public class homeActivity extends AppCompatActivity implements MenuProvider {
 
 
     }
+
+    @Override
+    public void onClick(View view) {
+        if (view == btnLogout) {
+            logout(true);
+        }
+    }
+
+
+//create download bitmap image function use volly library
+    private void downloadAndSetImage(String imageUrl) {
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            ImageRequest imageRequest = new ImageRequest(imageUrl, new Response.Listener<Bitmap>() {
+                @Override
+                public void onResponse(Bitmap response) {
+                    imgUserImage.setImageBitmap(response);
+                }
+            }, 0, 0, ImageView.ScaleType.CENTER_CROP, null, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    imgUserImage.setImageResource(R.drawable.ic_baseline_account_circle_24);
+                }
+            });
+            RequestQueue requestQueue = Volley.newRequestQueue(this);
+            requestQueue.add(imageRequest);
+        }else{
+            imgUserImage.setImageResource(R.drawable.ic_baseline_account_circle_24);
+        }
+    }
+
 }
+
 
 
 

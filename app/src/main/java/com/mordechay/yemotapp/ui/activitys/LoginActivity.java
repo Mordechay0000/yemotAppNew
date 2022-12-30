@@ -37,27 +37,43 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private Button btnLogout;
     private GoogleProgressBar gpb;
     private FirebaseAuth mAuth;
+    private boolean isAgree = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Set the language
+        setAppLanguage();
+
+        // Set the view
         setContentView(R.layout.activity_login);
 
 
-        // Initialize Firebase Auth
-    mAuth = FirebaseAuth.getInstance();
 
-        if(mAuth.getCurrentUser() == null){
-            startActivity(new Intent(LoginActivity.this, loginToServerActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-            finish();
+        isAgree = getSharedPreferences("agrrement", 0).getBoolean("agrrement", false);
+        if(!isAgree){
+            Intent intent = new Intent(this, StartActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
         }else {
 
-            btnLogin = findViewById(R.id.login_button);
-            btnLogin.setOnClickListener(this);
-            btnLogout = findViewById(R.id.logout_button);
-            btnLogout.setOnClickListener(this);
+            // Initialize Firebase Auth
+            mAuth = FirebaseAuth.getInstance();
 
-            gpb = findViewById(R.id.google_progress);
+
+            if (mAuth.getCurrentUser() == null) {
+                startActivity(new Intent(LoginActivity.this, loginToServerActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                finish();
+            } else {
+
+                btnLogin = findViewById(R.id.login_button);
+                btnLogin.setOnClickListener(this);
+                btnLogout = findViewById(R.id.logout_button);
+                btnLogout.setOnClickListener(this);
+
+                gpb = findViewById(R.id.google_progress);
+            }
         }
 
 }
@@ -129,10 +145,40 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onStart() {
         super.onStart();
 
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser == null){
-            startActivity(new Intent(LoginActivity.this, loginToServerActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-            finish();
+        if(!isAgree){
+            Intent intent = new Intent(this, StartActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }else {
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+            if (currentUser == null) {
+                startActivity(new Intent(LoginActivity.this, loginToServerActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                finish();
+            }
         }
+    }
+
+
+    // set the language app
+    private void setAppLanguage() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+
+        String lang = sp.getString("language", "default");
+        Configuration config;
+        config = getBaseContext().getResources().getConfiguration();
+        Locale locale;
+        if (!lang.equals("default")) {
+
+
+            locale = new Locale(lang);
+
+        } else {
+            locale = new Locale(Locale.getDefault().getLanguage());
+
+        }
+        Locale.setDefault(locale);
+        config.setLocale(locale);
+
+        getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
     }
     }

@@ -2,6 +2,7 @@ package com.mordechay.yemotapp.ui.fragments;
 
 import static android.app.Activity.RESULT_OK;
 
+import android.annotation.SuppressLint;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -46,8 +47,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
+@SuppressLint("NonConstantResourceId")
 public class filseExplorerFragment extends Fragment implements MenuProvider, AdapterView.OnItemClickListener, AbsListView.MultiChoiceModeListener, sendApiRequest.RespondsListener, SwipeRefreshLayout.OnRefreshListener, DialogInterface.OnClickListener, onBackPressedFilesExplorer {
 
 
@@ -456,13 +457,13 @@ public class filseExplorerFragment extends Fragment implements MenuProvider, Ada
     private void applyRename() {
         if(renameWhatList.size() == 1){
             String edtRenameWhatText = edtRenameDialog.getText().toString();
-            String _urlAction = urlAction + "&action=" + "move" + renameWhatString + "&target=ivr2:" + thisWhat + edtRenameWhatText;
+            String _urlAction = urlAction + "&action=" + "move" + renameWhatString + "&target=" + thisWhat + edtRenameWhatText;
             Log.e("urlAction", _urlAction);
             new sendApiRequest(getActivity(), this, "action", _urlAction);
         }else{
             for(int i = 0; i < renameWhatList.size(); i++){
                 String edtRenameWhatText = edtRenameDialog.getText().toString() + " (" + (i+1) + ")";
-                String _urlAction = urlAction + "&action=" + "move" + renameWhatString + "&target=ivr2:" + thisWhat + edtRenameWhatText;
+                String _urlAction = urlAction + "&action=" + "move" + renameWhatString + "&target=" + thisWhat + edtRenameWhatText;
                 Log.e("urlAction", _urlAction);
                 new sendApiRequest(getActivity(), this, "action", _urlAction);
             }
@@ -475,8 +476,9 @@ public class filseExplorerFragment extends Fragment implements MenuProvider, Ada
         // Here you can do something when items are selected/de-selected,
         // such as update the title in the CAB
         ArrayList<Integer> cob = getArrayListSelected();
-        mode.setTitle(cob.size() + " נבחרו");
+        mode.setTitle(cob.size() + getString(R.string.selected));
     }
+
 
     @Override
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
@@ -558,7 +560,7 @@ return true;
         request.setTitle("מוריד קובץ: " + url.substring(url.lastIndexOf("/") + 1));
         //Set a description of this download, to be displayed in notifications (if enabled)
 
-//Set the local destination for the downloaded file to a path within the application's external files directory
+        //Set the local destination for the downloaded file to a path within the application's external files directory
         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,url.substring(url.lastIndexOf("/")+1));
 
 
@@ -597,4 +599,9 @@ return true;
         }
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        requireActivity().removeMenuProvider(this);
+    }
 }
