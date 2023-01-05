@@ -1,7 +1,6 @@
 package com.mordechay.yemotapp.network;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -9,27 +8,23 @@ import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.mordechay.yemotapp.ui.programmatically.errors.errorHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class testIsExitsUser {
-    private Activity act;
-    private RespondsListener respondsListener;
+    private final Activity act;
+    private final RespondsListener respondsListener;
 
-    private String mail;
-    private String password;
+    private final String mail;
+    private final String password;
     private JSONObject jsonObject = null;
 
     public interface RespondsListener {
-
-        public void onSuccess(String result);
-        public void onFailure(int responseCode, String responseMessage);
+        void onSuccess(String result);
+        void onFailure(int responseCode, String responseMessage);
     }
 
 
@@ -45,47 +40,37 @@ public class testIsExitsUser {
 
 
     private void sendRequest() {
-        String url = "https://topbx.app/yemotapp770999/?username=" + mail +"&password="+password;
+        String url = "https://mordechay-database.000webhostapp.com/IsUser.php?email=" + mail +"&pass="+password;
 
         Log.d("url", "url" + url);
+        // dismiss the progress dialog after receiving Constants from API
         StringRequest jsObjRequest = new StringRequest(Request.Method.GET,url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
+                respondsListener::onSuccess,
+                error -> {
+                    NetworkResponse response = error.networkResponse;
+                    if (response != null) {
+                        int code = response.statusCode;
 
-                        // dismiss the progress dialog after receiving Constants from API
-
-                        respondsListener.onSuccess(response);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        NetworkResponse response = error.networkResponse;
-                        if (response != null) {
-                            int code = response.statusCode;
-
-                            String errorMsg = new String(response.data);
-                            try {
-                                jsonObject = new JSONObject(errorMsg);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
-
-                            if(jsonObject != null){
-                                if (!jsonObject.isNull("message")) {
-                                    String msg = jsonObject.optString("message");
-                                    respondsListener.onFailure(code, msg);
-                                }
-                            }
-
-
-                        } else {
-                            String errorMsg = error.getMessage();
-                            Toast.makeText(act, "אנא בדקו את החיבור לאינטרנט ונסו שוב", Toast.LENGTH_LONG).show();
-                            respondsListener.onFailure(0, errorMsg);
+                        String errorMsg = new String(response.data);
+                        try {
+                            jsonObject = new JSONObject(errorMsg);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
+
+
+                        if(jsonObject != null){
+                            if (!jsonObject.isNull("message")) {
+                                String msg = jsonObject.optString("message");
+                                respondsListener.onFailure(code, msg);
+                            }
+                        }
+
+
+                    } else {
+                        String errorMsg = error.getMessage();
+                        Toast.makeText(act, "אנא בדקו את החיבור לאינטרנט ונסו שוב", Toast.LENGTH_LONG).show();
+                        respondsListener.onFailure(0, errorMsg);
                     }
                 });
         try{

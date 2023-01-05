@@ -1,5 +1,6 @@
 package com.mordechay.yemotapp.ui.activitys;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -41,6 +42,7 @@ import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.interfaces.onBackPressedFilesExplorer;
+import com.mordechay.yemotapp.network.sendApiRequest;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -89,7 +91,7 @@ public class homeActivity extends AppCompatActivity implements MenuProvider, Vie
         txtUserName.setText(mAuth.getCurrentUser().getEmail());
 
         imgUserImage = nvgv.getHeaderView(0).findViewById(R.id.header_user_image);
-        downloadAndSetImage(mAuth.getCurrentUser().getPhotoUrl().toString());
+        downloadAndSetImage(mAuth.getCurrentUser().getPhotoUrl());
 
         btnLogout = nvgv.getHeaderView(0).findViewById(R.id.header_user_logout_button);
         btnLogout.setOnClickListener(this);
@@ -160,13 +162,36 @@ public class homeActivity extends AppCompatActivity implements MenuProvider, Vie
         if(isAccountsLogout) {
             Intent inet = new Intent(this, loginToServerActivity.class)
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            getSharedPreferences(Constants.DEFAULT_SHARED_PREFERENCES, 0).edit().clear().commit();
+            getSharedPreferences(Constants.DEFAULT_SHARED_PREFERENCES, 0).edit().clear().apply();
+            getSharedPreferences(Constants.DEFAULT_SHARED_PREFERENCES_THIS_SYSTEM, 0).edit().clear().apply();
+
             mAuth.signOut();
             startActivity(inet);
         } else {
-            Intent inet = new Intent(this, LoginActivity.class)
-                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(inet);
+            SharedPreferences spPref = PreferenceManager.getDefaultSharedPreferences(this);
+            if (spPref.getBoolean("logout", false)) {
+                // Create the AlertDialog.Builder
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("פעולה");
+                builder.setMessage("האם אתה בטוח?");
+
+                // Add the buttons
+                builder.setPositiveButton("אישור", (dialog, id) -> {
+                    getSharedPreferences(Constants.DEFAULT_SHARED_PREFERENCES_THIS_SYSTEM, 0).edit().clear().apply();
+                    Intent inet = new Intent(this, LoginActivity.class)
+                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(inet);
+                });
+                builder.setNegativeButton("ביטול", null);
+                // Create and show the AlertDialog
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }else{
+                getSharedPreferences(Constants.DEFAULT_SHARED_PREFERENCES_THIS_SYSTEM, 0).edit().clear().apply();
+                Intent inet = new Intent(this, LoginActivity.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(inet);
+            }
         }
     }
 
@@ -206,9 +231,9 @@ public class homeActivity extends AppCompatActivity implements MenuProvider, Vie
 
 
 //create download bitmap image function use volly library
-    private void downloadAndSetImage(String imageUrl) {
-        if (imageUrl != null && !imageUrl.isEmpty()) {
-            ImageRequest imageRequest = new ImageRequest(imageUrl, new Response.Listener<Bitmap>() {
+    private void downloadAndSetImage(Uri imageUrl) {
+        if (imageUrl != null && !imageUrl.toString().isEmpty()) {
+            ImageRequest imageRequest = new ImageRequest(imageUrl.toString(), new Response.Listener<Bitmap>() {
                 @Override
                 public void onResponse(Bitmap response) {
                     imgUserImage.setImageBitmap(response);
@@ -216,13 +241,13 @@ public class homeActivity extends AppCompatActivity implements MenuProvider, Vie
             }, 0, 0, ImageView.ScaleType.CENTER_CROP, null, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    imgUserImage.setImageResource(R.drawable.ic_baseline_account_circle_24);
+                    imgUserImage.setImageResource(R.drawable.ic_baseline_account_circle_70);
                 }
             });
             RequestQueue requestQueue = Volley.newRequestQueue(this);
             requestQueue.add(imageRequest);
         }else{
-            imgUserImage.setImageResource(R.drawable.ic_baseline_account_circle_24);
+            imgUserImage.setImageResource(R.drawable.ic_baseline_account_circle_70);
         }
     }
 

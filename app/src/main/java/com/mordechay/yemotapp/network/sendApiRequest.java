@@ -2,7 +2,6 @@ package com.mordechay.yemotapp.network;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
@@ -11,26 +10,22 @@ import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.snackbar.SnackbarContentLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.mordechay.yemotapp.ui.activitys.LoginActivity;
-import com.mordechay.yemotapp.ui.activitys.loginToServerActivity;
-import com.mordechay.yemotapp.ui.programmatically.errors.errorHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Objects;
+
 public class sendApiRequest implements testIsExitsUser.RespondsListener{
     private String  type;
-    private Activity act;
-    private RespondsListener respondsListener;
+    private final Activity act;
+    private final RespondsListener respondsListener;
 
-    private String networkurl;
+    private final String networkurl;
     ProgressDialog progressDialog;
     private JSONObject jsonObject = null;
     private FirebaseAuth mAuth;
@@ -40,17 +35,17 @@ public class sendApiRequest implements testIsExitsUser.RespondsListener{
     public void onSuccess(String result) {
         if(result.equals("ok")){
             respondsListener.onSuccess(this.responseString, this.type);
-        }else if (result.equals("block")) {
-            Toast.makeText(act, "המשתמש נחסם!", Toast.LENGTH_SHORT).show();
+        }else if (result.equals("Error: Account blocked")) {
+            Toast.makeText(act, "המשתמש נחסם.", Toast.LENGTH_SHORT).show();
 
             mAuth.signOut();
-            act.startActivity(new Intent(act, LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            act.startActivity(new Intent(act, LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
 
 
         }else{
             Toast.makeText(act, "המשתמש לא רשום, זה אומר שהאפליקציה גנובה!!!", Toast.LENGTH_LONG).show();
             mAuth.signOut();
-            act.startActivity(new Intent(act, LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            act.startActivity(new Intent(act, LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
         }
         }
 
@@ -62,8 +57,8 @@ public class sendApiRequest implements testIsExitsUser.RespondsListener{
 
     public interface RespondsListener {
 
-        public void onSuccess(String result, String type);
-        public void onFailure(int responseCode, String responseMessage);
+        void onSuccess(String result, String type);
+        void onFailure(int responseCode, String responseMessage);
     }
 
 
@@ -92,59 +87,52 @@ public class sendApiRequest implements testIsExitsUser.RespondsListener{
         sendRequest();
     }
 
-
     private void sendRequest() {
 
         Log.d("url", "url" + networkurl);
         StringRequest jsObjRequest = new StringRequest(Request.Method.GET,networkurl,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        // dismiss the progress dialog after receiving Constants from API
-                        if(progressDialog != null) progressDialog.dismiss();
+                response -> {
+                    // dismiss the progress dialog after receiving Constants from API
+                    if(progressDialog != null) progressDialog.dismiss();
 
-                        sendApiRequest.this.type = type;
-                        sendApiRequest.this.responseString = response;
+                    sendApiRequest.this.type = type;
+                    sendApiRequest.this.responseString = response;
 
-                        mAuth = FirebaseAuth.getInstance();
-                        String mail = mAuth.getCurrentUser().getEmail();
-                        String pass = mAuth.getUid();
+                    mAuth = FirebaseAuth.getInstance();
+                    String mail = Objects.requireNonNull(mAuth.getCurrentUser()).getEmail();
+                    String pass = mAuth.getUid();
 
 
-                        new testIsExitsUser(act, sendApiRequest.this, mail, pass);
-                    }
+                    new testIsExitsUser(act, sendApiRequest.this, mail, pass);
                 },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // dismiss the progress dialog after receiving Constants from API
-                        if(progressDialog != null) progressDialog.dismiss();
-                            NetworkResponse response = error.networkResponse;
-                            if (response != null) {
-                                int code = response.statusCode;
+                error -> {
+                    // dismiss the progress dialog after receiving Constants from API
+                    if(progressDialog != null) progressDialog.dismiss();
+                        NetworkResponse response = error.networkResponse;
+                        if (response != null) {
+                            int code = response.statusCode;
 
-                                String errorMsg = new String(response.data);
-                                    try {
-                                        jsonObject = new JSONObject(errorMsg);
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-
-
-                                    if(jsonObject != null){
-                                if (!jsonObject.isNull("message")) {
-                                    String msg = jsonObject.optString("message");
-                                    respondsListener.onFailure(code, msg);
-                                }
+                            String errorMsg = new String(response.data);
+                                try {
+                                    jsonObject = new JSONObject(errorMsg);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
 
 
-                            } else {
-                                String errorMsg = error.getMessage();
-                                Toast.makeText(act, "אנא בדקו את החיבור לאינטרנט ונסו שוב", Toast.LENGTH_LONG).show();
-                                    respondsListener.onFailure(0, errorMsg);
-                                }
-                    }
+                                if(jsonObject != null){
+                            if (!jsonObject.isNull("message")) {
+                                String msg = jsonObject.optString("message");
+                                respondsListener.onFailure(code, msg);
+                            }
+                            }
+
+
+                        } else {
+                            String errorMsg = error.getMessage();
+                            Toast.makeText(act, "אנא בדקו את החיבור לאינטרנט ונסו שוב", Toast.LENGTH_LONG).show();
+                                respondsListener.onFailure(0, errorMsg);
+                            }
                 });
 
 try{

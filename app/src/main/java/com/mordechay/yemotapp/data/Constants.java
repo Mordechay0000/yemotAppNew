@@ -2,6 +2,7 @@ package com.mordechay.yemotapp.data;
 
 public class Constants {
     public static final String DEFAULT_SHARED_PREFERENCES = "User";
+    public static final String DEFAULT_SHARED_PREFERENCES_THIS_SYSTEM = "ThisSystem";
     public static final String URL_HOME = "https://www.call2all.co.il/ym/api/";
     public static final String URL_GET_UNITS_HISTORY = URL_HOME + "GetTransactions?token="+ DataTransfer.getToken();
     public static final String URL_DOWNLOAD_FILE = URL_HOME + "DownloadFile?token="+ DataTransfer.getToken();

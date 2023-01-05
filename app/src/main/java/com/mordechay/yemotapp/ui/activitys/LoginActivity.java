@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -32,6 +33,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private String Number;
     private String Password;
     private EditText edtNumber;
+    private CheckBox chbRememberMe;
     private String url;
     private Button btnLogin;
     private Button btnLogout;
@@ -50,31 +52,38 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login);
 
 
-
         isAgree = getSharedPreferences("agrrement", 0).getBoolean("agrrement", false);
+        SharedPreferences sp = getSharedPreferences(Constants.DEFAULT_SHARED_PREFERENCES_THIS_SYSTEM,0);
         if(!isAgree){
             Intent intent = new Intent(this, StartActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
-        }else {
+        }
 
             // Initialize Firebase Auth
             mAuth = FirebaseAuth.getInstance();
 
-
             if (mAuth.getCurrentUser() == null) {
-                startActivity(new Intent(LoginActivity.this, loginToServerActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                finish();
-            } else {
+                startActivity(new Intent(LoginActivity.this, loginToServerActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+            }
 
+            if(sp.getBoolean("isRememberMe", false)){
+                DataTransfer.setInfoNumber(sp.getString("Number", null));
+                DataTransfer.setInfoPassword(sp.getString("Password", null));
+                DataTransfer.setToken(sp.getString("Token", null));
+                Intent inet = new Intent(LoginActivity.this, homeActivity.class);
+                inet.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(inet);
+            }
+                chbRememberMe = findViewById(R.id.remember_me);
                 btnLogin = findViewById(R.id.login_button);
                 btnLogin.setOnClickListener(this);
                 btnLogout = findViewById(R.id.logout_button);
                 btnLogout.setOnClickListener(this);
 
                 gpb = findViewById(R.id.google_progress);
-            }
-        }
+
+
 
 }
 
@@ -113,8 +122,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 DataTransfer.setInfoNumber(Number);
                 DataTransfer.setInfoPassword(Password);
                 DataTransfer.setToken(Number + ":" + Password);
+                if(chbRememberMe.isChecked()){
+                    SharedPreferences.Editor sped = getSharedPreferences(Constants.DEFAULT_SHARED_PREFERENCES_THIS_SYSTEM , 0).edit();
+                    sped.putBoolean("isRememberMe", true);
+                    sped.putString("Number",DataTransfer.getInfoNumber());
+                    sped.putString("Password",DataTransfer.getInfoPassword());
+                    sped.putString("Token",DataTransfer.getToken());
+                    sped.apply();
+                }
                 Intent inet = new Intent(LoginActivity.this, homeActivity.class);
-                inet.addFlags(Intent.FLAG_ACTIVITY_TASK_ON_HOME);
+                inet.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(inet);
             }else if(jsonObject.getString("responseStatus").equals("FORBIDDEN")){
 

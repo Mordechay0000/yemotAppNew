@@ -32,16 +32,14 @@
             app:summary="במחיקת קובץ"
             app:title="@string/delete" />
         <SwitchPreferenceCompat
-            app:key="paste"
-            app:summary="@string/paste_later_copy_move_summary"
-            app:title="@string/later_paste" />
-        <SwitchPreferenceCompat
+
             app:key="logout"
-            app:summary="בלחיצה על התנתקות"
-            app:title="@string/logout" />
+            app:summary="בלחיצה על ניתוק מהמערכת"
+            app:title="@string/system_logout" />
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="בטא">
+    <PreferenceCategory app:title="בטא"
+        app:isPreferenceVisible="false">
 
 
         <SwitchPreferenceCompat
@@ -53,7 +51,7 @@
         <SwitchPreferenceCompat
             app:key="customize_app"
             app:title="התאמה אישית בעזרת בינה מלאכותית"
-            app:summary="תכונת התאמה אישית באמצעות בינה מלאכותית מאפשרת לאפליקציה להתאים את התנאים למשתמש על־פי זיהוי ההדפות שלו. זו פונקציות בטא משמעותית שמסייעת לאפליקציה לעבוד בצורה יותר מתאימה ונוחה עבור המשתמש."
+            app:summary="תכונת התאמה אישית באמצעות בינה מלאכותית מאפשרת לאפליקציה להתאים את את עצמה על־פי זיהוי ההדפותך. זו פונקציות בטא שמסייעת לאפליקציה לעבוד בצורה יותר מתאימה ונוחה."
             app:dependency="beta"/>
 
     </PreferenceCategory>

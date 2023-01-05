@@ -97,6 +97,14 @@
             app:type="folding_circles"
  />
 
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/remember_me"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:checked="true"
+            android:text="זכור אותי" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/login_button"
             style="@style/Widget.MaterialComponents.Button"

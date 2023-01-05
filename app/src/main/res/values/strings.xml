@@ -63,6 +63,7 @@
     <string name="later_paste">paste</string>
     <string name="paste_later_copy_move_summary">Paste after copying / moving</string>
     <string name="selected">\" נבחרו\"</string>
+    <string name="system_logout">התנתקות מהמערכת</string>
 
 
 </resources>

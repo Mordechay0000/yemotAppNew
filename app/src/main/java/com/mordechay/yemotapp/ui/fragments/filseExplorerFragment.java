@@ -3,16 +3,19 @@ package com.mordechay.yemotapp.ui.fragments;
 import static android.app.Activity.RESULT_OK;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Environment;
@@ -47,6 +50,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 @SuppressLint("NonConstantResourceId")
 public class filseExplorerFragment extends Fragment implements MenuProvider, AdapterView.OnItemClickListener, AbsListView.MultiChoiceModeListener, sendApiRequest.RespondsListener, SwipeRefreshLayout.OnRefreshListener, DialogInterface.OnClickListener, onBackPressedFilesExplorer {
@@ -96,9 +100,10 @@ public class filseExplorerFragment extends Fragment implements MenuProvider, Ada
 
     long downloadID;
     private MaterialToolbar toolbar;
+    private SharedPreferences spPref;
 
 
-        public filseExplorerFragment() {
+    public filseExplorerFragment() {
         // Required empty public constructor
     }
 
@@ -137,6 +142,9 @@ public class filseExplorerFragment extends Fragment implements MenuProvider, Ada
         list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         list.setMultiChoiceModeListener(this);
 
+        spPref = PreferenceManager.getDefaultSharedPreferences(requireContext());
+
+
         new sendApiRequest(getActivity(), this, "url", url);
 
 
@@ -159,6 +167,7 @@ public class filseExplorerFragment extends Fragment implements MenuProvider, Ada
             thisWhatStack.add(thisWhat);
             refresh();
         } else {
+
             //DataTransfer.setFileUrl(Constants.URL_DOWNLOAD_FILE  +"&path="+ aryWhat.get(i));
             //DataTransfer.setFileName("000 music");
             //DataTransfer.setFileType("mp3");
@@ -317,13 +326,33 @@ public class filseExplorerFragment extends Fragment implements MenuProvider, Ada
         if (!whatString.isEmpty()) {
             switch (action) {
                 case "delete":
-                    String _urlAction = urlAction + "&action=delete" + whatString;
-                    Log.e("urlAction", _urlAction);
-                    swprl.setRefreshing(true);
-                    new sendApiRequest(getActivity(), this, "action", _urlAction);
+                    if (spPref.getBoolean("delete", true)){
+                        // Create the AlertDialog.Builder
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setTitle("פעולה");
+                        builder.setMessage("האם אתה בטוח?");
+
+                        // Add the buttons
+                        builder.setPositiveButton("אישור", (dialog, id) -> {
+                            // User clicked confirm button
+                            String _urlAction = urlAction + "&action=delete" + whatString;
+                            Log.e("urlAction", _urlAction);
+                            swprl.setRefreshing(true);
+                            new sendApiRequest(getActivity(), this, "action", _urlAction);
+                        });
+                        builder.setNegativeButton("ביטול", null);
+                        // Create and show the AlertDialog
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }else {
+                        String _urlAction = urlAction + "&action=delete" + whatString;
+                        Log.e("urlAction", _urlAction);
+                        swprl.setRefreshing(true);
+                        new sendApiRequest(getActivity(), this, "action", _urlAction);
+                    }
                     break;
                 case "move":
-                    whatList = whatString;
+                        whatList = whatString;
                     isCopy = false;
                     menu.getItem(2).setVisible(true);
                     break;
@@ -338,6 +367,33 @@ public class filseExplorerFragment extends Fragment implements MenuProvider, Ada
             }
         }
         if (action.equals("paste")) {
+            if (spPref.getBoolean("paste", false)){
+                // Create the AlertDialog.Builder
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("פעולה");
+                builder.setMessage("האם אתה בטוח?");
+
+                // Add the buttons
+                builder.setPositiveButton("אישור", (dialog, id) -> {
+                    Log.e("testtttttt", whatList);
+                    String act;
+                    if (isCopy) {
+                        act = "copy";
+                    } else {
+                        act = "move";
+                    }
+                    swprl.setRefreshing(true);
+                    String _urlAction = urlAction + "&action=" + act + whatList + "&target=" + thisWhat;
+                    Log.e("urlAction", _urlAction);
+                    new sendApiRequest(getActivity(), this, "action", _urlAction);
+                    isCopy = false;
+                    menu.getItem(2).setVisible(false);
+                });
+                builder.setNegativeButton("ביטול", null);
+                // Create and show the AlertDialog
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }else{
             Log.e("testtttttt", whatList);
             String act;
             if (isCopy) {
@@ -350,13 +406,14 @@ public class filseExplorerFragment extends Fragment implements MenuProvider, Ada
             Log.e("urlAction", _urlAction);
             new sendApiRequest(getActivity(), this, "action", _urlAction);
             isCopy = false;
-            menu.getItem(2).setVisible(false);
+            menu.getItem(2).setVisible(false);}
         } else if (action.equals("createFolder")) {
             swprl.setRefreshing(true);
             String _urlCreatedFolder = urlUpdateExtFolder + "&path=" + thisWhat + "/" + edtDialog.getText();
             new sendApiRequest(getActivity(), this, "action", _urlCreatedFolder);
         }
     }
+
 
     private void uploadFile() {
         Intent intent = new Intent();
@@ -557,7 +614,7 @@ return true;
 
 
         //Set the title of this download, to be displayed in notifications (if enabled).
-        request.setTitle("מוריד קובץ: " + url.substring(url.lastIndexOf("/") + 1));
+        request.setTitle(url.substring(url.lastIndexOf("/") + 1));
         //Set a description of this download, to be displayed in notifications (if enabled)
 
         //Set the local destination for the downloaded file to a path within the application's external files directory
