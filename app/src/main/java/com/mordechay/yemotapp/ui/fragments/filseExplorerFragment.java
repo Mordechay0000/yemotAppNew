@@ -38,6 +38,7 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
+import com.mordechay.yemotapp.data.filter;
 import com.mordechay.yemotapp.ui.programmatically.list.CustomAdapter;
 import com.mordechay.yemotapp.ui.programmatically.list.DataModel;
 import com.mordechay.yemotapp.R;
@@ -168,11 +169,11 @@ public class filseExplorerFragment extends Fragment implements MenuProvider, Ada
             refresh();
         } else {
 
-            //DataTransfer.setFileUrl(Constants.URL_DOWNLOAD_FILE  +"&path="+ aryWhat.get(i));
+            //DataTransfer.setFileUrl(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken()  +"&path="+ aryWhat.get(i));
             //DataTransfer.setFileName("000 music");
             //DataTransfer.setFileType("mp3");
             //startActivity(new Intent(getActivity(), OpenFileActivity.class));
-            downloadFile(Constants.URL_DOWNLOAD_FILE +"&path=" + aryWhat.get(i));
+            downloadFile(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken() +"&path=" + aryWhat.get(i));
         }
     }
 
@@ -234,15 +235,13 @@ public class filseExplorerFragment extends Fragment implements MenuProvider, Ada
 
                             }
                         }
-
-
+                        int aryExtTypeSize = aryExtType.size();
+                        int aryImageSize = aryImage.size();
                         if (!jsonObject.isNull("files")) {
                             JSONArray jsonArray = jsonObject.getJSONArray("files");
 
                             for (int i = 1; i <= jsonArray.length(); i++) {
                                 JSONObject jsonObject1 = jsonArray.getJSONObject(i - 1);
-                                aryImage.add(String.valueOf(R.drawable.ic_baseline_audio_file_24));
-
 
                                 if (!jsonObject1.isNull("name")) {
                                     aryName.add(jsonObject1.getString("name"));
@@ -260,11 +259,13 @@ public class filseExplorerFragment extends Fragment implements MenuProvider, Ada
                                     aryWhat.add("");
                                 }
 
-                                if (aryExtType.get(i - 1).equals("") || aryExtType.get(i - 1).isEmpty()) {
+                                if (aryExtType.get(i - 1 + aryExtTypeSize).equals("") || aryExtType.get(i - 1 + aryExtTypeSize).isEmpty()) {
                                     aryTypeFile.add("FILE");
                                 } else {
                                     aryTypeFile.add(aryExtType.get(i - 1));
                                 }
+
+                                aryImage.add(String.valueOf(filter.getImageResources(aryName.get(i - 1 +aryImageSize ).substring(aryName.get(i - 1 + aryImageSize).lastIndexOf(".") + 1))));
                             }
                         }
 

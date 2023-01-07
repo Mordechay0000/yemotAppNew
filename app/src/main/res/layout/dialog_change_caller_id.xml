@@ -25,46 +25,22 @@
                 android:textStyle="bold" />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textField1000"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginHorizontal="50dp"
-                android:hint="מאיזה תנועה להציג?">
+                android:hint="מספר זיהוי יוצא">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edt_dialog_from"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:gravity="center|center_horizontal|center_vertical"
-                    android:inputType="number" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="50dp"
-                android:layout_gravity="center"
-                android:hint="מספר מרבי של תנועות שיש לכלול.">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edt_dialog_limit"
+                    android:id="@+id/edt_dialog_caller_id"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="5"
                     android:gravity="center|center_horizontal|center_vertical"
-                    android:inputType="number"
-                    />
+                    android:inputType="number" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/button_dialog_units_filter"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="15dp"
-                android:text="סנן"/>
 
         </LinearLayout>
     </ScrollView>

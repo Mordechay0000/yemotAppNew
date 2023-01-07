@@ -3,67 +3,50 @@ package com.mordechay.yemotapp.ui.fragments;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.view.ActionMode;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mordechay.yemotapp.R;
+import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
+import com.mordechay.yemotapp.interfaces.OnItemActionClickListener;
 import com.mordechay.yemotapp.network.sendApiRequest;
-import com.mordechay.yemotapp.ui.programmatically.list.DataModel;
+import com.mordechay.yemotapp.ui.programmatically.list_for_sip_accounts.MyCustomAdapter;
+import com.mordechay.yemotapp.ui.programmatically.list_for_sip_accounts.MyItem;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 
-public class sipCallsFragment extends Fragment implements sendApiRequest.RespondsListener, SwipeRefreshLayout.OnRefreshListener {
+public class sipCallsFragment extends Fragment implements sendApiRequest.RespondsListener, SwipeRefreshLayout.OnRefreshListener, View.OnClickListener, OnItemActionClickListener {
 
 
+    private final String url = Constants.URL_SIP_GET_ACCOUNTS + DataTransfer.getToken();
 
-    String urlHome;
-    String token;
-    String urlInfo;
-    String urlStart;
-    String url;
-    String urlAction;
-    String urlUpdateExtFolder;
+    private SwipeRefreshLayout swprl;
 
-    ArrayList<String> urlStack;
-    String thisWhat = "/";
-    ArrayList<String> thisWhatStack;
+    private Button btnNewAccount;
 
-    String whatList;
+    private RecyclerView recyclerView;
 
-    boolean isCopy = false;
+    private ArrayList<MyItem> myItems;
 
-    ListView list;
-    ArrayList<DataModel> adapter;
+    private LinearLayout lnrError_sip;
 
-    ArrayList<String> aryNumTo;
-    ArrayList<String> aryNumFrom;
-    ArrayList<String> aryNumTrans;
-    ArrayList<String> aryExt;
-    ArrayList<String> aryCallDur;
-    ArrayList<String> aryCallId;
-
-    ActionMode actMode;
-
-    SwipeRefreshLayout swprl;
-
-    MaterialAlertDialogBuilder dialog;
-    EditText edtDialog;
-    String titleApp;
-
-    Menu menu;
-    boolean onBack;
-    private ArrayList<String> aryImage;
 
     public sipCallsFragment() {
         // Required empty public constructor
@@ -84,13 +67,16 @@ public class sipCallsFragment extends Fragment implements sendApiRequest.Respond
         swprl.setOnRefreshListener(this);
         swprl.setRefreshing(true);
 
-        token = DataTransfer.getToken();
+        btnNewAccount = v.findViewById(R.id.btn_sip_new_accounts);
 
+        lnrError_sip = v.findViewById(R.id.lnr_error_sip);
 
-        urlHome = "https://www.call2all.co.il/ym/api/GetSipAccountsInCustomer?token=" + token;
+        recyclerView = v.findViewById(R.id.recyclerView);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        url = urlHome;
-        list = v.findViewById(R.id.list111112);
+        Log.e("testing", DataTransfer.getToken() + " and " +Constants.URL_SIP_GET_ACCOUNTS+ DataTransfer.getToken());
+
         new sendApiRequest(getActivity(), this, "url", url);
 
         return v;
@@ -98,10 +84,62 @@ public class sipCallsFragment extends Fragment implements sendApiRequest.Respond
 
     @Override
     public void onSuccess(String result, String type) {
-        swprl.setRefreshing(false);
-    }
+        if (type.equals("url")) {
+            myItems = new ArrayList<>();
+            try {
+                JSONObject jsb = new JSONObject(result);
+                if (!jsb.getString("responseStatus").equalsIgnoreCase("OK")) {
+                    btnNewAccount.setVisibility(View.GONE);
+                    lnrError_sip.setVisibility(View.VISIBLE);
+                } else {
+                    lnrError_sip.setVisibility(View.GONE);
+                    JSONArray jsa = jsb.getJSONArray("accounts");
+                    int accountLimit = jsb.getInt("accountLimit");
+                    if (accountLimit <= jsa.length()) {
+                        btnNewAccount.setVisibility(View.GONE);
+                    }else {
+                        btnNewAccount.setVisibility(View.VISIBLE);
+                    }
+                    if (jsa.length() != 0) {
+                        btnNewAccount.setText("צור חשבון נוסף");
+                    } else if (jsa.length() == 0) {
+                        btnNewAccount.setText("צור חשבון ראשון");
+                    }
+                    btnNewAccount.setOnClickListener(this);
+                    for (int i = 0; i < jsa.length(); i++) {
+                        JSONObject jsb2 = jsa.getJSONObject(i);
+                        String customerExtension = jsb2.getString("customerExtension");
+                        if (customerExtension.equals("null") || customerExtension.isEmpty()) {
+                            customerExtension = "לא מוגדר";
+                        }
+                        String transport = jsb2.getString("transport");
+                        transport = transport.substring(transport.length() - 3);
 
-    @Override
+                        String callerId = jsb2.getString("callerid");
+
+                        String specialCallerID = jsb2.getString("specialCallerID");
+                        if (specialCallerID.isEmpty() || specialCallerID.equals("null")) {
+                            specialCallerID = callerId;
+                        }
+                        myItems.add(new MyItem(jsb2.getString("accountNumber"), jsb2.getString("id"), jsb2.getString("password"), customerExtension, transport, jsb2.getString("created_date"), callerId, specialCallerID));
+                    }
+
+                    MyCustomAdapter myca = new MyCustomAdapter(myItems);
+                    myca.setOnItemActionClickListener(this);
+                    recyclerView.setAdapter(myca);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            swprl.setRefreshing(false);
+        }else if (type.equals("new_account")){
+            btnNewAccount.setEnabled(true);
+            refresh();
+        }else if(type.equals("udp_to_wss") || type.equals("wss_to_udp") || type.equals("remove_accounts")){
+            refresh();
+        }
+    }
+            @Override
     public void onFailure(int responseCode, String responseMessage) {
 swprl.setRefreshing(false);
     }
@@ -112,6 +150,53 @@ swprl.setRefreshing(false);
     }
 
     private void refresh() {
+        swprl.setRefreshing(true);
         new sendApiRequest(getActivity(), this, "url", url);
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view == btnNewAccount){
+            newAccount();
+        }
+    }
+
+    private void newAccount() {
+        btnNewAccount.setEnabled(false);
+        new sendApiRequest(getActivity(), this, "new_account", Constants.URL_SIP_NEW_ACCOUNT + DataTransfer.getToken());
+    }
+
+    @Override
+    public void onActionClick(int actionType, int position) {
+        int accountsNumber = Integer.parseInt(myItems.get(position).getAccountNumber());
+        switch (actionType){
+            case 0:
+                if(myItems.get(position).getProtocol().equalsIgnoreCase("udp")){
+                    new sendApiRequest(getActivity(), this, "udp_to_wss", Constants.URL_SIP_PROTOCOL_TO_WSS + DataTransfer.getToken() + "&accountNumber=" + accountsNumber);
+                }else{ //== wss
+                    new sendApiRequest(getActivity(), this, "wss_to_udp", Constants.URL_SIP_PROTOCOL_TO_UDP + DataTransfer.getToken() + "&accountNumber=" + accountsNumber);
+                }
+                break;
+            case 1:
+                View v = getLayoutInflater().inflate(R.layout.dialog_change_caller_id, null);
+                MaterialAlertDialogBuilder digChangeCallerId = new MaterialAlertDialogBuilder(requireActivity())
+                        .setTitle("שינוי זיהוי יוצא")
+                        .setView(v)
+                        .setPositiveButton("אישור", (dialogInterface, i) -> {
+                            EditText etCallerId = v.findViewById(R.id.edt_dialog_caller_id);
+                            String callerId = etCallerId.getText().toString();
+                            if(callerId.isEmpty()){
+                                Toast.makeText(getActivity(), "יש להזין זיהוי יוצא", Toast.LENGTH_SHORT).show();
+                            }else{
+                                new sendApiRequest(getActivity(), this, "change_caller_id", Constants.URL_SIP_CHANGE_CALLER_ID + DataTransfer.getToken() + "&accountNumber=" + accountsNumber + "&callerId=" + callerId);
+                            }
+                        })
+                        .setNegativeButton("ביטול", null);
+                digChangeCallerId.show();
+                break;
+            case 2:
+                new sendApiRequest(getActivity(), this, "remove_accounts", Constants.URL_SIP_REMOVE_ACCOUNTS + DataTransfer.getToken() + "&accountNumber=" + accountsNumber);
+                break;
+        }
     }
 }

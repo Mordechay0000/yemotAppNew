@@ -22,6 +22,13 @@ public class filter {
             case "rtf": //or
             return R.drawable.ic_baseline_text_snippet_24;
 
+            case "ini": //or
+                return R.drawable.ic_baseline_settings_suggest_24;
+
+                case "html": //or
+                case "htm": //or
+                    return R.drawable.ic_baseline_html_24;
+
             default:
                 // Perform action for unrecognized file format
         }

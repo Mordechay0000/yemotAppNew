@@ -61,8 +61,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:gravity="center|center_horizontal|center_vertical"
-                android:inputType="number"
-                android:text="0774669406" />
+                android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Space
@@ -83,9 +82,18 @@
                 android:layout_height="wrap_content"
                 android:ems="25"
                 android:gravity="center|center_horizontal|center_vertical"
-                android:inputType="numberPassword"
-                android:text="0548572998" />
+                android:inputType="numberPassword" />
         </com.google.android.material.textfield.TextInputLayout>
+
+
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/remember_me"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:checked="true"
+            android:text="זכור אותי" />
 
         <com.jpardogo.android.googleprogressbar.library.GoogleProgressBar
             android:id="@+id/google_progress"
@@ -95,15 +103,7 @@
             android:layout_gravity="center"
             android:visibility="gone"
             app:type="folding_circles"
- />
-
-        <com.google.android.material.checkbox.MaterialCheckBox
-            android:id="@+id/remember_me"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:checked="true"
-            android:text="זכור אותי" />
+            />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/login_button"

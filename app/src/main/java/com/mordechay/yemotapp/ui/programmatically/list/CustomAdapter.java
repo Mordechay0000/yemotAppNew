@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import com.mordechay.yemotapp.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CustomAdapter extends ArrayAdapter<DataModel> {
 
