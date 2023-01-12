@@ -49,4 +49,9 @@
         android:name="com.mordechay.yemotapp.ui.fragments.sipCallsFragment"
         android:label="fragment_sip_list"
         tools:layout="@layout/fragment_sip_calls" />
+    <fragment
+        android:id="@id/nav_more_actions"
+        android:name="com.mordechay.yemotapp.ui.fragments.MoreActionsFragment"
+        android:label="fragment_more_actions"
+        tools:layout="@layout/fragment_more_actions" />
 </navigation>

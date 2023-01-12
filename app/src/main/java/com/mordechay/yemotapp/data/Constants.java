@@ -4,6 +4,7 @@ public class Constants {
     public static final String DEFAULT_SHARED_PREFERENCES = "User";
     public static final String DEFAULT_SHARED_PREFERENCES_THIS_SYSTEM = "ThisSystem";
     public static final String URL_HOME = "https://www.call2all.co.il/ym/api/";
+    public static final String URL_LOGIN = URL_HOME + "Login?";
     public static final String URL_GET_UNITS_HISTORY = URL_HOME + "GetTransactions?token=";
     public static final String URL_DOWNLOAD_FILE = URL_HOME + "DownloadFile?token=";
     public static final String URL_SEND_SMS = URL_HOME + "DownloadFile?token=";
@@ -14,6 +15,10 @@ public class Constants {
     public static final String URL_SIP_PROTOCOL_TO_WSS = "https://private.call2all.co.il/ym/api/SipToWss?token=";
     public static final String URL_SIP_CHANGE_CALLER_ID = "https://private.call2all.co.il/ym/api/EditCallerIdInSipAccount?token=";
     public static final String URL_SIP_REMOVE_ACCOUNTS = "https://private.call2all.co.il/ym/api/DeleteSipAccount?token=";
+    public static final String URL_VALIDATION_CALLER_ID = URL_HOME + "ValidationCallerId?token=";
+    public static final String URL_INCOMING_MINUTES = URL_HOME + "GetIncomingSum?token=";
+    public static final String URL_SECURING_GET_SESSION = URL_HOME + "GetAllSessions?token=";
+
 
 
 

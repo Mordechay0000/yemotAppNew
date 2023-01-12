@@ -83,8 +83,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, send
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_home, container, false);
 
-        ;
-
         swprl = v.findViewById(R.id.swipeRefresh);
         swprl.setOnRefreshListener(this);
         swprl.setRefreshing(true);

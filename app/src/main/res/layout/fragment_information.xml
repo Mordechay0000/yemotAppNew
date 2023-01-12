@@ -27,7 +27,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -252,14 +252,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="30dp"
                     android:text="@string/save" />
-                <Button
-                    android:id="@+id/button333"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="50dp"
-                    android:text="שינוי סיסמה" />
-            </LinearLayout>
 
+            </LinearLayout>
         </ScrollView>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

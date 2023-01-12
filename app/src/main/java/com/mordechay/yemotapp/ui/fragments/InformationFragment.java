@@ -33,8 +33,6 @@ import java.net.URLEncoder;
 
 public class InformationFragment extends Fragment implements View.OnClickListener, sendApiRequest.RespondsListener, SwipeRefreshLayout.OnRefreshListener {
 
-
-    String token;
     String url;
 
     SwipeRefreshLayout swipeRefreshLayout;
@@ -51,12 +49,6 @@ public class InformationFragment extends Fragment implements View.OnClickListene
     EditText edtPassRecording;
 
     Button btnSaveInfo;
-    private String number;
-    private String password;
-    private String newPassword;
-    private String urlCustom;
-    private View btnChangePass;
-
 
     public InformationFragment() {
         // Required empty public constructor
@@ -73,11 +65,6 @@ public class InformationFragment extends Fragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_information, container, false);
-
-
-        token = DataTransfer.getToken();
-        number = DataTransfer.getInfoNumber();
-        password = DataTransfer.getInfoPassword();
 
         swipeRefreshLayout = v.findViewById(R.id.info_swipeRefresh);
         edtSystemNumber = v.findViewById(R.id.editTextPhone);
@@ -96,11 +83,10 @@ public class InformationFragment extends Fragment implements View.OnClickListene
 
         btnSaveInfo = v.findViewById(R.id.button3);
         btnSaveInfo.setOnClickListener(this);
-        btnChangePass = v.findViewById(R.id.button333);
-        btnChangePass.setOnClickListener(this);
+
 
         swipeRefreshLayout.setOnRefreshListener(this);
-        String urlInfo = URL_HOME + "GetSession" + "?token=" + token;
+        String urlInfo = URL_HOME + "GetSession" + "?token=" + DataTransfer.getToken();
         new sendApiRequest(getActivity(), this, "info", urlInfo);
 
         return v;
@@ -110,7 +96,7 @@ public class InformationFragment extends Fragment implements View.OnClickListene
     public void onClick(View view) {
         if (view == btnSaveInfo) {
             try {
-                url = URL_HOME + "SetCustomerDetails?token=" + token +
+                url = URL_HOME + "SetCustomerDetails?token=" + DataTransfer.getToken() +
                         "&name=" + URLEncoder.encode(edtClientName.getText().toString(), "utf-8") +
                         "&email=" + URLEncoder.encode(edtMail.getText().toString(), "utf-8") +
                         "&organization=" + URLEncoder.encode(edtNameOrg.getText().toString(), "utf-8") +
@@ -127,8 +113,6 @@ public class InformationFragment extends Fragment implements View.OnClickListene
 
             Log.e("url", url);
             new sendApiRequest(getActivity(), this, "url", url);
-        }else if(view == btnChangePass){
-            setPassword();
         }
     }
 
@@ -154,12 +138,6 @@ public class InformationFragment extends Fragment implements View.OnClickListene
                     new errorHandler(getActivity(), e, result);
                 }
                 break;
-            case "pass":
-
-
-                setPassActiv(result);
-
-                break;
         }
     }
 
@@ -169,62 +147,6 @@ public class InformationFragment extends Fragment implements View.OnClickListene
         swipeRefreshLayout.setRefreshing(false);
         Log.e(String.valueOf(responseCode), responseMessage);
     }
-
-
-    public void setPassActiv(String result){
-        try {
-            JSONObject jsonObject = new JSONObject(result);
-            if(jsonObject.getString("message").equals("ok")){
-                DataTransfer.setInfoPassword(newPassword);
-                password = newPassword;
-                token = number + ":" + password;
-                DataTransfer.setToken(token);
-
-                MaterialAlertDialogBuilder al = new MaterialAlertDialogBuilder(requireActivity());
-                al.setTitle("הצלחה!");
-                al.setMessage("שינוי הסיסמה ל \"" +newPassword +"\" בוצע בהצלחה");
-                al.show();
-            }else{
-                MaterialAlertDialogBuilder al = new MaterialAlertDialogBuilder(requireActivity());
-                al.setTitle("שגיאה!");
-                al.setMessage("שינוי הסיסמה נכשל" + "\n" + "השגיאה היא: \n \n" + jsonObject.getString("message"));
-                al.show();
-            }
-        } catch (JSONException e) {
-            Toast.makeText(getActivity(), "שגיאת ניתוח נתונים!", Toast.LENGTH_SHORT).show();
-            Log.e("error json parse Minutes", result + "|" + result);
-            e.printStackTrace();
-        }
-    }
-
-
-    public void setPassword(){
-        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-
-
-
-
-        final EditText edittext = new EditText(getActivity());
-
-        alert.setMessage("הקלד את הסיסמה החדשה");
-        alert.setTitle("שינוי סיסמה");
-
-        alert.setView(edittext);
-
-        alert.setPositiveButton("אישור", (dialog, whichButton) -> {
-            newPassword = edittext.getText().toString();
-            urlCustom = URL_HOME + "SetPassword" +"?token="+token + "&password=" + password + "&newPassword=" + newPassword;
-            Log.e("url set pass", urlCustom);
-            new sendApiRequest(getActivity(), InformationFragment.this, "pass", urlCustom);
-        });
-
-        alert.setNegativeButton("ביטול", null);
-
-        alert.show();
-    }
-
-
-
 
     public void infoActiv(String result) {
         try {
@@ -275,7 +197,7 @@ public class InformationFragment extends Fragment implements View.OnClickListene
 
     private void refresh() {
         swipeRefreshLayout.setOnRefreshListener(this);
-        String urlInfo = URL_HOME + "GetSession" + "?token=" + token;
+        String urlInfo = URL_HOME + "GetSession" + "?token=" + DataTransfer.getToken();
         new sendApiRequest(getActivity(), this, "info", urlInfo);
     }
 }

@@ -18,6 +18,7 @@ public class DataTransfer {
 
     //login
     private static String token;
+    private static String tokenSecurity;
     private static String infoNumber;
     private static String infoPassword;
 
@@ -175,6 +176,14 @@ public class DataTransfer {
 
     public static void setToken(String token) {
         DataTransfer.token = token;
+    }
+
+    public static String getTokenSecurity() {
+        return tokenSecurity;
+    }
+
+    public static void setTokenSecurity(String tokenSecurity) {
+        DataTransfer.tokenSecurity = tokenSecurity;
     }
 
     public static String getInfoNumber() {

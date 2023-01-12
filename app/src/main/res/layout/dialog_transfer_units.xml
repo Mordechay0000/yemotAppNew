@@ -1,37 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:orientation="vertical">
+
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="1dp" >
+        tools:layout_editor_absoluteY="1dp">
+
         <LinearLayout
+            android:id="@+id/lnr_dialog_transfer_units"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             tools:layout_editor_absoluteX="1dp"
             tools:layout_editor_absoluteY="1dp">
-
-
-            <TextView
-                android:id="@+id/textView9"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="דוגמא, אין להעבירת, להעתיק , להסריט, פותח על ידי office@y-fox.com"
-                android:textSize="20sp"
-                android:textStyle="bold" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textField1000"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="15dp"
-                app:helperTextEnabled="true"
-                android:hint="לאן להעביר?">
+                android:hint="לאן להעביר?"
+                app:helperTextEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edt_transfer_to_system"
@@ -39,17 +34,17 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:gravity="center|center_horizontal|center_vertical"
-                    android:inputType="text"
-                    />
+                    android:inputType="text" />
 
             </com.google.android.material.textfield.TextInputLayout>
+
             <com.google.android.material.textfield.TextInputLayout
-                android:minEms="5"
-                android:maxEms="10"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:hint="כמות היחידות להעברה.">
+                android:hint="כמות היחידות להעברה."
+                android:maxEms="10"
+                android:minEms="5">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edt_transfer_amount"
@@ -57,8 +52,7 @@
                     android:layout_height="wrap_content"
                     android:ems="5"
                     android:gravity="center|center_horizontal|center_vertical"
-                    android:inputType="text"
-                    />
+                    android:inputType="text" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -67,8 +61,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="15dp"
-                android:text="העבר"/>
+                android:text="העבר" />
 
         </LinearLayout>
     </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/lnr_dialog_transfer_units_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:indeterminateOnly="true" />
+    </LinearLayout>
+
 </LinearLayout>

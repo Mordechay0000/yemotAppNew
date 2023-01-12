@@ -40,5 +40,7 @@
     <string name="agree_terms">אני מאשר/ת את תנאי השימוש.</string>
     <string name="terms">terms</string>
     <string name="copyright">דוגמא, אין להעבירת, להעתיק , להסריט, פותח על ידי office@y-fox.com</string>
-    <string name="selected">\" נבחרו\"</string>
+    <string name="selected">" נבחרו"</string>
+    <string name="system_logout">התנתקות מהמערכת</string>
+    <string name="paste_later_copy_move">לאחר העתקה/הדבקה</string>
 </resources>

@@ -326,7 +326,7 @@ refresh();
             boolean flash = swmFlash.isChecked();
             String phones = edtPhones.getText().toString();
 
-            String urlSendSMS = Constants.URL_SEND_SMS + "&from=" + URLEncoder.encode(from) + "&message=" + URLEncoder.encode(message) + "&sendFlashMessage=" + flash + "&phones=" + URLEncoder.encode(phones);
+            String urlSendSMS = Constants.URL_SEND_SMS+ DataTransfer.getToken() + "&from=" + URLEncoder.encode(from) + "&message=" + URLEncoder.encode(message) + "&sendFlashMessage=" + flash + "&phones=" + URLEncoder.encode(phones);
             new sendApiRequest(getActivity(), this, "send_sms", urlSendSMS);
         }
     }

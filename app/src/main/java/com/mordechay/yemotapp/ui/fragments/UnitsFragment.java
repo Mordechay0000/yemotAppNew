@@ -12,12 +12,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
+import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.network.sendApiRequest;
 import com.mordechay.yemotapp.ui.programmatically.list.CustomAdapter;
 import com.mordechay.yemotapp.ui.programmatically.list.newList;
@@ -28,6 +30,7 @@ import org.json.JSONObject;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class UnitsFragment extends Fragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener, sendApiRequest.RespondsListener {
@@ -56,6 +59,10 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
     private EditText edtDialogFilterFrom;
     private EditText edtDialogFilterLimit;
     private String text = "";
+    private LinearLayout lnrDialogTrans = null;
+    private LinearLayout lnrDialogProgress = null;
+    private AlertDialog dialogBuilder;
+
 
 
     public UnitsFragment() {
@@ -84,7 +91,7 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
 
         txtFilter = v.findViewById(R.id.txt_filter);
 
-        url = Constants.URL_GET_UNITS_HISTORY;
+        url = Constants.URL_GET_UNITS_HISTORY + DataTransfer.getToken();
 
         new sendApiRequest(getActivity(), this, "getUnitsHistory", url);
         
@@ -93,25 +100,30 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
 
     @Override
     public void onClick(View view) {
-
-
         MaterialAlertDialogBuilder dialog;
+
         if(view == btnTrans){
             View v = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_transfer_units,null);
-            dialog = new MaterialAlertDialogBuilder(getActivity())
+            dialog = new MaterialAlertDialogBuilder(requireActivity())
                     .setTitle("העברת יחידות")
+                    .setMessage("העברת יחידות למערכת אחרת: \n אנא הזן מספר מערכת היעד וכמות יחידות להעברה")
                     .setView(v);
+            lnrDialogTrans = v.findViewById(R.id.lnr_dialog_transfer_units);
+            lnrDialogProgress = v.findViewById(R.id.lnr_dialog_transfer_units_progress);
+
             edtDialogToSystem = v.findViewById(R.id.edt_transfer_to_system);
             edtDialogAmount = v.findViewById(R.id.edt_transfer_amount);
             btnDialogTrans = v.findViewById(R.id.button_transfer_units);
             btnDialogTrans.setOnClickListener(this);
-            altDialog = dialog.show();
+            dialogBuilder = dialog.create();
+            dialogBuilder.show();
         }else if(view == btnDialogTrans){
-            altDialog.dismiss();
+            lnrDialogTrans.setVisibility(View.GONE);
+            lnrDialogProgress.setVisibility(View.VISIBLE);
             String to = edtDialogToSystem.getText().toString();
             String amount = edtDialogAmount.getText().toString();
 
-            String urlTransferUnits = Constants.URL_TRANSFER_UNITS + "&destination=" + URLEncoder.encode(to) + "&amount=" + URLEncoder.encode(amount);
+            String urlTransferUnits = Constants.URL_TRANSFER_UNITS + DataTransfer.getToken() + "&destination=" + URLEncoder.encode(to) + "&amount=" + URLEncoder.encode(amount);
             new sendApiRequest(getActivity(), this, "transfer_units", urlTransferUnits);
 
     }else if (view == btnFilter){
@@ -141,7 +153,7 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
             }
 
             txtFilter.setText(text);
-            url = Constants.URL_GET_UNITS_HISTORY + body;
+            url = Constants.URL_GET_UNITS_HISTORY + DataTransfer.getToken() + body;
             refresh();
         }
     }
@@ -260,8 +272,8 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
         }else if(type.equals("transfer_units")){
             try {
                 JSONObject jsb = new JSONObject(result);
-                MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(getActivity());
-                dialog.setTitle("סיכום");
+                lnrDialogProgress.setVisibility(View.GONE);
+                dialogBuilder.setTitle("סיכום");
 
                 String rspStatus = jsb.getString("responseStatus");
                 String out;
@@ -269,19 +281,16 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
                     out =  "הועברו בהצלחה "   +   jsb.getString("amount") + " יחידות למערכת " + jsb.getString("destination") + "\n \n יתרת יחידות מעודכנת: " + jsb.getString("newBalance");
                 } else {
                     String ErrorMessage = jsb.getString("message");
-                    if(ErrorMessage.equals("Bad destination"))
+                    if(ErrorMessage.equalsIgnoreCase("Bad destination"))
                         ErrorMessage = "המערכת אינה קיימת או שאינה מורשית לקבל יחידות ממערכת זו";
-                    else if(ErrorMessage.equals("Bad amount"))
+                    else if(ErrorMessage.equalsIgnoreCase("Bad amount"))
                         ErrorMessage = "סכום היחידות להעברה אינו חוקי";
-                    else if(ErrorMessage.equals("Not enough balance"))
+                    else if(ErrorMessage.equalsIgnoreCase("Not enough balance"))
                         ErrorMessage = "אין יחידות מספיקות במערכת";
 
-out = "העברת יחידות נכשלה" + "\n סיבה: \n" + ErrorMessage;
+                    out = "העברת יחידות נכשלה" + "\n סיבה: \n" + ErrorMessage;
                 }
-                dialog.setMessage(out);
-                dialog.setPositiveButton("אישור", null);
-                dialog.show();
-
+                dialogBuilder.setMessage(out);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

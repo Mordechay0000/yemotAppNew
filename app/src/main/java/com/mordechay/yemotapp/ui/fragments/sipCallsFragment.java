@@ -20,10 +20,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
-import com.mordechay.yemotapp.interfaces.OnItemActionClickListener;
+import com.mordechay.yemotapp.interfaces.sipListOnItemActionClickListener;
 import com.mordechay.yemotapp.network.sendApiRequest;
-import com.mordechay.yemotapp.ui.programmatically.list_for_sip_accounts.MyCustomAdapter;
-import com.mordechay.yemotapp.ui.programmatically.list_for_sip_accounts.MyItem;
+import com.mordechay.yemotapp.ui.programmatically.list_for_sip_accounts.sipCustomAdapter;
+import com.mordechay.yemotapp.ui.programmatically.list_for_sip_accounts.sipItem;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,7 +32,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 
-public class sipCallsFragment extends Fragment implements sendApiRequest.RespondsListener, SwipeRefreshLayout.OnRefreshListener, View.OnClickListener, OnItemActionClickListener {
+public class sipCallsFragment extends Fragment implements sendApiRequest.RespondsListener, SwipeRefreshLayout.OnRefreshListener, View.OnClickListener, sipListOnItemActionClickListener {
 
 
     private final String url = Constants.URL_SIP_GET_ACCOUNTS + DataTransfer.getToken();
@@ -43,7 +43,7 @@ public class sipCallsFragment extends Fragment implements sendApiRequest.Respond
 
     private RecyclerView recyclerView;
 
-    private ArrayList<MyItem> myItems;
+    private ArrayList<sipItem> sipItems;
 
     private LinearLayout lnrError_sip;
 
@@ -85,7 +85,7 @@ public class sipCallsFragment extends Fragment implements sendApiRequest.Respond
     @Override
     public void onSuccess(String result, String type) {
         if (type.equals("url")) {
-            myItems = new ArrayList<>();
+            sipItems = new ArrayList<>();
             try {
                 JSONObject jsb = new JSONObject(result);
                 if (!jsb.getString("responseStatus").equalsIgnoreCase("OK")) {
@@ -121,10 +121,10 @@ public class sipCallsFragment extends Fragment implements sendApiRequest.Respond
                         if (specialCallerID.isEmpty() || specialCallerID.equals("null")) {
                             specialCallerID = callerId;
                         }
-                        myItems.add(new MyItem(jsb2.getString("accountNumber"), jsb2.getString("id"), jsb2.getString("password"), customerExtension, transport, jsb2.getString("created_date"), callerId, specialCallerID));
+                        sipItems.add(new sipItem(jsb2.getString("accountNumber"), jsb2.getString("id"), jsb2.getString("password"), customerExtension, transport, jsb2.getString("created_date"), callerId, specialCallerID));
                     }
 
-                    MyCustomAdapter myca = new MyCustomAdapter(myItems);
+                    sipCustomAdapter myca = new sipCustomAdapter(sipItems);
                     myca.setOnItemActionClickListener(this);
                     recyclerView.setAdapter(myca);
                 }
@@ -168,10 +168,10 @@ swprl.setRefreshing(false);
 
     @Override
     public void onActionClick(int actionType, int position) {
-        int accountsNumber = Integer.parseInt(myItems.get(position).getAccountNumber());
+        int accountsNumber = Integer.parseInt(sipItems.get(position).getAccountNumber());
         switch (actionType){
             case 0:
-                if(myItems.get(position).getProtocol().equalsIgnoreCase("udp")){
+                if(sipItems.get(position).getProtocol().equalsIgnoreCase("udp")){
                     new sendApiRequest(getActivity(), this, "udp_to_wss", Constants.URL_SIP_PROTOCOL_TO_WSS + DataTransfer.getToken() + "&accountNumber=" + accountsNumber);
                 }else{ //== wss
                     new sendApiRequest(getActivity(), this, "wss_to_udp", Constants.URL_SIP_PROTOCOL_TO_UDP + DataTransfer.getToken() + "&accountNumber=" + accountsNumber);
