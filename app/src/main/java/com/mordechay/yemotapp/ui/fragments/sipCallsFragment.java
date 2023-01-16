@@ -2,6 +2,7 @@ package com.mordechay.yemotapp.ui.fragments;
 
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -45,8 +46,13 @@ public class sipCallsFragment extends Fragment implements sendApiRequest.Respond
 
     private ArrayList<sipItem> sipItems;
 
+    private AlertDialog digChangeCallerId;
+    private int accountsNumber;
     private LinearLayout lnrError_sip;
-
+    private LinearLayout lnrChangeCallerId;
+    private LinearLayout lnrProgress;
+    private EditText edtCallerId;
+    private Button btnSave;
 
     public sipCallsFragment() {
         // Required empty public constructor
@@ -138,6 +144,10 @@ public class sipCallsFragment extends Fragment implements sendApiRequest.Respond
         }else if(type.equals("udp_to_wss") || type.equals("wss_to_udp") || type.equals("remove_accounts")){
             refresh();
         }
+        else if(type.equals("change_caller_id")){
+            digChangeCallerId.dismiss();
+            refresh();
+        }
     }
             @Override
     public void onFailure(int responseCode, String responseMessage) {
@@ -158,6 +168,15 @@ swprl.setRefreshing(false);
     public void onClick(View view) {
         if (view == btnNewAccount){
             newAccount();
+        }else if(view == btnSave){
+            lnrChangeCallerId.setVisibility(View.GONE);
+            lnrProgress.setVisibility(View.VISIBLE);
+            String callerId = edtCallerId.getText().toString();
+            if(callerId.isEmpty()){
+                Toast.makeText(getActivity(), "יש להזין זיהוי יוצא", Toast.LENGTH_SHORT).show();
+            }else{
+                new sendApiRequest(getActivity(), this, "change_caller_id", Constants.URL_SIP_CHANGE_CALLER_ID + DataTransfer.getToken() + "&accountNumber=" + accountsNumber + "&callerId=" + callerId);
+            }
         }
     }
 
@@ -168,7 +187,7 @@ swprl.setRefreshing(false);
 
     @Override
     public void onActionClick(int actionType, int position) {
-        int accountsNumber = Integer.parseInt(sipItems.get(position).getAccountNumber());
+        accountsNumber = Integer.parseInt(sipItems.get(position).getAccountNumber());
         switch (actionType){
             case 0:
                 if(sipItems.get(position).getProtocol().equalsIgnoreCase("udp")){
@@ -179,19 +198,15 @@ swprl.setRefreshing(false);
                 break;
             case 1:
                 View v = getLayoutInflater().inflate(R.layout.dialog_change_caller_id, null);
-                MaterialAlertDialogBuilder digChangeCallerId = new MaterialAlertDialogBuilder(requireActivity())
+                edtCallerId = v.findViewById(R.id.edt_dialog_caller_id);
+                btnSave = v.findViewById(R.id.btn_dialog_change_caller_id);
+                btnSave.setOnClickListener(this);
+                lnrChangeCallerId = v.findViewById(R.id.lnr_dialog_change_caller_id);
+                lnrProgress = v.findViewById(R.id.lnr_dialog_change_caller_id_progress);
+                MaterialAlertDialogBuilder digChangeCallerIdBuilder = new MaterialAlertDialogBuilder(requireActivity())
                         .setTitle("שינוי זיהוי יוצא")
-                        .setView(v)
-                        .setPositiveButton("אישור", (dialogInterface, i) -> {
-                            EditText etCallerId = v.findViewById(R.id.edt_dialog_caller_id);
-                            String callerId = etCallerId.getText().toString();
-                            if(callerId.isEmpty()){
-                                Toast.makeText(getActivity(), "יש להזין זיהוי יוצא", Toast.LENGTH_SHORT).show();
-                            }else{
-                                new sendApiRequest(getActivity(), this, "change_caller_id", Constants.URL_SIP_CHANGE_CALLER_ID + DataTransfer.getToken() + "&accountNumber=" + accountsNumber + "&callerId=" + callerId);
-                            }
-                        })
-                        .setNegativeButton("ביטול", null);
+                        .setView(v);
+                digChangeCallerId = digChangeCallerIdBuilder.create();
                 digChangeCallerId.show();
                 break;
             case 2:

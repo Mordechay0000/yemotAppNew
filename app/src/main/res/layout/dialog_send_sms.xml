@@ -13,97 +13,118 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            tools:layout_editor_absoluteX="1dp"
-            tools:layout_editor_absoluteY="1dp">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-
-            <TextView
-                android:id="@+id/textView9"
+            <LinearLayout
+                android:id="@+id/lnr_dialog_send_sms"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="דוגמא, אין להעבירת, להעתיק , להסריט, פותח על ידי office@y-fox.com"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                tools:layout_editor_absoluteX="1dp"
+                tools:layout_editor_absoluteY="1dp">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textField1000"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="15dp"
-                android:hint="זיהוי שולח"
-                app:helperText="ברירת מחדל זיהוי המערכת הראשי."
-                app:helperTextEnabled="true">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editTextNumber100"
+                <TextView
+                    android:id="@+id/textView9"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:gravity="center|center_horizontal|center_vertical"
-                    android:inputType="text" />
+                    android:text="דוגמא, אין להעבירת, להעתיק , להסריט, פותח על ידי office@y-fox.com"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
 
-            </com.google.android.material.textfield.TextInputLayout>
-
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textFieldd"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="15dp"
-                android:hint="תוכן ההודעה"
-                app:counterEnabled="true"
-                app:counterMaxLength="70"
-                app:helperText="החיוב 0.1 יחידה לכל 70 תווים (החיוב לכל מספר טלפון)"
-                app:helperTextEnabled="true">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editTextNumber22"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textField1000"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:ems="70"
-                    android:gravity="center|center_horizontal|center_vertical"
-                    android:inputType="textMultiLine" />
+                    android:layout_marginHorizontal="15dp"
+                    android:hint="זיהוי שולח"
+                    app:helperText="ברירת מחדל זיהוי המערכת הראשי."
+                    app:helperTextEnabled="true">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editTextNumber100"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:gravity="center|center_horizontal|center_vertical"
+                        android:inputType="text" />
+
+                </com.google.android.material.textfield.TextInputLayout>
 
 
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/switch1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="15dp"
-                android:text="הודעת פלאש?"
-                android:tooltipText="מסרון פלאש (הודעת הבזק) ישלח ללקוח ויקפוץ בטלפון במסך מלא. האפשרות יכולה לא לעבוד בטלפונים מסויימים/במפעילים מסויימים ויתכן שנמענים מסויימים יזהו את המסרון כמסרון רגיל." />
-
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textFielddd"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="15dp"
-                android:hint="נמענים"
-                app:helperText="הפרדה של : בין כל מספר, או tpl:מזהה-הקמפיין על מנת לשלוח לרשימת תפוצה במערכת."
-                app:helperTextEnabled="true">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editTextNumber222"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textFieldd"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:ems="20"
-                    android:gravity="center|center_horizontal|center_vertical"
-                    android:inputType="text" />
+                    android:layout_marginHorizontal="15dp"
+                    android:hint="תוכן ההודעה"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="70"
+                    app:helperText="החיוב 0.1 יחידה לכל 70 תווים (החיוב לכל מספר טלפון)"
+                    app:helperTextEnabled="true">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editTextNumber22"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="70"
+                        android:gravity="center|center_horizontal|center_vertical"
+                        android:inputType="textMultiLine" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/button_send_sms"
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switch1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="15dp"
+                    android:text="הודעת פלאש?"
+                    android:tooltipText="מסרון פלאש (הודעת הבזק) ישלח ללקוח ויקפוץ בטלפון במסך מלא. האפשרות יכולה לא לעבוד בטלפונים מסויימים/במפעילים מסויימים ויתכן שנמענים מסויימים יזהו את המסרון כמסרון רגיל." />
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textFielddd"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="15dp"
+                    android:hint="נמענים"
+                    app:helperText="הפרדה של : בין כל מספר, או tpl:מזהה-הקמפיין על מנת לשלוח לרשימת תפוצה במערכת."
+                    app:helperTextEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editTextNumber222"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="20"
+                        android:gravity="center|center_horizontal|center_vertical"
+                        android:inputType="text" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_send_sms"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="15dp"
+                    android:text="שלח" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/lnr_dialog_send_sms_progress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="15dp"
-                android:text="שלח" />
+                android:orientation="vertical"
+                android:visibility="gone">
 
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:indeterminate="true"
+                    android:indeterminateOnly="true" />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

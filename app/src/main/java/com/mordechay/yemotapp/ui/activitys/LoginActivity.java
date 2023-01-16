@@ -16,9 +16,9 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.jpardogo.android.googleprogressbar.library.GoogleProgressBar;
 import com.mordechay.yemotapp.*;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
@@ -37,7 +37,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private String url;
     private Button btnLogin;
     private Button btnLogout;
-    private GoogleProgressBar gpb;
+    private CircularProgressIndicator cpi;
     private FirebaseAuth mAuth;
     private boolean isAgree = false;
 
@@ -81,7 +81,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 btnLogout = findViewById(R.id.logout_button);
                 btnLogout.setOnClickListener(this);
 
-                gpb = findViewById(R.id.google_progress);
+                cpi = findViewById(R.id.login_progress);
 
 
 
@@ -101,7 +101,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View view) {
         if(view == btnLogin){
             btnLogin.setVisibility(View.GONE);
-            gpb.setVisibility(View.VISIBLE);
+            cpi.setVisibility(View.VISIBLE);
             getData();
             new sendApiRequest(this, this, "url", url);
         }else if(view == btnLogout){
@@ -146,13 +146,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         } catch (JSONException e) {
             new errorHandler(this, e, result);
         }
-        gpb.setVisibility(View.GONE);
+        cpi.setVisibility(View.GONE);
         btnLogin.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onFailure(int responseCode, String responseMessage) {
-        gpb.setVisibility(View.GONE);
+        cpi.setVisibility(View.GONE);
         btnLogin.setVisibility(View.VISIBLE);
         Log.e(String.valueOf(responseCode), responseMessage);
     }

@@ -32,12 +32,12 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 
 public class MoreActionsFragment extends Fragment implements View.OnClickListener, sendApiRequest.RespondsListener, MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>> {
 
 
-    private String dialog;
     private Button btnSpecialId;
     private androidx.appcompat.app.AlertDialog dialogSpecialIdOne;
 
@@ -85,11 +85,10 @@ public class MoreActionsFragment extends Fragment implements View.OnClickListene
     public void onClick(View view) {
         if (view == btnSpecialId) {
             View v = getLayoutInflater().inflate(R.layout.dialog_special_id, null);
-            MaterialAlertDialogBuilder dialogSpecialIdOneBuilder = new MaterialAlertDialogBuilder(getContext());
+            MaterialAlertDialogBuilder dialogSpecialIdOneBuilder = new MaterialAlertDialogBuilder(requireContext());
             dialogSpecialIdOneBuilder.setTitle("אימות זיהוי ספיישל");
             dialogSpecialIdOneBuilder.setMessage("הזן את מספר הזיהוי הספיישל שלך");
             dialogSpecialIdOneBuilder.setView(v);
-            dialog = "dialogSpecialIdOne";
             dialogSpecialIdOne  = dialogSpecialIdOneBuilder.create();
             dialogSpecialIdOne.show();
 
@@ -110,6 +109,7 @@ public class MoreActionsFragment extends Fragment implements View.OnClickListene
             if (!rdbSpecialIdCALL.isChecked() && !rdbSpecialIdSMS.isChecked()) {
                 Toast.makeText(getContext(), "יש לבחור אחת מהאפשרויות", Toast.LENGTH_SHORT).show();
             } else {
+                dialogSpecialIdOne.setMessage("");
                 lnrSpecialId.setVisibility(View.GONE);
                 lnrProgress.setVisibility(View.VISIBLE);
                 String specialIdNumber = edtSpecialIdNumber.getText().toString();
@@ -117,6 +117,7 @@ public class MoreActionsFragment extends Fragment implements View.OnClickListene
                 new sendApiRequest(requireActivity(), this, "SpecialIdOne", Constants.URL_VALIDATION_CALLER_ID + DataTransfer.getToken() + "&action=send&callerId=" + specialIdNumber + "&validType=" + specialIdType);
             }
             }else if (view == btnSpecialIdConfirm) {
+            dialogSpecialIdOne.setMessage("");
             lnrSpecialIdConfirm.setVisibility(View.GONE);
             lnrProgress.setVisibility(View.VISIBLE);
             String specialIdNumber = edtSpecialIdNumberConfirm.getText().toString();
@@ -173,9 +174,7 @@ public class MoreActionsFragment extends Fragment implements View.OnClickListene
                         lnrProgress.setVisibility(View.GONE);
                         lnrSpecialIdConfirm.setVisibility(View.VISIBLE);
                         reqId = jsonObject.getString("reqId");
-                        View v = getLayoutInflater().inflate(R.layout.dialog_special_id_two, null);
                         dialogSpecialIdOne.setTitle("אימות זיהוי ספיישל");
-                        dialog = "dialogSpecialIdTwo";
                         dialogSpecialIdOne.setMessage("הזן את הקוד שנשלח אליך");
                     }else{
                         lnrProgress.setVisibility(View.GONE);

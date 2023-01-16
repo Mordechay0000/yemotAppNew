@@ -61,7 +61,6 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment:2.5.3'
     implementation 'androidx.navigation:navigation-ui:2.5.3'
     implementation 'androidx.preference:preference:1.2.0'
-    implementation 'com.jpardogo.googleprogressbar:library:1.1.0'
     implementation 'com.google.firebase:firebase-auth'
     implementation platform('com.google.firebase:firebase-bom:31.1.0')
     implementation 'androidx.media:media:1.6.0'

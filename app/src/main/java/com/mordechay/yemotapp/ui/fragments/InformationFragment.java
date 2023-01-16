@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.network.sendApiRequest;
@@ -48,7 +49,7 @@ public class InformationFragment extends Fragment implements View.OnClickListene
     EditText edtPassAccess;
     EditText edtPassRecording;
 
-    Button btnSaveInfo;
+    FloatingActionButton btnSaveInfo;
 
     public InformationFragment() {
         // Required empty public constructor
@@ -81,7 +82,7 @@ public class InformationFragment extends Fragment implements View.OnClickListene
 
         swipeRefreshLayout.setRefreshing(true);
 
-        btnSaveInfo = v.findViewById(R.id.button3);
+        btnSaveInfo = v.findViewById(R.id.information_save_fab);
         btnSaveInfo.setOnClickListener(this);
 
 

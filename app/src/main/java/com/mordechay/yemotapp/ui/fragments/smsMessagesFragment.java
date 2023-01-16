@@ -8,82 +8,57 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.network.sendApiRequest;
 import com.mordechay.yemotapp.ui.programmatically.list.CustomAdapter;
-import com.mordechay.yemotapp.ui.programmatically.list.DataModel;
 import com.mordechay.yemotapp.ui.programmatically.list.newList;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class smsMessagesFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, sendApiRequest.RespondsListener, View.OnClickListener {
 
-
-
-
-
-
-
-
-
     String urlHome;
     String token;
-    String urlInfo;
-    String urlStart;
     String url;
 
-    ArrayList<String> urlStack;
-    String thisWhat = "/";
-    ArrayList<String> thisWhatStack;
-
-    String whatList;
-
-    boolean isCopy = false;
 
     ListView list;
-    ArrayList<DataModel> adapter;
 
     ArrayList<String> aryImage;
 
-    Button btn;
+    FloatingActionButton btn;
 
     SwipeRefreshLayout swprl;
 
-    MaterialAlertDialogBuilder dialog;
-    AlertDialog altDialog;
-    EditText edtDialog;
-
-
-    Menu menu;
-    boolean onBack;
-    private MaterialAlertDialogBuilder rnmDialog;
-    private EditText edtRenameDialog;
-    private String renameWhatString;
-    private ArrayList<Integer> renameWhatList;
-
+    AlertDialog digSendSMS;
 
 private EditText edtFrom;
     private EditText edtMessage;
     private SwitchMaterial swmFlash;
     private EditText edtPhones;
     private Button btnSend;
+    private LinearLayout lnrSendSMS;
+    private LinearLayout lnrProgress;
 
 
     public smsMessagesFragment() {
@@ -111,7 +86,7 @@ private EditText edtFrom;
         swprl.setRefreshing(true);
 
 
-        btn = v.findViewById(R.id.button5);
+        btn = v.findViewById(R.id.sms_writing_sms_message);
         btn.setOnClickListener(this);
 
 
@@ -241,7 +216,7 @@ refresh();
                 aryy.add(DeliveryReport);
 
                 try {
-                    CustomAdapter csta = new CustomAdapter(this.getContext(), new newList().getAdapter(getActivity(), aryy));
+                    CustomAdapter csta = new CustomAdapter(requireContext(), new newList().getAdapter(getActivity(), aryy));
                     list.setAdapter(csta);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -251,10 +226,11 @@ refresh();
             }
             swprl.setRefreshing(false);
         }else if(type.equals("send_sms")){
+            lnrProgress.setVisibility(View.GONE);
+            digSendSMS.setTitle("סיכום");
+
             try {
                 JSONObject jsb = new JSONObject(result);
-                dialog = new MaterialAlertDialogBuilder(getActivity());
-                dialog.setTitle("סיכום");
 
                 String rspStatus = jsb.getString("responseStatus");
                 if(rspStatus.equals("OK")){
@@ -265,23 +241,25 @@ refresh();
 
                 try {
                     String strMessage = jsb.getString("message");
+                    if(strMessage.equalsIgnoreCase("Low unit balance")){
+                        strMessage = "אין מספיק יחידות";
+                    }
                     String strFrom = jsb.getString("from");
                     String strSendCount = String.valueOf(jsb.getInt("sendCount"));
                     String strBilling = String.valueOf(jsb.getInt("Billing"));
 
-                    dialog.setMessage(
+                    digSendSMS.setMessage(
                             "סטטוס הפעולה: " + rspStatus + "\n" + "\n" +
                                     "תוכן ההודעה: " + "\n" +
                                     strMessage + "\n" + "\n" +
                                     "הזיהוי ממנו יצאה ההודעה: " + strFrom + "\n" +
                                     "כמה הודעות נשלחו: " + strSendCount + "\n" +
                                     "תשלום: " + strBilling + "\n");
-                    dialog.setPositiveButton("אישור", null);
                 }catch (JSONException e) {
                     e.printStackTrace();
                     Log.e("error parse json", e.getMessage());
 
-                    dialog.setMessage("שגיאה: " + "\n" + "\n" +
+                    digSendSMS.setMessage("שגיאה: " + "\n" + "\n" +
                             "סטטוס הפעולה: " + rspStatus + "\n" +
                             "סיבה:" + "\n" + "\n" + jsb.getString("message") + "\n" + "\n" +
                             "ההודעה לא נשלחה");
@@ -289,10 +267,9 @@ refresh();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                dialog.setMessage("שגיאה בניתוח תגובת השרת.");
+                digSendSMS.setMessage("שגיאה בניתוח תגובת השרת.");
             }
-            dialog.setPositiveButton("אישור", null);
-            dialog.show();
+            digSendSMS.show();
         }
     }
 
@@ -308,25 +285,35 @@ refresh();
 
         if(view == btn){
             View v = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_send_sms,null);
-            dialog = new MaterialAlertDialogBuilder(getActivity())
+            MaterialAlertDialogBuilder digSendSMSBuilder = new MaterialAlertDialogBuilder(requireActivity())
                     .setTitle("שליחת סמס")
-                    .setView(v)
-            ;
+                    .setMessage("טופס לשליחת סמס")
+                    .setView(v);
             edtFrom = v.findViewById(R.id.editTextNumber100);
             edtMessage = v.findViewById(R.id.editTextNumber22);
             swmFlash = v.findViewById(R.id.switch1);
             edtPhones = v.findViewById(R.id.editTextNumber222);
             btnSend = v.findViewById(R.id.button_send_sms);
             btnSend.setOnClickListener(this);
-            altDialog = dialog.show();
+            lnrSendSMS = v.findViewById(R.id.lnr_dialog_send_sms);
+            lnrProgress = v.findViewById(R.id.lnr_dialog_send_sms_progress);
+            digSendSMS = digSendSMSBuilder.create();
+            digSendSMS.show();
         }else if(view == btnSend){
-            altDialog.dismiss();
+            lnrSendSMS.setVisibility(View.GONE);
+            lnrProgress.setVisibility(View.VISIBLE);
+            digSendSMS.setMessage("");
             String from = edtFrom.getText().toString();
             String message = edtMessage.getText().toString();
             boolean flash = swmFlash.isChecked();
             String phones = edtPhones.getText().toString();
 
-            String urlSendSMS = Constants.URL_SEND_SMS+ DataTransfer.getToken() + "&from=" + URLEncoder.encode(from) + "&message=" + URLEncoder.encode(message) + "&sendFlashMessage=" + flash + "&phones=" + URLEncoder.encode(phones);
+            String urlSendSMS = null;
+            try {
+                urlSendSMS = Constants.URL_SEND_SMS+ DataTransfer.getToken() + "&from=" + URLEncoder.encode(from, "UTF-8") + "&message=" + URLEncoder.encode(message, "UTF-8") + "&sendFlashMessage=" + flash + "&phones=" + URLEncoder.encode(phones, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
             new sendApiRequest(getActivity(), this, "send_sms", urlSendSMS);
         }
     }

@@ -6,256 +6,261 @@
     android:layout_height="match_parent"
     tools:context=".ui.fragments.InformationFragment">
 
-
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/information_save_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:src="@drawable/baseline_save_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/info_swipeRefresh"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:layout_editor_absoluteX="1dp"
-            tools:layout_editor_absoluteY="1dp">
-
-            <LinearLayout
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="match_parent"
+                tools:layout_editor_absoluteX="1dp"
+                tools:layout_editor_absoluteY="1dp">
 
-
-                <com.google.android.material.textfield.TextInputLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="15dp"
-                    android:layout_marginVertical="3dp"
-                    android:background="#FFFFFF"
-                    android:hint="@string/system_number">
+                    android:orientation="vertical">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/editTextPhone"
+
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginHorizontal="30dp"
-                        android:ems="10"
-                        android:enabled="false"
-                        android:gravity="center|center_horizontal|center_vertical"
-                        android:inputType="phone"
-                        android:text="0000000000" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_marginHorizontal="15dp"
+                        android:layout_marginVertical="3dp"
+                        android:background="#FFFFFF"
+                        android:hint="@string/system_number">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="15dp"
-                    android:layout_marginVertical="3dp"
-                    android:background="#FFFFFF"
-                    android:hint="@string/customer_name">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/editTextPhone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginHorizontal="30dp"
+                            android:ems="10"
+                            android:enabled="false"
+                            android:gravity="center|center_horizontal|center_vertical"
+                            android:inputType="phone"
+                            android:text="0000000000" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-
-                    <EditText
-                        android:id="@+id/editTextPhone2"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginHorizontal="30dp"
-                        android:ems="10"
-                        android:gravity="center_horizontal"
-                        android:inputType="text" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="15dp"
-                    android:layout_marginVertical="3dp"
-                    android:background="#FFFFFF"
-                    android:hint="@string/mail">
+                        android:layout_marginHorizontal="15dp"
+                        android:layout_marginVertical="3dp"
+                        android:background="#FFFFFF"
+                        android:hint="@string/customer_name">
 
 
-                    <EditText
-                        android:id="@+id/editTextTextEmailAddress"
+                        <EditText
+                            android:id="@+id/editTextPhone2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginHorizontal="30dp"
+                            android:ems="10"
+                            android:gravity="center_horizontal"
+                            android:inputType="text" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginHorizontal="30dp"
-                        android:ems="10"
-                        android:gravity="center_horizontal"
-                        android:inputType="textEmailAddress" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_marginHorizontal="15dp"
+                        android:layout_marginVertical="3dp"
+                        android:background="#FFFFFF"
+                        android:hint="@string/mail">
 
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="15dp"
-                    android:layout_marginVertical="3dp"
-                    android:background="#FFFFFF"
-                    android:hint="@string/telephone">
+                        <EditText
+                            android:id="@+id/editTextTextEmailAddress"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginHorizontal="30dp"
+                            android:ems="10"
+                            android:gravity="center_horizontal"
+                            android:inputType="textEmailAddress" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
 
-                    <EditText
-                        android:id="@+id/editTextPhone5"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginHorizontal="30dp"
-                        android:ems="10"
-                        android:gravity="center_horizontal"
-                        android:inputType="phone" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_marginHorizontal="15dp"
+                        android:layout_marginVertical="3dp"
+                        android:background="#FFFFFF"
+                        android:hint="@string/telephone">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="15dp"
-                    android:layout_marginVertical="3dp"
-                    android:background="#FFFFFF"
-                    android:hint="@string/fax">
 
-                    <EditText
-                        android:id="@+id/editTextPhone7"
+                        <EditText
+                            android:id="@+id/editTextPhone5"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginHorizontal="30dp"
+                            android:ems="10"
+                            android:gravity="center_horizontal"
+                            android:inputType="phone" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginHorizontal="30dp"
-                        android:ems="10"
-                        android:gravity="center_horizontal"
-                        android:inputType="phone" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_marginHorizontal="15dp"
+                        android:layout_marginVertical="3dp"
+                        android:background="#FFFFFF"
+                        android:hint="@string/fax">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="15dp"
-                    android:layout_marginVertical="3dp"
-                    android:background="#FFFFFF"
-                    android:hint="@string/orgination_name">
+                        <EditText
+                            android:id="@+id/editTextPhone7"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginHorizontal="30dp"
+                            android:ems="10"
+                            android:gravity="center_horizontal"
+                            android:inputType="phone" />
 
-                    <EditText
-                        android:id="@+id/editTextPhone3"
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginHorizontal="30dp"
-                        android:ems="10"
-                        android:gravity="center_horizontal"
-                        android:inputType="text" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_marginHorizontal="15dp"
+                        android:layout_marginVertical="3dp"
+                        android:background="#FFFFFF"
+                        android:hint="@string/orgination_name">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="15dp"
-                    android:layout_marginVertical="3dp"
-                    android:background="#FFFFFF"
-                    android:hint="@string/contact_name">
+                        <EditText
+                            android:id="@+id/editTextPhone3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginHorizontal="30dp"
+                            android:ems="10"
+                            android:gravity="center_horizontal"
+                            android:inputType="text" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    <EditText
-                        android:id="@+id/editTextPhone4"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginHorizontal="30dp"
-                        android:ems="10"
-                        android:gravity="center_horizontal"
-                        android:inputType="text" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_marginHorizontal="15dp"
+                        android:layout_marginVertical="3dp"
+                        android:background="#FFFFFF"
+                        android:hint="@string/contact_name">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="15dp"
-                    android:layout_marginVertical="3dp"
-                    android:background="#FFFFFF"
-                    android:hint="@string/Invoice_name">
+                        <EditText
+                            android:id="@+id/editTextPhone4"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginHorizontal="30dp"
+                            android:ems="10"
+                            android:gravity="center_horizontal"
+                            android:inputType="text" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    <EditText
-                        android:id="@+id/editTextPhone6"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginHorizontal="30dp"
-                        android:ems="10"
-                        android:gravity="center_horizontal"
-                        android:inputType="text" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_marginHorizontal="15dp"
+                        android:layout_marginVertical="3dp"
+                        android:background="#FFFFFF"
+                        android:hint="@string/Invoice_name">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="15dp"
-                    android:layout_marginVertical="3dp"
-                    android:background="#FFFFFF"
-                    android:hint="@string/address_to_send_Invoice">
+                        <EditText
+                            android:id="@+id/editTextPhone6"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginHorizontal="30dp"
+                            android:ems="10"
+                            android:gravity="center_horizontal"
+                            android:inputType="text" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    <EditText
-                        android:id="@+id/editTextTextPostalAddress2"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginHorizontal="30dp"
-                        android:ems="10"
-                        android:gravity="center_horizontal"
-                        android:inputType="textPostalAddress" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_marginHorizontal="15dp"
+                        android:layout_marginVertical="3dp"
+                        android:background="#FFFFFF"
+                        android:hint="@string/address_to_send_Invoice">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="15dp"
-                    android:layout_marginVertical="3dp"
-                    android:background="#FFFFFF"
-                    android:hint="@string/access_password">
+                        <EditText
+                            android:id="@+id/editTextTextPostalAddress2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginHorizontal="30dp"
+                            android:ems="10"
+                            android:gravity="center_horizontal"
+                            android:inputType="textPostalAddress" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    <EditText
-                        android:id="@+id/editTextPhone8"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginHorizontal="30dp"
-                        android:ems="10"
-                        android:gravity="center_horizontal"
-                        android:inputType="numberPassword"
-                        android:text="" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_marginHorizontal="15dp"
+                        android:layout_marginVertical="3dp"
+                        android:background="#FFFFFF"
+                        android:hint="@string/access_password">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="15dp"
-                    android:layout_marginVertical="3dp"
-                    android:background="#FFFFFF"
-                    android:hint="@string/recording_password">
+                        <EditText
+                            android:id="@+id/editTextPhone8"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginHorizontal="30dp"
+                            android:ems="10"
+                            android:gravity="center_horizontal"
+                            android:inputType="numberPassword"
+                            android:text="" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    <EditText
-                        android:id="@+id/editTextPhone9"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginHorizontal="30dp"
-                        android:ems="10"
-                        android:gravity="center_horizontal"
-                        android:inputType="numberPassword"
-                        android:text="" />
-                </com.google.android.material.textfield.TextInputLayout>
-                <Button
-                    android:id="@+id/button3"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="30dp"
-                    android:text="@string/save" />
+                        android:layout_marginHorizontal="15dp"
+                        android:layout_marginVertical="3dp"
+                        android:background="#FFFFFF"
+                        android:hint="@string/recording_password">
 
-            </LinearLayout>
-        </ScrollView>
+                        <EditText
+                            android:id="@+id/editTextPhone9"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginHorizontal="30dp"
+                            android:ems="10"
+                            android:gravity="center_horizontal"
+                            android:inputType="numberPassword"
+                            android:text="" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+            </ScrollView>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

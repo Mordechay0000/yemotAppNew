@@ -8,7 +8,8 @@
         android:id="@id/nav_home"
         android:name="com.mordechay.yemotapp.ui.fragments.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+    </fragment>
     <fragment
         android:id="@id/nav_info"
         android:name="com.mordechay.yemotapp.ui.fragments.InformationFragment"

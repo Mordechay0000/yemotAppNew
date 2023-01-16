@@ -75,7 +75,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="15dp"
                 android:background="#FFFFFF"
-                android:hint="@string/password">
+                app:endIconMode="password_toggle"
+            android:hint="@string/password">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/passwordEditText"
@@ -83,19 +84,19 @@
                     android:layout_height="wrap_content"
                     android:ems="25"
                     android:gravity="center|center_horizontal|center_vertical"
-                    android:inputType="textPassword|textVisiblePassword"
+                    android:inputType="textPassword"
                     android:text="" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.jpardogo.android.googleprogressbar.library.GoogleProgressBar
-                android:id="@+id/google_progress"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_margin="5dp"
-                android:layout_gravity="center"
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/login_to_server_progress"
                 android:visibility="gone"
-                app:type="folding_circles"
-                />
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:indeterminate="true"
+                android:indeterminateOnly="true" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/loginButton"

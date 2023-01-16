@@ -118,6 +118,7 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
             dialogBuilder = dialog.create();
             dialogBuilder.show();
         }else if(view == btnDialogTrans){
+            dialogBuilder.setMessage("");
             lnrDialogTrans.setVisibility(View.GONE);
             lnrDialogProgress.setVisibility(View.VISIBLE);
             String to = edtDialogToSystem.getText().toString();
@@ -281,11 +282,11 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
                     out =  "הועברו בהצלחה "   +   jsb.getString("amount") + " יחידות למערכת " + jsb.getString("destination") + "\n \n יתרת יחידות מעודכנת: " + jsb.getString("newBalance");
                 } else {
                     String ErrorMessage = jsb.getString("message");
-                    if(ErrorMessage.equalsIgnoreCase("Bad destination"))
+                    if(ErrorMessage.equalsIgnoreCase("Bad_destination"))
                         ErrorMessage = "המערכת אינה קיימת או שאינה מורשית לקבל יחידות ממערכת זו";
-                    else if(ErrorMessage.equalsIgnoreCase("Bad amount"))
+                    else if(ErrorMessage.equalsIgnoreCase("Bad_amount"))
                         ErrorMessage = "סכום היחידות להעברה אינו חוקי";
-                    else if(ErrorMessage.equalsIgnoreCase("Not enough balance"))
+                    else if(ErrorMessage.equalsIgnoreCase("Not_enough balance"))
                         ErrorMessage = "אין יחידות מספיקות במערכת";
 
                     out = "העברת יחידות נכשלה" + "\n סיבה: \n" + ErrorMessage;
