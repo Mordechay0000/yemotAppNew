@@ -1,5 +1,6 @@
 package com.mordechay.yemotapp.ui.fragments;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
@@ -18,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
@@ -40,7 +42,7 @@ public class sipCallsFragment extends Fragment implements sendApiRequest.Respond
 
     private SwipeRefreshLayout swprl;
 
-    private Button btnNewAccount;
+    private FloatingActionButton btnNewAccount;
 
     private RecyclerView recyclerView;
 
@@ -73,7 +75,8 @@ public class sipCallsFragment extends Fragment implements sendApiRequest.Respond
         swprl.setOnRefreshListener(this);
         swprl.setRefreshing(true);
 
-        btnNewAccount = v.findViewById(R.id.btn_sip_new_accounts);
+        btnNewAccount = v.findViewById(R.id.sip_add_sip_account);
+        btnNewAccount.bringToFront(); //set to upend all child's view
 
         lnrError_sip = v.findViewById(R.id.lnr_error_sip);
 
@@ -105,11 +108,6 @@ public class sipCallsFragment extends Fragment implements sendApiRequest.Respond
                         btnNewAccount.setVisibility(View.GONE);
                     }else {
                         btnNewAccount.setVisibility(View.VISIBLE);
-                    }
-                    if (jsa.length() != 0) {
-                        btnNewAccount.setText("צור חשבון נוסף");
-                    } else if (jsa.length() == 0) {
-                        btnNewAccount.setText("צור חשבון ראשון");
                     }
                     btnNewAccount.setOnClickListener(this);
                     for (int i = 0; i < jsa.length(); i++) {

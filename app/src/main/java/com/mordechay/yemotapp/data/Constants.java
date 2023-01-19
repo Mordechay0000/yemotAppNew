@@ -9,6 +9,7 @@ public class Constants {
     public static final String URL_DOWNLOAD_FILE = URL_HOME + "DownloadFile?token=";
     public static final String URL_SEND_SMS = URL_HOME + "SendSms?token=";
     public static final String URL_TRANSFER_UNITS = URL_HOME + "TransferUnits?token=";
+    public static final String URL_DOUBLE_AUTH = URL_HOME + "DoubleAuth?token=";
     public static final String URL_SIP_NEW_ACCOUNT = "https://private.call2all.co.il/ym/api/CreateSipAccount?token=";
     public static final String URL_SIP_GET_ACCOUNTS = "https://private.call2all.co.il/ym/api/GetSipAccountsInCustomer?token=" ;
     public static final String URL_SIP_PROTOCOL_TO_UDP = "https://private.call2all.co.il/ym/api/SipToUdp?token=";

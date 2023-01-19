@@ -1,8 +1,8 @@
 package com.mordechay.yemotapp.ui.fragments;
 
-import android.app.AlertDialog;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -10,9 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
@@ -20,7 +22,6 @@ import com.mordechay.yemotapp.interfaces.securingListOnItemActionClickListener;
 import com.mordechay.yemotapp.network.sendApiRequest;
 import com.mordechay.yemotapp.ui.programmatically.list_for_securing_login_log.SecuringSessionItem;
 import com.mordechay.yemotapp.ui.programmatically.list_for_securing_login_log.SessionListCustomAdapter;
-import com.mordechay.yemotapp.ui.programmatically.list_for_sip_accounts.sipCustomAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,8 +37,13 @@ public class securingFragment extends Fragment implements sendApiRequest.Respond
     private LinearLayout lnrVerify;
     private LinearLayout lnrBody;
     private Button btnVerify;
+    private LinearLayout digLnrVerify;
+    private LinearLayout digLnrProgress;
     private ArrayList<SecuringSessionItem> arySecuringSessionItems;
     private RecyclerView recyclerView;
+    private EditText digEdtVerify;
+    private Button digBtnVerify;
+    private AlertDialog dialogDoubleAuth;
 
     public securingFragment() {
         // Required empty public constructor
@@ -62,21 +68,53 @@ public class securingFragment extends Fragment implements sendApiRequest.Respond
 
         recyclerView = v.findViewById(R.id.recyclerViewSession);
 
-        new sendApiRequest(requireActivity(), this, "securing_login", Constants.URL_LOGIN + "username=" + DataTransfer.getUsername() + "&password=" + DataTransfer.getInfoPassword());
+        // todo: change login secure ↓ to login in start application
+        new sendApiRequest(requireActivity(), this, "securing_login", Constants.URL_LOGIN + "username=" + DataTransfer.getInfoNumber() + "&password=" + DataTransfer.getInfoPassword());
         return v;
     }
 
     @Override
     public void onSuccess(String result, String type) {
+        JSONObject jsonObject = null;
         if (type.equals("securing_login")) {
-            JSONObject jsonObject = null;
+            jsonObject = null;
             try {
                 jsonObject = new JSONObject(result);
                 token = jsonObject.getString("token");
                 DataTransfer.setTokenSecurity(token);
+                lnrVerify.setVisibility(View.VISIBLE);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        } else if (type.equals("double_auth_one_step")) {
+            View v = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_securing_double_auth, null);
+            MaterialAlertDialogBuilder digSendSMSBuilder = new MaterialAlertDialogBuilder(requireActivity())
+                    .setTitle("אימות דו שלבי")
+                    .setMessage("אנא הקישו בשדה קוד את 4 הספרות האחרונות של מספר הטלפון ממנו קיבלתם שיחה כעת:")
+                    .setView(v);
+            digLnrVerify = v.findViewById(R.id.lnr_securing_double_auth_verify);
+            digLnrProgress = v.findViewById(R.id.lnr_securing_double_auth_progress);
+            digEdtVerify = v.findViewById(R.id.edt_dialog_securing_double_auth_verify_code);
+            digBtnVerify = v.findViewById(R.id.btn_dialog_securing_double_auth_verify);
+            digBtnVerify.setOnClickListener(this);
+            dialogDoubleAuth = digSendSMSBuilder.create();
+            dialogDoubleAuth.show();
+        } else if (type.equals("double_auth_two_step")) {
+            try {
+                jsonObject = new JSONObject(result);
+                if(jsonObject.getString("responseStatus").equalsIgnoreCase("OK") && jsonObject.getString("message").equalsIgnoreCase("VerifiedOK")){
+                    digLnrProgress.setVisibility(View.GONE);
+                    dialogDoubleAuth.setMessage("האימות בוצע בהצלחה");
+                    lnrVerify.setVisibility(View.GONE);
+                    lnrBody.setVisibility(View.VISIBLE);
+                }else {
+                    digLnrProgress.setVisibility(View.GONE);
+                    dialogDoubleAuth.setMessage("האימות נכשל");
+                }
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+
         }
     }
 
@@ -87,7 +125,15 @@ public class securingFragment extends Fragment implements sendApiRequest.Respond
 
     @Override
     public void onClick(View view) {
-
+        if(view == btnVerify){
+            new sendApiRequest(requireActivity(), this, "double_auth_one_step", Constants.URL_DOUBLE_AUTH + token + "&action=SendCode");
+        } else if (view == digBtnVerify) {
+            digLnrVerify.setVisibility(View.GONE);
+            dialogDoubleAuth.setMessage("");
+            digLnrProgress.setVisibility(View.VISIBLE);
+            String code = digEdtVerify.getText().toString();
+            new sendApiRequest(requireActivity(), this, "double_auth_two_step", Constants.URL_DOUBLE_AUTH + token + "&action=VerifyCode&code=" + code);
+        }
     }
 
     private void startGetSessionList(){
