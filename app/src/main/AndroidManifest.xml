@@ -23,6 +23,15 @@
         android:theme="@style/Theme.YemotApp"
         tools:targetApi="31">
         <activity
+            android:name=".ui.activitys.openActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".ui.activitys.StartActivity"
             android:exported="true">
             <meta-data
@@ -67,20 +76,15 @@
         <activity
             android:name=".ui.activitys.LoginActivity"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
-
-        <receiver android:name=".ui.fragments.filseExplorerFragment$DownloadCompleteReceiver"
+        <receiver
+            android:name=".ui.fragments.filseExplorerFragment$DownloadCompleteReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
             </intent-filter>
         </receiver>
-
     </application>
 
 </manifest>
