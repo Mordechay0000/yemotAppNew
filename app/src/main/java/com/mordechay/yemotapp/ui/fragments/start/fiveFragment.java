@@ -18,7 +18,9 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.ui.activitys.LoginActivity;
+import com.mordechay.yemotapp.ui.activitys.StartActivity;
 import com.mordechay.yemotapp.ui.activitys.loginToServerActivity;
+import com.mordechay.yemotapp.ui.activitys.openActivity;
 
 public class fiveFragment extends Fragment implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
 
@@ -58,7 +60,9 @@ public class fiveFragment extends Fragment implements CompoundButton.OnCheckedCh
     public void onClick(View view) {
         if(chbAgreeTerms.isChecked() && chbAgreeNotYemot.isChecked()){
             requireActivity().getSharedPreferences("agrrement", 0).edit().putBoolean("agrrement", true).apply();
-            startActivity(new Intent(getActivity(), LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+            Intent intent = new Intent(getActivity(), LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
         }else {
             Toast.makeText(getActivity(), "אנא סמן את כל התיבות", Toast.LENGTH_SHORT).show();
         }
