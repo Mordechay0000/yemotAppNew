@@ -5,19 +5,15 @@ import static android.app.Activity.RESULT_OK;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.core.view.MenuProvider;
-import androidx.fragment.app.Fragment;
-import androidx.preference.PreferenceManager;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.os.Environment;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -34,24 +30,30 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.core.view.MenuProvider;
+import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.data.filter;
+import com.mordechay.yemotapp.interfaces.onBackPressedFilesExplorer;
+import com.mordechay.yemotapp.network.sendApiRequest;
+import com.mordechay.yemotapp.ui.activitys.OpenFileActivity;
 import com.mordechay.yemotapp.ui.programmatically.list.CustomAdapter;
 import com.mordechay.yemotapp.ui.programmatically.list.DataModel;
-import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.ui.programmatically.list.newList;
-import com.mordechay.yemotapp.network.sendApiRequest;
-import com.mordechay.yemotapp.interfaces.onBackPressedFilesExplorer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 @SuppressLint("NonConstantResourceId")
 public class filseExplorerFragment extends Fragment implements MenuProvider, AdapterView.OnItemClickListener, AbsListView.MultiChoiceModeListener, sendApiRequest.RespondsListener, SwipeRefreshLayout.OnRefreshListener, DialogInterface.OnClickListener, onBackPressedFilesExplorer {
@@ -161,19 +163,19 @@ public class filseExplorerFragment extends Fragment implements MenuProvider, Ada
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        if(aryTypeFile.get(i).equals("DIR")) {
+        if(aryTypeFile.get(i).equalsIgnoreCase("DIR")) {
             url = urlHome + aryWhat.get(i);
             urlStack.add(url);
             thisWhat = aryWhat.get(i);
             thisWhatStack.add(thisWhat);
             refresh();
         } else {
+            DataTransfer.setFileUrl(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken()  +"&path="+ aryWhat.get(i));
+            DataTransfer.setFileName(url.substring(url.lastIndexOf("/") +1));
+            DataTransfer.setFilePath(thisWhat);
+            DataTransfer.setFileType(filter.getTypes(aryTypeFile.get(i)));
 
-            //DataTransfer.setFileUrl(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken()  +"&path="+ aryWhat.get(i));
-            //DataTransfer.setFileName("000 music");
-            //DataTransfer.setFileType("mp3");
-            //startActivity(new Intent(getActivity(), OpenFileActivity.class));
-            downloadFile(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken() +"&path=" + aryWhat.get(i));
+            downloadFile(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken() +"&path=" + aryWhat.get(i), filter.getTypes(aryTypeFile.get(i)));
         }
     }
 
@@ -262,12 +264,52 @@ public class filseExplorerFragment extends Fragment implements MenuProvider, Ada
                                 if (aryExtType.get(i - 1 + aryExtTypeSize).equals("") || aryExtType.get(i - 1 + aryExtTypeSize).isEmpty()) {
                                     aryTypeFile.add("FILE");
                                 } else {
-                                    aryTypeFile.add(aryExtType.get(i - 1));
+                                    aryTypeFile.add(aryExtType.get(i - 1 + aryExtTypeSize));
                                 }
 
                                 aryImage.add(String.valueOf(filter.getImageResources(aryName.get(i - 1 +aryImageSize ).substring(aryName.get(i - 1 + aryImageSize).lastIndexOf(".") + 1))));
                             }
                         }
+                        aryExtTypeSize = aryExtType.size();
+                        aryImageSize = aryImage.size();
+                        if (!jsonObject.isNull("ini")) {
+                            JSONArray jsonArray = jsonObject.getJSONArray("ini");
+
+                            for (int i = 1; i <= jsonArray.length(); i++) {
+                                JSONObject jsonObject1 = jsonArray.getJSONObject(i - 1);
+
+                                if (!jsonObject1.isNull("name")) {
+                                    aryName.add(jsonObject1.getString("name"));
+                                } else {
+                                    aryName.add("");
+                                }
+                                if (!jsonObject1.isNull("fileType")) {
+                                    aryExtType.add(jsonObject1.getString("fileType"));
+                                } else {
+                                    aryExtType.add("");
+                                }
+                                if (!jsonObject1.isNull("what")) {
+                                    aryWhat.add(jsonObject1.getString("what"));
+                                } else {
+                                    aryWhat.add("");
+                                }
+
+                                if (aryExtType.get(i - 1 + aryExtTypeSize).equals("") || aryExtType.get(i - 1 + aryExtTypeSize).isEmpty()) {
+                                    aryTypeFile.add("ini");
+                                } else {
+                                    aryTypeFile.add(aryExtType.get(i - 1 + aryExtTypeSize));
+                                }
+
+                                aryImage.add(String.valueOf(
+                                        filter.getImageResources(aryName.get(i - 1 +aryImageSize ).
+                                                substring(aryName.get(i - 1 + aryImageSize).
+                                                        lastIndexOf(".") + 1))));
+                            }
+                        }
+
+
+
+
 
                         ArrayList<ArrayList<String>> aryyyyyyy = new ArrayList<>();
                         aryyyyyyy.add(aryImage);
@@ -607,31 +649,67 @@ return true;
 
 
 
-    public void downloadFile(String url) {
-        Toast.makeText(getActivity(), "ההורדה מתבצעת.", Toast.LENGTH_SHORT).show();
+    public void downloadFile(String url, String MIME) {
+
         DownloadManager manager = (DownloadManager) requireActivity().getSystemService(Context.DOWNLOAD_SERVICE);
         Uri Download_Uri = Uri.parse(url);
         DownloadManager.Request request = new DownloadManager.Request(Download_Uri);
 
+        if(MIME.equals("text/*")) {
+            IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+            DownloadCompleteReceiver receiver = new DownloadCompleteReceiver();
+            requireContext().registerReceiver(receiver, filter);
+            request.setDestinationInExternalFilesDir(requireContext(), Environment.DIRECTORY_DOWNLOADS,url.substring(url.lastIndexOf("/")+1));
+        }else {
+            Toast.makeText(getActivity(), "ההורדה מתבצעת.", Toast.LENGTH_SHORT).show();
 
-        //Set the title of this download, to be displayed in notifications (if enabled).
-        request.setTitle(url.substring(url.lastIndexOf("/") + 1));
-        //Set a description of this download, to be displayed in notifications (if enabled)
+            //Set the title of this download, to be displayed in notifications (if enabled).
+            request.setTitle(url.substring(url.lastIndexOf("/") + 1));
+            //Set the local destination for the downloaded file to a path within the application's external files directory
+            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,url.substring(url.lastIndexOf("/")+1));
+            //set then click on notification to open the download file
+            request.allowScanningByMediaScanner();
+            //set the notification visibility to VISIBILITY_VISIBLE_NOTIFY_COMPLETED. This will ensure that the download shows in the notifications while it's in progress, and that it is automatically removed from the notification drawer once it has been completed.
+            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 
-        //Set the local destination for the downloaded file to a path within the application's external files directory
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,url.substring(url.lastIndexOf("/")+1));
-
-
-        //set then click on notification to open the download file
-        request.allowScanningByMediaScanner();
-
-        //set the notification visibility to VISIBILITY_VISIBLE_NOTIFY_COMPLETED. This will ensure that the download shows in the notifications while it's in progress, and that it is automatically removed from the notification drawer once it has been completed.
-        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-
-        request.setMimeType("audio/*");
+            request.setMimeType(MIME);
+        }
 
         downloadID =manager.enqueue(request);
-}
+    }
+
+
+
+
+
+
+    public class DownloadCompleteReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+            if(downloadId == downloadID)
+            {
+                DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+                DownloadManager.Query query = new DownloadManager.Query();
+                query.setFilterById(downloadId);
+                Cursor cursor = manager.query(query);
+                if(cursor.moveToFirst()) {
+                    int columnIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
+                    if (DownloadManager.STATUS_SUCCESSFUL == cursor.getInt(columnIndex)) {
+                        @SuppressLint("Range") String uriString = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+                        Uri downloadedUri = Uri.parse(uriString);
+                        startActivity(new Intent(requireContext(), OpenFileActivity.class).setAction(Intent.ACTION_EDIT).setData(downloadedUri));
+
+                    }
+                }
+            }
+        }
+
+    }
+
+
+
 
     @Override
     public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
@@ -663,3 +741,4 @@ return true;
         requireActivity().removeMenuProvider(this);
     }
 }
+

@@ -28,14 +28,6 @@
 
         </com.google.android.material.appbar.AppBarLayout>
 
-        <TextView
-            android:id="@+id/textView12"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/copyright"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
         <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">

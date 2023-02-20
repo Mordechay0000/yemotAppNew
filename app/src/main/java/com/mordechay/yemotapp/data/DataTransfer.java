@@ -45,6 +45,7 @@ public class DataTransfer {
      */
     private static String fileUrl;
     private static String fileName;
+    private static String filePath;
     private static String fileType;
 
 
@@ -216,6 +217,14 @@ public static void setFileUrl(String fileUrl) {
 
     public static void setFileName(String fileName) {
         DataTransfer.fileName = fileName;
+    }
+
+    public static String getFilePath() {
+        return filePath;
+    }
+
+    public static void setFilePath(String filePath) {
+        DataTransfer.filePath = filePath;
     }
 
     public static String getFileType() {

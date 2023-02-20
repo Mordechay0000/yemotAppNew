@@ -45,11 +45,12 @@ public class filter {
             case "m4a": //or
             case "wma": //or
             case "amr": //or
-                return "Audio";
+                return "audio/*";
 
             case "txt": //or
             case "rtf": //or
-            return "Text";
+            case "ini":
+            return "text/*";
 
             default:
                 // Perform action for unrecognized file format

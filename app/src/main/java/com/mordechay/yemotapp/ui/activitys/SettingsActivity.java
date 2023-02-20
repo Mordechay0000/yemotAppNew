@@ -14,6 +14,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
 import androidx.preference.SwitchPreferenceCompat;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.mordechay.yemotapp.R;
 
 import java.util.Locale;
@@ -24,6 +25,10 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
+
+        MaterialToolbar mtb = findViewById(R.id.settings_mtb);
+        setSupportActionBar(mtb);
+
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
@@ -31,6 +36,7 @@ public class SettingsActivity extends AppCompatActivity {
                     .commit();
         }
         ActionBar actionBar = getSupportActionBar();
+
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }

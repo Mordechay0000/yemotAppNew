@@ -16,6 +16,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -67,6 +68,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 startActivity(new Intent(LoginActivity.this, loginToServerActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             }
 
+        MaterialToolbar mtb = findViewById(R.id.login_mtb);
+        setSupportActionBar(mtb);
+
             if(sp.getBoolean("isRememberMe", false)){
                 DataTransfer.setInfoNumber(sp.getString("Number", null));
                 DataTransfer.setInfoPassword(sp.getString("Password", null));
@@ -82,10 +86,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 btnLogout.setOnClickListener(this);
 
                 cpi = findViewById(R.id.login_progress);
-
-
-
-}
+    }
 
 
     public String getData(){

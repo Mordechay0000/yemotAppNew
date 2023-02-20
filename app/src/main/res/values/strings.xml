@@ -50,5 +50,6 @@
     <string name="selected">" selected"</string>
     <string name="system_logout">logout from system</string>
 
+    <string name="detect">Detect</string>
 
 </resources>
