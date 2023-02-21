@@ -64,11 +64,11 @@ public class loginToServerActivity extends AppCompatActivity {
                                     FirebaseUser user = mAuth.getCurrentUser();
                                     if (user != null) {
                                         DataTransfer.setUsername(user.getEmail());
+                                        DataTransfer.setUid(user.getUid());
                                     }else{
                                         Toast.makeText(loginToServerActivity.this, "שגיאה חמורה בהתחברות לאפליקציה.", Toast.LENGTH_LONG).show();
                                         finish();
                                     }
-                                    DataTransfer.setUid(user.getUid());
                                     Intent intent = new Intent(loginToServerActivity.this, LoginActivity.class);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     startActivity(intent);
