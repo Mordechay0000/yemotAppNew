@@ -32,7 +32,7 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Objects;
+import java.util.Locale;
 
 
 public class MoreActionsFragment extends Fragment implements View.OnClickListener, sendApiRequest.RespondsListener, MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>> {
@@ -125,7 +125,7 @@ public class MoreActionsFragment extends Fragment implements View.OnClickListene
 
         }else if (view == btnIncomingMinutes) {
 
-            MaterialDatePicker dialogDataPicker = MaterialDatePicker.Builder.dateRangePicker()
+            MaterialDatePicker<Pair<Long, Long>> dialogDataPicker = MaterialDatePicker.Builder.dateRangePicker()
                     .setTitleText("בחר טווח תאריכים")
                     .build();
             dialogDataPicker.addOnPositiveButtonClickListener(this);
@@ -280,10 +280,11 @@ public class MoreActionsFragment extends Fragment implements View.OnClickListene
         if (selection != null) {
             long start = selection.first;
             long end = selection.second;
-            SimpleDateFormat sdf = new SimpleDateFormat("YYYY-mm-dd");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
             String startDate = sdf.format(new Date(start));
             String endDate = sdf.format(new Date(end));
             new sendApiRequest(requireActivity(), this, "IncomingMinutes", Constants.URL_INCOMING_MINUTES + DataTransfer.getToken() + "&from=" + startDate + "&to=" + endDate);
+            Log.d("tagg", Constants.URL_INCOMING_MINUTES + DataTransfer.getToken() + "&from=" + startDate + "&to=" + endDate);
         }
     }
 }
