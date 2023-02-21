@@ -48,7 +48,7 @@
         </service>
 
         <activity
-            android:name=".ui.activitys.OpenFileActivity"
+            android:name=".ui.activitys.EditExtFileActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

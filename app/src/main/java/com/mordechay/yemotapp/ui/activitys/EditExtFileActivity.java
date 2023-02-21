@@ -98,12 +98,12 @@ import java.util.regex.Pattern;
 
 
 
-public class OpenFileActivity extends AppCompatActivity {
+public class EditExtFileActivity extends AppCompatActivity {
 
 
 
 
-    public final static String TAG = "Editor";
+    public final static String TAG = "EditExtFileActivity";
 
     public final static String PATH = "path";
     public final static String EDIT = "edit";
@@ -111,8 +111,6 @@ public class OpenFileActivity extends AppCompatActivity {
     public final static String CHANGED = "changed";
     public final static String CONTENT = "content";
     public final static String MODIFIED = "modified";
-
-    public final static String PREF_FILE = "pref_file";
     public final static String PREF_HIGHLIGHT = "pref_highlight";
     public final static String PREF_PATHS = "pref_paths";
     public final static String PREF_SAVE = "pref_save";
@@ -123,94 +121,9 @@ public class OpenFileActivity extends AppCompatActivity {
     public final static String PREF_TYPE = "pref_type";
     public final static String PREF_WRAP = "pref_wrap";
 
-    public final static String DOCUMENTS = "Documents";
-    public final static String FOLDER = "Folder:  ";
+    public final static String TEXT_PLAIN = "text/plain";
     public final static String UTF_8 = "UTF-8";
 
-    public final static String NEW_FILE = "Untitled.txt";
-    public final static String EDIT_FILE = "Editor.txt";
-    public final static String HTML_FILE = "Editor.html";
-
-    public final static String TEXT_HTML = "text/html";
-    public final static String TEXT_PLAIN = "text/plain";
-    public final static String TEXT_WILD = "text/*";
-
-    public final static Pattern PATTERN_CHARS =
-            Pattern.compile("[\\(\\)\\[\\]\\{\\}\\<\\>\"'`]");
-    public final static String BRACKET_CHARS = "([{<";
-
-    public final static String HTML_HEAD =
-            "<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n" +
-                    "<meta name=\"viewport\" content=\"width=device-width, " +
-                    "initial-scale=1.0\">\n</head>\n<body>\n";
-    public final static String HTML_TAIL = "\n</body>\n</html>\n";
-    public final static String FILE_PROVIDER =
-            "org.billthefarmer.editor.fileprovider";
-    public final static String OPEN_NEW =
-            "org.billthefarmer.editor.OPEN_NEW";
-
-    public final static String CC_EXT =
-            "\\.(c(c|pp|xx|\\+\\+)?|go|h|java|js|kt|m|py|swift)";
-
-    public final static String HTML_EXT =
-            "\\.html?";
-
-    public final static String CSS_EXT =
-            "\\.css?";
-
-    public final static String ORG_EXT =
-            "\\.org";
-
-    public final static String MD_EXT =
-            "\\.md";
-
-    public final static String SH_EXT =
-            "\\.sh";
-
-    // Syntax patterns
-    public final static Pattern KEYWORDS = Pattern.compile
-            ("\\b(abstract|and|arguments|as(m|sert|sociativity)?|auto|break|" +
-                    "case|catch|chan|char|class|con(st|tinue|venience)|continue|" +
-                    "de(bugger|f|fault|fer|in|init|l|lete)|didset|do(ne)?|dynamic" +
-                    "(type)?|el(if|se)|enum|esac|eval|ex(cept|ec|plicit|port|" +
-                    "tends|tension|tern)|fal(lthrough|se)|fi(nal|nally)?|for|" +
-                    "friend|from|fun(c(tion)?)?|get|global|go(to)?|if|" +
-                    "im(plements|port)|in(fix|it|line|out|stanceof|terface|" +
-                    "ternal)?|is|lambda|lazy|left|let|local|map|mut(able|ating)|" +
-                    "namespace|native|new|nil|none|nonmutating|not|null|" +
-                    "operator|optional|or|override|package|pass|postfix|" +
-                    "pre(cedence|fix)|print|private|prot(ected|ocol)|public|" +
-                    "raise|range|register|required|return|right|select|self|" +
-                    "set|signed|sizeof|static|strictfp|struct|subscript|super|" +
-                    "switch|synchronized|template|th(en|is|rows?)|transient|" +
-                    "true|try|type(alias|def|id|name|of)?|un(ion|owned|signed)|" +
-                    "using|va(l|r)|virtual|void|volatile|weak|wh(en|ere|ile)|willset|" +
-                    "with|yield)\\b", Pattern.MULTILINE);
-
-    public final static Pattern TYPES = Pattern.compile
-            ("\\b(j?bool(ean)?|(u|j)?(byte|char|double|float|int(eger)?|" +
-                    "long|short))\\b", Pattern.MULTILINE);
-
-    public final static Pattern ANNOTATION =
-            Pattern.compile("@\\b[A-Za-z]+\\b", Pattern.MULTILINE);
-
-    public final static Pattern CC_COMMENT = Pattern.compile
-            ("//.*$|(\"(?:\\\\[^\"]|\\\\\"|.)*?\")|(?s)/\\*.*?\\*/",
-                    Pattern.MULTILINE);
-
-    public final static Pattern CLASS = Pattern.compile
-            ("\\b[A-Z][A-Za-z0-9_]+\\b", Pattern.MULTILINE);
-
-    public final static Pattern CONSTANT = Pattern.compile
-            ("\\b(([A-Z][A-Z0-9_]+)|(k[A-Z][A-Za-z0-9]+))\\b",
-                    Pattern.MULTILINE);
-
-    public final static Pattern OPERATOR = Pattern.compile
-            ("[+-=:;<>|!%^&*/?]+", Pattern.MULTILINE);
-
-    public final static Pattern NUMBER = Pattern.compile
-            ("\\b\\d+(\\.\\d*)?(e(\\+|\\-)?\\d+)?\\b",
-                    Pattern.MULTILINE);
 
     public final static Pattern QUOTED = Pattern.compile
             // "'([^\\\\']+|\\\\([btnfr\"'\\\\]|" +
@@ -260,87 +173,6 @@ public class OpenFileActivity extends AppCompatActivity {
 
     public final static Pattern HTML_COMMENT =
             Pattern.compile("<!--.*?-->", Pattern.MULTILINE);
-
-    public final static Pattern CSS_STYLES = Pattern.compile
-            ("\\b(action|active|additive|adjust|after|align|all|alternates|" +
-                            "animation|annotation|area|areas|as|asian|attachment|attr|" +
-                            "auto|backdrop|backface|background|basis|before|behavior|" +
-                            "bezier|bidi|blend|block|blur|border|both|bottom|box|break|" +
-                            "brightness|calc|caps|caption|caret|cells|center|ch|change|" +
-                            "character|charset|checked|child|circle|clamp|clear|clip|" +
-                            "cm|collapse|color|column|columns|combine|composite|conic|" +
-                            "content|contrast|count|counter|counters|cross|cubic|cue|" +
-                            "cursor|decoration|default|deg|delay|dir|direction|" +
-                            "disabled|display|dpcm|dpi|dppx|drop|duration|east|element|" +
-                            "ellipse|em|emphasis|empty|enabled|end|env|events|ex|face|" +
-                            "fade|fallback|family|feature|fill|filter|first|fit|flex|" +
-                            "float|flow|focus|font|format|forms|fr|frames|fullscreen|" +
-                            "function|gap|grad|gradient|grayscale|grid|grow|hanging|" +
-                            "height|historical|hover|hsl|hsla|hue|hyphens|hz|image|import|" +
-                            "in|increment|indent|indeterminate|index|inherit|initial|" +
-                            "inline|inset|inside|invalid|invert|isolation|items|" +
-                            "iteration|justify|khz|kerning|keyframes|lang|language|" +
-                            "last|layout|leader|left|letter|ligatures|line|linear|link|" +
-                            "list|local|margin|mask|matrix|matrix3d|max|media|min|" +
-                            "minmax|mix|mm|mode|ms|name|namespace|negative|none|not|nth|" +
-                            "numeric|object|of|offset|only|opacity|optical|optional|" +
-                            "order|orientation|origin|ornaments|orphans|out|outline|" +
-                            "outset|outside|overflow|override|pad|padding|page|path|pc|" +
-                            "perspective|place|placeholder|play|pointer|polygon|" +
-                            "position|prefix|property|pt|punctuation|px|q|quotes|rad|" +
-                            "radial|radius|range|read|rect|relative|rem|rendering|repeat|" +
-                            "repeating|required|reset|resize|revert|rgb|rgba|right|" +
-                            "root|rotate|rotate3d|rotatex|rotatey|rotatez|row|rows|" +
-                            "rule|s|saturate|scale|scale3d|scalex|scaley|scalez|scope|" +
-                            "scroll|scrollbar|selection|self|sepia|set|settings|shadow|" +
-                            "shape|shrink|side|size|sizing|skew|skewx|skewy|slice|" +
-                            "slotted|snap|source|space|spacing|span|speak|src|start|" +
-                            "state|static|steps|stop|stretch|style|styleset|stylistic|suffix|" +
-                            "supports|swash|symbols|synthesis|system|tab|table|target|" +
-                            "template|text|threshold|timing|top|touch|transform|" +
-                            "transition|translate|translate3d|translatex|translatey|" +
-                            "translatez|turn|type|underline|unicode|unset|upright|url|" +
-                            "user|valid|values|var|variant|variation|vertical|vh|" +
-                            "viewport|visibility|visited|vmax|vmin|vw|weight|white|" +
-                            "widows|width|will|word|wrap|write|writing|x|y|z|zoom)\\b",
-                    Pattern.MULTILINE);
-
-    public final static Pattern CSS_HEX = Pattern.compile
-            ("#\\b[A-Fa-f0-9]+\\b", Pattern.MULTILINE);
-
-    public final static Pattern ORG_HEADER = Pattern.compile
-            ("(^\\*+ +.+$)|(^#\\+.+$)", Pattern.MULTILINE);
-
-    public final static Pattern ORG_LINK = Pattern.compile
-            ("\\[\\[.*?\\]\\]", Pattern.MULTILINE);
-
-    public final static Pattern ORG_EMPH = Pattern.compile
-            ("(([*~/+=]+)\\b(\\w| )+?\\b\\2)|(\\b(_{1,2})(\\w| )+?\\5\\b)",
-                    Pattern.MULTILINE);
-
-    public final static Pattern ORG_COMMENT = Pattern.compile
-            ("(^# .*$)|(@@.*?@@)", Pattern.MULTILINE);
-
-    public final static Pattern MD_HEADER = Pattern.compile
-            ("(^.+\\s+-+$)|(^.+\\s+=+$)|(^#+ +.+$)", Pattern.MULTILINE);
-
-    public final static Pattern MD_LINK = Pattern.compile
-            ("(\\!?\\[.+\\] *\\(.+\\))|(!?\\[.+\\] *\\[.+\\])|" +
-                    "( *\\[.+\\]: +.+$)", Pattern.MULTILINE);
-
-    public final static Pattern MD_EMPH = Pattern.compile
-            ("(([*~]{1,2})\\b(\\w| )+?\\b\\2)|(\\b(_{1,2})(\\w| )+?\\5\\b)",
-                    Pattern.MULTILINE);
-
-    public final static Pattern MD_CODE = Pattern.compile
-            ("(^ {4,}.+$)|(`.+?`)", Pattern.MULTILINE);
-
-    public final static Pattern SH_VAR = Pattern.compile
-            ("(\\$\\b\\w+\\b)|(\\$\\{.+?\\})|(\\$\\(.+?\\))", Pattern.MULTILINE);
-
-    public final static Pattern SH_COMMENT = Pattern.compile
-            ("#.*$", Pattern.MULTILINE);
-
     public final static Pattern MODE_PATTERN = Pattern.compile
             ("^\\S+\\s+ed:(.+)$", Pattern.MULTILINE);
     public final static Pattern OPTION_PATTERN = Pattern.compile
@@ -351,16 +183,11 @@ public class OpenFileActivity extends AppCompatActivity {
     private final static double KEYBOARD_RATIO = 0.25;
 
     private final static int LAST_SIZE = 256;
-    private final static int MENU_SIZE = 192;
     private final static int FIRST_SIZE = 256;
-    private final static int TOO_LARGE = 524288;
-    private final static int FOLDER_OFFSET = 0x7d000000;
     private final static int POSITION_DELAY = 128;
     private final static int UPDATE_DELAY = 128;
     private final static int FIND_DELAY = 128;
     private final static int MAX_PATHS = 10;
-
-    private final static int GET_TEXT = 0;
 
     private final static int REQUEST_READ = 1;
     private final static int REQUEST_SAVE = 2;
@@ -427,8 +254,6 @@ public class OpenFileActivity extends AppCompatActivity {
     private int size = MEDIUM;
     private int type = MONO;
 
-    private int syntax;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -491,7 +316,7 @@ public class OpenFileActivity extends AppCompatActivity {
     private void setListeners()
     {
         scaleDetector =
-                new ScaleGestureDetector(this, new OpenFileActivity.ScaleListener());
+                new ScaleGestureDetector(this, new EditExtFileActivity.ScaleListener());
 
         if (textView != null)
         {
@@ -1000,7 +825,7 @@ public class OpenFileActivity extends AppCompatActivity {
         // Get search string
         String search = searchView.getQuery().toString();
 
-        OpenFileActivity.FindTask findTask = new OpenFileActivity.FindTask(this);
+        EditExtFileActivity.FindTask findTask = new EditExtFileActivity.FindTask(this);
         findTask.execute(search);
     }
 
@@ -1319,7 +1144,7 @@ public class OpenFileActivity extends AppCompatActivity {
 
         textView.setText(R.string.loading);
 
-        OpenFileActivity.ReadTask read = new OpenFileActivity.ReadTask(this);
+        EditExtFileActivity.ReadTask read = new EditExtFileActivity.ReadTask(this);
         read.execute(uri);
 
         changed = false;
@@ -1404,6 +1229,7 @@ public class OpenFileActivity extends AppCompatActivity {
         file.getParentFile().mkdirs();
 
         String charset = UTF_8;
+
         if (match != null && !match.equals(getString(R.string.detect)))
             charset = match;
 
@@ -1453,43 +1279,14 @@ public class OpenFileActivity extends AppCompatActivity {
     // checkHighlight
     private void checkHighlight()
     {
-        // No syntax
-        syntax = NO_SYNTAX;
-
         // Check extension
         if (highlight && file != null)
         {
             String ext = FileUtils.getExtension(file.getName());
             if (ext != null)
             {
-                String type = FileUtils.getMimeType(file);
-
-                if (ext.matches(CC_EXT))
-                    syntax = CC_SYNTAX;
-
-                else if (ext.matches(HTML_EXT))
-                    syntax = HTML_SYNTAX;
-
-                else if (ext.matches(CSS_EXT))
-                    syntax = CSS_SYNTAX;
-
-                else if (ext.matches(ORG_EXT))
-                    syntax = ORG_SYNTAX;
-
-                else if (ext.matches(MD_EXT))
-                    syntax = MD_SYNTAX;
-
-                else if (ext.matches(SH_EXT))
-                    syntax = SH_SYNTAX;
-
-                else if (!TEXT_PLAIN.equals(type))
-                    syntax = DEF_SYNTAX;
-
-                else
-                    syntax = NO_SYNTAX;
-
                 // Add callback
-                if (textView != null && syntax != NO_SYNTAX)
+                if (textView != null)
                 {
                     if (updateHighlight == null)
                         updateHighlight = () -> highlightText();
@@ -1547,109 +1344,6 @@ public class OpenFileActivity extends AppCompatActivity {
 
         Matcher matcher;
 
-        switch (syntax)
-        {
-            case NO_SYNTAX:
-                // Get current spans
-                spans = editable.getSpans(0, editable.length(),
-                        ForegroundColorSpan.class);
-                // Remove spans
-                for (ForegroundColorSpan span: spans)
-                    editable.removeSpan(span);
-                break;
-
-            case CC_SYNTAX:
-                matcher = KEYWORDS.matcher(editable);
-                matcher.region(start, end);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.CYAN);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-                matcher.region(start, end).usePattern(TYPES);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.MAGENTA);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-                matcher.region(start, end).usePattern(CLASS);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.BLUE);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-                matcher.region(start, end).usePattern(NUMBER);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.YELLOW);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-                matcher.region(start, end).usePattern(ANNOTATION);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.CYAN);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-                matcher.region(start, end).usePattern(CONSTANT);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.LTGRAY);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-                matcher.region(start, end).usePattern(OPERATOR);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.CYAN);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-                matcher.region(start, end).usePattern(CC_COMMENT);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.RED);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-                break;
-
-            case HTML_SYNTAX:
                 matcher = HTML_TAGS.matcher(editable);
                 matcher.region(start, end);
                 while (matcher.find())
@@ -1694,288 +1388,6 @@ public class OpenFileActivity extends AppCompatActivity {
                     editable.setSpan(span, matcher.start(), matcher.end(),
                             Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
-                break;
-
-            case CSS_SYNTAX:
-                matcher = CSS_STYLES.matcher(editable);
-                matcher.region(start, end);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.CYAN);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-                matcher.region(start, end).usePattern(CSS_HEX);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.MAGENTA);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-                matcher.region(start, end).usePattern(CC_COMMENT);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.RED);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-                break;
-
-            case ORG_SYNTAX:
-                matcher = ORG_HEADER.matcher(editable);
-                matcher.region(start, end);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.BLUE);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-
-                matcher.region(start, end).usePattern(ORG_EMPH);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.MAGENTA);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-                matcher.region(start, end).usePattern(ORG_LINK);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.CYAN);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-                matcher.region(start, end).usePattern(ORG_COMMENT);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.RED);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-                break;
-
-            case MD_SYNTAX:
-                matcher = MD_HEADER.matcher(editable);
-                matcher.region(start, end);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.BLUE);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-                matcher.region(start, end).usePattern(MD_LINK);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.CYAN);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-                matcher.region(start, end).usePattern(MD_EMPH);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.MAGENTA);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-                matcher.region(start, end).usePattern(MD_CODE);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.CYAN);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-                break;
-
-            case SH_SYNTAX:
-                matcher = KEYWORDS.matcher(editable);
-                matcher.region(start, end);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.CYAN);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-                matcher.region(start, end).usePattern(NUMBER);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.YELLOW);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-                matcher.region(start, end).usePattern(CONSTANT);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.LTGRAY);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-                matcher.region(start, end).usePattern(SH_VAR);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.MAGENTA);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-                matcher.region(start, end).usePattern(OPERATOR);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.CYAN);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-                matcher.region(start, end).usePattern(QUOTED);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.RED);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-                matcher.region(start, end).usePattern(SH_COMMENT);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.RED);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-                break;
-
-            case DEF_SYNTAX:
-                matcher = KEYWORDS.matcher(editable);
-                matcher.region(start, end);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.CYAN);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-                matcher.region(start, end).usePattern(TYPES);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.MAGENTA);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-                matcher.region(start, end).usePattern(CLASS);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.BLUE);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-                matcher.region(start, end).usePattern(NUMBER);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.YELLOW);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-                matcher.region(start, end).usePattern(CONSTANT);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.LTGRAY);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-                matcher.region(start, end).usePattern(QUOTED);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.RED);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-                break;
-        }
     }
 
     // wordCountText
@@ -2372,12 +1784,12 @@ public class OpenFileActivity extends AppCompatActivity {
     private static class FindTask
             extends AsyncTask<String, Void, List<File>>
     {
-        private WeakReference<OpenFileActivity> editorWeakReference;
+        private WeakReference<EditExtFileActivity> editorWeakReference;
         private Pattern pattern;
         private String search;
 
         // FindTask
-        public FindTask(OpenFileActivity editor)
+        public FindTask(EditExtFileActivity editor)
         {
             editorWeakReference = new WeakReference<>(editor);
         }
@@ -2388,7 +1800,7 @@ public class OpenFileActivity extends AppCompatActivity {
         {
             // Create a list of matches
             List<File> matchList = new ArrayList<>();
-            final OpenFileActivity editor = editorWeakReference.get();
+            final EditExtFileActivity editor = editorWeakReference.get();
             if (editor == null)
                 return matchList;
 
@@ -2428,7 +1840,7 @@ public class OpenFileActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(List<File> matchList)
         {
-            final OpenFileActivity editor = editorWeakReference.get();
+            final EditExtFileActivity editor = editorWeakReference.get();
             if (editor == null)
                 return;
 
@@ -2477,9 +1889,9 @@ public class OpenFileActivity extends AppCompatActivity {
     private static class ReadTask
             extends AsyncTask<Uri, Void, CharSequence>
     {
-        private WeakReference<OpenFileActivity> editorWeakReference;
+        private WeakReference<EditExtFileActivity> editorWeakReference;
 
-        public ReadTask(OpenFileActivity editor)
+        public ReadTask(EditExtFileActivity editor)
         {
             editorWeakReference = new WeakReference<>(editor);
         }
@@ -2489,7 +1901,7 @@ public class OpenFileActivity extends AppCompatActivity {
         protected CharSequence doInBackground(Uri... uris)
         {
             StringBuilder stringBuilder = new StringBuilder();
-            final OpenFileActivity editor = editorWeakReference.get();
+            final EditExtFileActivity editor = editorWeakReference.get();
             if (editor == null)
                 return stringBuilder;
 
@@ -2555,10 +1967,9 @@ public class OpenFileActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(CharSequence result)
         {
-            final OpenFileActivity editor = editorWeakReference.get();
+            final EditExtFileActivity editor = editorWeakReference.get();
             if (editor == null)
                 return;
-
             editor.loadText(result);
         }
     }
@@ -2566,7 +1977,6 @@ public class OpenFileActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        File file = new File(String.valueOf(uri));
         if(file.exists()){
             file.delete();
         }
