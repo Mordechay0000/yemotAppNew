@@ -134,12 +134,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener, send
 
     @Override
     public void onClick(View view) {
-        if(view == crdH) {
+        /*if(view == crdH) {
             NavController nvc = Navigation.findNavController(getActivity(), R.id.nvgv_fragment);
             nvc.navigate(R.id.nav_explorer);
 
 
         }
+         */
     }
 
 
