@@ -28,6 +28,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.network.sendApiRequest;
+import com.mordechay.yemotapp.ui.ProgressView;
 import com.mordechay.yemotapp.ui.programmatically.errors.errorHandler;
 
 import org.json.JSONArray;
@@ -50,9 +51,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, send
     String urlCamp;
     String urlCampSh;
     String urlMinu;
-    String urlCustom;
 
-    String newPassword;
+    ProgressView prgvStart;
 
     TextView txtvNumber;
     TextView txtvOrg;
@@ -112,8 +112,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, send
         urlCamp = URL_HOME + "GetActiveCampaigns" +"?token="+token;
         urlMinu = URL_HOME + "GetIncomingSum" +"?token="+token;
         urlCampSh = URL_HOME + "GetScheduledCampaigns" +"?token="+token + "&type=PENDING";
-
-
+        prgvStart = new ProgressView(this.getContext());
+prgvStart.show();
 
         refresh();
 
@@ -180,6 +180,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, send
 
         }
         if (!isLoading1 & !isLoading2 & !isLoading3 & !isLoading4 & !isLoading5) {
+            if (prgvStart.isShowing()){
+                prgvStart.dismiss();
+            }
             swprl.setRefreshing(false);
         }
     }
