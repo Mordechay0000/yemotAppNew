@@ -5,12 +5,15 @@ import androidx.preference.PreferenceManager;
 
 import org.json.*;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -45,13 +48,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         // Set the view
         setContentView(R.layout.activity_login);
 
-
-            // Initialize Firebase Auth
-            mAuth = FirebaseAuth.getInstance();
+        // Initialize Firebase Auth
+        mAuth = FirebaseAuth.getInstance();
 
         MaterialToolbar mtb = findViewById(R.id.login_mtb);
         setSupportActionBar(mtb);
