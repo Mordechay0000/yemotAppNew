@@ -44,7 +44,7 @@ import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.data.filter;
 import com.mordechay.yemotapp.interfaces.onBackPressedFilesExplorer;
 import com.mordechay.yemotapp.network.sendApiRequest;
-import com.mordechay.yemotapp.ui.activitys.OpenFileActivity;
+import com.mordechay.yemotapp.ui.activitys.EditExtFileActivity;
 import com.mordechay.yemotapp.ui.programmatically.list.CustomAdapter;
 import com.mordechay.yemotapp.ui.programmatically.list.DataModel;
 import com.mordechay.yemotapp.ui.programmatically.list.newList;
@@ -699,7 +699,7 @@ return true;
                     if (DownloadManager.STATUS_SUCCESSFUL == cursor.getInt(columnIndex)) {
                         @SuppressLint("Range") String uriString = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
                         Uri downloadedUri = Uri.parse(uriString);
-                        startActivity(new Intent(requireContext(), OpenFileActivity.class).setAction(Intent.ACTION_EDIT).setData(downloadedUri));
+                        startActivity(new Intent(requireContext(), EditExtFileActivity.class).setAction(Intent.ACTION_EDIT).setData(downloadedUri));
 
                     }
                 }
