@@ -7,10 +7,10 @@ import android.view.Window;
 
 import com.mordechay.yemotapp.R;
 
-public class progressView {
+public class ProgressView {
     private final Dialog dialog;
 
-    public progressView(Context cntx){
+    public ProgressView(Context cntx){
         dialog = new Dialog(cntx);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
@@ -24,5 +24,8 @@ public class progressView {
     }
     public void dismiss(){
         dialog.dismiss();
+    }
+    public boolean isShowing(){
+        return dialog.isShowing();
     }
 }
