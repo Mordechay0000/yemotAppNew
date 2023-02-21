@@ -1,5 +1,6 @@
 package com.mordechay.yemotapp.ui.activitys;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -55,6 +56,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class homeActivity extends AppCompatActivity implements MenuProvider, View.OnClickListener {
 
+    private final int xmlView = R.layout.activity_home;
 
     NavController nvc;
     NavigationView nvgv;
@@ -70,11 +72,10 @@ public class homeActivity extends AppCompatActivity implements MenuProvider, Vie
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
+        setContentView(xmlView);
 
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor sped = sp.edit();
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -204,6 +205,7 @@ public class homeActivity extends AppCompatActivity implements MenuProvider, Vie
         menu.getItem(2).setVisible(false);
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onMenuItemSelected(@NonNull MenuItem item) {
         if(actionBarDrawerToggle.onOptionsItemSelected(item))
