@@ -68,8 +68,13 @@ public class securingFragment extends Fragment implements sendApiRequest.Respond
 
         recyclerView = v.findViewById(R.id.recyclerViewSession);
 
-        // todo: change login secure ↓ to login in start application
-        new sendApiRequest(requireActivity(), this, "securing_login", Constants.URL_LOGIN + "username=" + DataTransfer.getInfoNumber() + "&password=" + DataTransfer.getInfoPassword());
+        if(DataTransfer.getTokenSecurity() == null) {
+            new sendApiRequest(requireActivity(), this, "securing_login", Constants.URL_LOGIN + "username=" + DataTransfer.getInfoNumber() + "&password=" + DataTransfer.getInfoPassword());
+        }else{
+           token =  DataTransfer.getTokenSecurity();
+            lnrVerify.setVisibility(View.GONE);
+            lnrBody.setVisibility(View.VISIBLE);
+        }
         return v;
     }
 
