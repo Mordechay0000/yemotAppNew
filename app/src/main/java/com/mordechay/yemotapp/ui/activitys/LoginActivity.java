@@ -34,6 +34,7 @@ import java.util.Locale;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, sendApiRequest.RespondsListener {
 
 
+    private final String TAG = "LoginActivity";
     private String Number;
     private String Password;
     private EditText edtNumber;
@@ -134,7 +135,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onFailure(int responseCode, String responseMessage) {
         cpi.setVisibility(View.GONE);
         btnLogin.setVisibility(View.VISIBLE);
-        Log.e(String.valueOf(responseCode), responseMessage);
+        if(responseCode == 0) {
+            Log.e(TAG, "no internet...");
+        } else if (responseMessage != null) {
+            Log.e(TAG, "code = " + responseCode + "; message = " + responseMessage);
+        }else{
+            Log.e(TAG, "code = " + responseCode + "; null message...");
+        }
     }
 
 

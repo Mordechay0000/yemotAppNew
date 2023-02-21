@@ -41,7 +41,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, send
 
 
 
-
+    private final String TAG = "HomeFragment";
     String token;
     String number;
     String password;
@@ -115,16 +115,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, send
 
 
 
-        isLoading1 = true;
-        isLoading2 = true;
-        isLoading3 = true;
-        isLoading4 = true;
-        isLoading5 = true;
-        new sendApiRequest(getActivity(), this, "info", urlInfo);
-        new sendApiRequest(getActivity(), this, "call", urlCall);
-        new sendApiRequest(getActivity(), this, "camp", urlCamp);
-        new sendApiRequest(getActivity(), this, "campsh", urlCampSh);
-        new sendApiRequest(getActivity(), this, "minu", urlMinu);
+        refresh();
 
         return v;
     }
@@ -155,30 +146,36 @@ public class HomeFragment extends Fragment implements View.OnClickListener, send
     public void onSuccess(String result, String type) {
         switch (type) {
             case "info":
-                infoActiv(result);
-                isLoading1 = false;
+                if(isLoading1) {
+                    infoActiv(result);
+                    isLoading1 = false;
+                }
                 break;
             case "call":
-                callActiv(result);
-                isLoading2 = false;
-
+                if(isLoading2) {
+                    callActiv(result);
+                    isLoading2 = false;
+                }
                 break;
             case "camp":
-                campActiv(result);
-                isLoading3 = false;
-
+                if(isLoading3) {
+                    campActiv(result);
+                    isLoading3 = false;
+                }
                 break;
 
             case "campsh":
-                campShActiv(result);
-                isLoading4 = false;
-
+                if(isLoading4) {
+                    campShActiv(result);
+                    isLoading4 = false;
+                }
                 break;
 
             case "minu":
-                minuActiv(result);
-                isLoading5 = false;
-
+                if(isLoading5 == true) {
+                    minuActiv(result);
+                    isLoading5 = false;
+                }
                 break;
 
         }
@@ -188,42 +185,17 @@ public class HomeFragment extends Fragment implements View.OnClickListener, send
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Override
     public void onFailure(int responseCode, String responseMessage) {
-        Log.e(String.valueOf(responseCode), responseMessage);
+        if(responseCode == 0) {
+            Log.e(TAG, "no internet...");
+        } else if (responseMessage != null) {
+            Log.e(TAG, "code = " + responseCode + "; message = " + responseMessage);
+        }else{
+            Log.e(TAG, "code = " + responseCode + "; null message...");
+        }
         swprl.setRefreshing(false);
-        refresh();
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     public void infoActiv(String result) {
@@ -257,13 +229,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener, send
         }
     }
 
-
     public void callActiv(String result) {
         try {
             JSONObject jsonObject = new JSONObject(result);
             if(jsonObject.getString("responseStatus").equals("OK")) {
             txtvCall.setText(jsonObject.getString("callsCount"));
-        }else{
+            }else{
             Toast.makeText(getActivity(), "שגיאה: " + jsonObject.getString("responseStatus"), Toast.LENGTH_SHORT).show();
         }
         } catch (JSONException e) {
