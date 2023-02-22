@@ -6,29 +6,19 @@ import android.os.Bundle;
 
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.NavController;
-import androidx.navigation.NavGraph;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.NavigationUI;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.navigation.NavigationView;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.network.sendApiRequest;
-import com.mordechay.yemotapp.ui.ProgressView;
+import com.mordechay.yemotapp.ui.layoutViews.ProgressView;
 import com.mordechay.yemotapp.ui.programmatically.errors.errorHandler;
 
 import org.json.JSONArray;
@@ -196,6 +186,9 @@ prgvStart.show();
             Log.e(TAG, "code = " + responseCode + "; message = " + responseMessage);
         }else{
             Log.e(TAG, "code = " + responseCode + "; null message...");
+        }
+        if (prgvStart.isShowing()){
+            prgvStart.dismiss();
         }
         swprl.setRefreshing(false);
     }
