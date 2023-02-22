@@ -1,7 +1,13 @@
 package com.mordechay.yemotapp.data;
 
+import java.util.ArrayList;
+
 public class DataTransfer {
 
+    private static boolean showing;
+    private static ArrayList<String> listUrl = new ArrayList<>();
+
+    private static ArrayList<String> listType = new ArrayList<>();
 
     /*
     server login
@@ -50,6 +56,29 @@ public class DataTransfer {
 
 
 
+    public static boolean isShowing() {
+        return showing;
+    }
+
+    public static void setShowing(boolean showing) {
+        DataTransfer.showing = showing;
+    }
+
+    public static ArrayList<String> getListUrl() {
+        return listUrl;
+    }
+
+    public static void setListUrl(ArrayList<String> listUrl) {
+        DataTransfer.listUrl = listUrl;
+    }
+
+    public static ArrayList<String> getListType() {
+        return listType;
+    }
+
+    public static void setListType(ArrayList<String> listType) {
+        DataTransfer.listType = listType;
+    }
 
     public static String getUsername() {
         return username;
