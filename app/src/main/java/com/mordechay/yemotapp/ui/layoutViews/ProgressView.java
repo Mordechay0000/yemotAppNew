@@ -1,4 +1,4 @@
-package com.mordechay.yemotapp.ui;
+package com.mordechay.yemotapp.ui.layoutViews;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -6,6 +6,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.view.Window;
 
 import com.mordechay.yemotapp.R;
+import com.mordechay.yemotapp.data.DataTransfer;
 
 public class ProgressView {
     private final Dialog dialog;
@@ -21,11 +22,13 @@ public class ProgressView {
 
     public void show(){
         dialog.show();
+        DataTransfer.setProgressViewShowing(true);
     }
     public void dismiss(){
         dialog.dismiss();
+        DataTransfer.setProgressViewShowing(false);
     }
     public boolean isShowing(){
-        return dialog.isShowing();
+        return DataTransfer.isProgressViewShowing();
     }
 }
