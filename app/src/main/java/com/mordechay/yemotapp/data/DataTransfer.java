@@ -4,7 +4,9 @@ import java.util.ArrayList;
 
 public class DataTransfer {
 
-    private static boolean showing;
+    private static boolean errorNoInternetShowing;
+
+    private static boolean progressViewShowing;
     private static ArrayList<String> listUrl = new ArrayList<>();
 
     private static ArrayList<String> listType = new ArrayList<>();
@@ -56,12 +58,20 @@ public class DataTransfer {
 
 
 
-    public static boolean isShowing() {
-        return showing;
+    public static boolean isErrorNoInternetShowing() {
+        return errorNoInternetShowing;
     }
 
-    public static void setShowing(boolean showing) {
-        DataTransfer.showing = showing;
+    public static void setErrorNoInternetShowing(boolean errorNoInternetShowing) {
+        DataTransfer.errorNoInternetShowing = errorNoInternetShowing;
+    }
+
+    public static boolean isProgressViewShowing() {
+        return progressViewShowing;
+    }
+
+    public static void setProgressViewShowing(boolean progressViewShowing) {
+        DataTransfer.progressViewShowing = progressViewShowing;
     }
 
     public static ArrayList<String> getListUrl() {
