@@ -15,4 +15,19 @@
         android:title=""
         android:visibility="invisible"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/paste"
+        android:icon="@drawable/ic_baseline_content_paste_24"
+        android:title="ckv"
+        android:visibility="invisible"
+        app:showAsAction="always" />
+
+
+    <item
+        android:id="@+id/logout"
+        android:title="התנתקות מהמערכת" />
+    <item
+        android:id="@+id/settings"
+        android:title="הגדרות"
+         />
 </menu>

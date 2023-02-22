@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "580577970464",
+    "project_id": "yemotapp",
+    "storage_bucket": "yemotapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:580577970464:android:4e5b856ab533c98e386f45",
+        "android_client_info": {
+          "package_name": "com.mordechay.yemotapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "580577970464-hnk44dllbklov9ntvdu1c1delheno3vn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mordechay.yemotapp",
+            "certificate_hash": "324c2028111ed08cbe77e9c13322471edbf82d10"
+          }
+        },
+        {
+          "client_id": "580577970464-83p119ujeh3t56h3jsl0lelcj75gk8nk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDQ7Su9Bn-fFXcKozVnB5d3o1fkkU2JqE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "580577970464-83p119ujeh3t56h3jsl0lelcj75gk8nk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

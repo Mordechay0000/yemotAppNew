@@ -1,34 +1,58 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <PreferenceCategory app:title="@string/messages_header">
-
-        <EditTextPreference
-            app:key="signature"
-            app:title="@string/signature_title"
-            app:useSimpleSummaryProvider="true" />
+    <PreferenceCategory app:title="@string/preferences_header">
 
         <ListPreference
-            app:defaultValue="reply"
-            app:entries="@array/reply_entries"
-            app:entryValues="@array/reply_values"
-            app:key="reply"
-            app:title="@string/reply_title"
+            app:defaultValue="default"
+            app:entries="@array/language_entries"
+            app:entryValues="@array/language_values"
+            app:key="language"
+            app:title="@string/language_title"
             app:useSimpleSummaryProvider="true" />
+        <SwitchPreferenceCompat
+            android:id="@+id/switchPreferenceCompat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:defaultValue="true"
+            app:key="report"
+            app:summary="האם להציג דוח לאחר פעולה מחיקה/העברה/העתקה."
+            app:title="הצגת דוח פעולה" />
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/sync_header">
+    <PreferenceCategory app:title="@string/ask">
+
 
         <SwitchPreferenceCompat
-            app:key="sync"
-            app:title="@string/sync_title" />
+            app:defaultValue="true"
+            app:key="delete"
+            app:summary="במחיקת קובץ"
+            app:title="@string/delete" />
+        <SwitchPreferenceCompat
+
+            app:key="logout"
+            app:summary="בלחיצה על ניתוק מהמערכת"
+            app:title="@string/system_logout" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="בטא"
+        app:isPreferenceVisible="false">
+
 
         <SwitchPreferenceCompat
-            app:dependency="sync"
-            app:key="attachment"
-            app:summaryOff="@string/attachment_summary_off"
-            app:summaryOn="@string/attachment_summary_on"
-            app:title="@string/attachment_title" />
+            app:key="beta"
+            app:title="הפעלת אפשרויות הבטא"
+            app:summary="הצגת תכונות נסיוניות" />
+
+
+        <SwitchPreferenceCompat
+            app:key="customize_app"
+            app:title="התאמה אישית בעזרת בינה מלאכותית"
+            app:summary="תכונת התאמה אישית באמצעות בינה מלאכותית מאפשרת לאפליקציה להתאים את את עצמה על־פי זיהוי ההדפותך. זו פונקציות בטא שמסייעת לאפליקציה לעבוד בצורה יותר מתאימה ונוחה."
+            app:dependency="beta"/>
 
     </PreferenceCategory>
 
