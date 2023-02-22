@@ -2,11 +2,8 @@ package com.mordechay.yemotapp.ui.layoutViews;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 
@@ -36,11 +33,15 @@ public class ErrorNoInternetView implements View.OnClickListener {
 
     public void show(){
         dialog.show();
-        DataTransfer.setShowing(true);
+        DataTransfer.setErrorNoInternetShowing(true);
+    }
+
+    public boolean isShowing(){
+        return DataTransfer.isErrorNoInternetShowing();
     }
     public void dismiss(){
         dialog.dismiss();
-        DataTransfer.setShowing(false);
+        DataTransfer.setErrorNoInternetShowing(false);
     }
 
     @Override
