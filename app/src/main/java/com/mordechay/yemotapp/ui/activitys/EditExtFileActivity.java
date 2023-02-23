@@ -288,7 +288,8 @@ public class EditExtFileActivity extends AppCompatActivity {
                     InputType.TYPE_TEXT_FLAG_MULTI_LINE |
                     InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 
-        setSizeAndTypeface(size, type);
+        textView.setTextSize(size);
+        textView.setTypeface(Typeface.DEFAULT, Typeface.NORMAL);
 
         Intent intent = getIntent();
         Uri uri = intent.getData();
@@ -320,62 +321,6 @@ public class EditExtFileActivity extends AppCompatActivity {
 
         if (textView != null)
         {
-            textView.addTextChangedListener(new TextWatcher()
-            {
-                // afterTextChanged
-                @Override
-                public void afterTextChanged(Editable s)
-                {
-                    if (!changed)
-                    {
-                        changed = true;
-                        invalidateOptionsMenu();
-                    }
-
-                    if (updateHighlight != null)
-                    {
-                        textView.removeCallbacks(updateHighlight);
-                        textView.postDelayed(updateHighlight, UPDATE_DELAY);
-                    }
-
-                    if (updateWordCount != null)
-                    {
-                        textView.removeCallbacks(updateWordCount);
-                        textView.postDelayed(updateWordCount, UPDATE_DELAY);
-                    }
-                }
-
-                // beforeTextChanged
-                @Override
-                public void beforeTextChanged(CharSequence s,
-                                              int start,
-                                              int count,
-                                              int after)
-                {
-                    if (searchItem != null &&
-                            searchItem.isActionViewExpanded())
-                    {
-                        final CharSequence query = searchView.getQuery();
-
-                        textView.postDelayed(() ->
-                        {
-                            if (searchItem != null &&
-                                    searchItem.isActionViewExpanded())
-                            {
-                                if (query != null)
-                                    searchView.setQuery(query, false);
-                            }
-                        }, UPDATE_DELAY);
-                    }
-                }
-
-                // onTextChanged
-                @Override
-                public void onTextChanged(CharSequence s,
-                                          int start,
-                                          int before,
-                                          int count) {}
-            });
 
             // onFocusChange
             textView.setOnFocusChangeListener((v, hasFocus) ->
@@ -540,7 +485,7 @@ public class EditExtFileActivity extends AppCompatActivity {
 
         if (match == null)
             match = UTF_8;
-        getActionBar().setSubtitle(match);
+        getSupportActionBar().setSubtitle(match);
 
         checkHighlight();
 
@@ -564,32 +509,6 @@ public class EditExtFileActivity extends AppCompatActivity {
         // Stop highlighting
         textView.removeCallbacks(updateHighlight);
         textView.removeCallbacks(updateWordCount);
-
-        SharedPreferences preferences =
-                PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = preferences.edit();
-
-        editor.putBoolean(PREF_SAVE, save);
-        editor.putBoolean(PREF_VIEW, view);
-        editor.putBoolean(PREF_WRAP, wrap);
-        editor.putBoolean(PREF_SUGGEST, suggest);
-        editor.putBoolean(PREF_HIGHLIGHT, highlight);
-        editor.putInt(PREF_THEME, theme);
-        editor.putInt(PREF_SIZE, size);
-        editor.putInt(PREF_TYPE, type);
-
-        // Add the set of recent files
-        editor.putStringSet(PREF_PATHS, pathMap.keySet());
-
-        // Add a position for each file
-        for (String path : pathMap.keySet())
-            editor.putInt(path, pathMap.get(path));
-
-        editor.apply();
-
-        // Save file
-        if (changed && save)
-            saveFile();
     }
 
     // onSaveInstanceState
@@ -606,72 +525,12 @@ public class EditExtFileActivity extends AppCompatActivity {
         outState.putString(PATH, path);
     }
 
-
-
-
-
-
-    // onActivityResult
-    @SuppressLint("MissingSuperCall")
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode,
-                                    Intent data)
-    {
-        if (resultCode == RESULT_CANCELED)
-            return;
-
-        switch (requestCode)
-        {
-            case OPEN_DOCUMENT:
-                content = data.getData();
-                readFile(content);
-                break;
-
-            case CREATE_DOCUMENT:
-                content = data.getData();
-                setTitle(FileUtils.getDisplayName(this, content, null, null));
-                saveFile();
-                break;
-        }
-    }
-
-
     // dispatchTouchEvent
     @Override
     public boolean dispatchTouchEvent(MotionEvent event)
     {
         scaleDetector.onTouchEvent(event);
         return super.dispatchTouchEvent(event);
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event)
-    {
-        // Check Ctrl key
-        if (event.isCtrlPressed())
-        {
-            switch (keyCode)
-            {
-                // Edit, View
-                case KeyEvent.KEYCODE_E:
-                    if (event.isShiftPressed())
-                        viewClicked(null);
-                    else
-                        editClicked(null);
-                    break;
-
-                // Save, Save as
-                case KeyEvent.KEYCODE_S:
-                        saveCheck();
-                    break;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-
-            return true;
-        }
-
-        return super.onKeyDown(keyCode, event);
     }
 
     // editClicked
@@ -718,59 +577,6 @@ public class EditExtFileActivity extends AppCompatActivity {
         recreate(this);
     }
 
-    // viewClicked
-    private void viewClicked(MenuItem item)
-    {
-        // Set read only
-        textView.setRawInputType(InputType.TYPE_NULL);
-        textView.clearFocus();
-
-        // Update boolean
-        edit = false;
-
-        // Update menu
-        invalidateOptionsMenu();
-    }
-
-
-    // setCharset
-    private void setCharset(MenuItem item)
-    {
-        match = item.getTitle().toString();
-        getActionBar().setSubtitle(match);
-    }
-
-    // alertDialog
-    private void alertDialog(int title, int message,
-                             int positiveButton, int negativeButton,
-                             DialogInterface.OnClickListener listener)
-    {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(title);
-        builder.setMessage(message);
-
-        // Add the buttons
-        builder.setPositiveButton(positiveButton, listener);
-        builder.setNegativeButton(negativeButton, listener);
-
-        // Create the AlertDialog
-        builder.show();
-    }
-
-    // alertDialog
-    private void alertDialog(int title, String message, int neutralButton)
-    {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(title);
-        builder.setMessage(message);
-
-        // Add the buttons
-        builder.setNeutralButton(neutralButton, null);
-
-        // Create the AlertDialog
-        builder.show();
-    }
-
     // savePath
     private void savePath(String path)
     {
@@ -810,162 +616,6 @@ public class EditExtFileActivity extends AppCompatActivity {
         }
     }
 
-    // clearList
-    private void clearList()
-    {
-        for (String path : pathMap.keySet())
-            removeList.add(path);
-
-        pathMap.clear();
-    }
-
-    // findAll
-    public void findAll()
-    {
-        // Get search string
-        String search = searchView.getQuery().toString();
-
-        EditExtFileActivity.FindTask findTask = new EditExtFileActivity.FindTask(this);
-        findTask.execute(search);
-    }
-
-
-    // viewFileClicked
-    private void viewFileClicked(MenuItem item)
-    {
-        view = !view;
-        item.setChecked(view);
-    }
-
-
-    // wrapClicked
-    private void wrapClicked(MenuItem item)
-    {
-        wrap = !wrap;
-        item.setChecked(wrap);
-        recreate(this);
-    }
-
-    // suggestClicked
-    private void suggestClicked(MenuItem item)
-    {
-        suggest = !suggest;
-        item.setChecked(suggest);
-
-        if (suggest)
-            textView.setRawInputType(InputType.TYPE_CLASS_TEXT |
-                    InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-        else
-            textView.setRawInputType(InputType.TYPE_CLASS_TEXT |
-                    InputType.TYPE_TEXT_FLAG_MULTI_LINE |
-                    InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-        recreate(this);
-    }
-
-    // highlightClicked
-    private void highlightClicked(MenuItem item)
-    {
-        highlight = !highlight;
-        item.setChecked(highlight);
-
-        checkHighlight();
-    }
-
-    // lightClicked
-    private void lightClicked(MenuItem item)
-    {
-        theme = LIGHT;
-        item.setChecked(true);
-        recreate(this);
-    }
-
-    // darkClicked
-    private void darkClicked(MenuItem item)
-    {
-        theme = DARK;
-        item.setChecked(true);
-        recreate(this);
-    }
-
-    // blackClicked
-    private void blackClicked(MenuItem item)
-    {
-        theme = BLACK;
-        item.setChecked(true);
-        recreate(this);
-    }
-
-    // retroClicked
-    private void retroClicked(MenuItem item)
-    {
-        theme = RETRO;
-        item.setChecked(true);
-        recreate(this);
-    }
-
-    // smallClicked
-    private void smallClicked(MenuItem item)
-    {
-        size = SMALL;
-        item.setChecked(true);
-
-        textView.setTextSize(size);
-    }
-
-    // mediumClicked
-    private void mediumClicked(MenuItem item)
-    {
-        size = MEDIUM;
-        item.setChecked(true);
-
-        textView.setTextSize(size);
-    }
-
-    // largeClicked
-    private void largeClicked(MenuItem item)
-    {
-        size = LARGE;
-        item.setChecked(true);
-
-        textView.setTextSize(size);
-    }
-
-    // monoClicked
-    private void monoClicked(MenuItem item)
-    {
-        type = MONO;
-        item.setChecked(true);
-
-        textView.setTypeface(Typeface.MONOSPACE, Typeface.NORMAL);
-    }
-
-    // normalClicked
-    private void normalClicked(MenuItem item)
-    {
-        type = NORMAL;
-        item.setChecked(true);
-
-        textView.setTypeface(Typeface.DEFAULT, Typeface.NORMAL);
-    }
-
-    // setSizeAndTypeface
-    private void setSizeAndTypeface(int size, int type)
-    {
-        // Set size
-        textView.setTextSize(size);
-
-        // Set type
-        switch (type)
-        {
-            case MONO:
-                textView.setTypeface(Typeface.MONOSPACE, Typeface.NORMAL);
-                break;
-
-            case NORMAL:
-                textView.setTypeface(Typeface.DEFAULT, Typeface.NORMAL);
-                break;
-        }
-    }
 
     // recreate
     private void recreate(Context context)
@@ -1980,6 +1630,5 @@ public class EditExtFileActivity extends AppCompatActivity {
         if(file.exists()){
             file.delete();
         }
-
     }
 }
