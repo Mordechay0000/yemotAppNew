@@ -70,7 +70,7 @@ public class filesExplorerFragment extends Fragment implements MenuProvider, Ada
 
 
     ArrayList<String> urlStack;
-    String thisWhat = "/";
+    String thisWhat = "ivr2:/";
     ArrayList<String> thisWhatStack;
 
     String whatList;
@@ -171,10 +171,9 @@ public class filesExplorerFragment extends Fragment implements MenuProvider, Ada
             refresh();
         } else {
             DataTransfer.setFileUrl(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken()  +"&path="+ aryWhat.get(i));
-            DataTransfer.setFileName(url.substring(url.lastIndexOf("/") +1));
-            DataTransfer.setFilePath(thisWhat);
+            DataTransfer.setFileName(aryName.get(i));
+            DataTransfer.setFilePath(thisWhat + "/"+ aryName.get(i));
             DataTransfer.setFileType(filter.getTypes(aryTypeFile.get(i)));
-
             downloadFile(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken() +"&path=" + aryWhat.get(i), filter.getTypes(aryTypeFile.get(i)));
         }
     }
