@@ -56,7 +56,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 @SuppressLint("NonConstantResourceId")
-public class filseExplorerFragment extends Fragment implements MenuProvider, AdapterView.OnItemClickListener, AbsListView.MultiChoiceModeListener, sendApiRequest.RespondsListener, SwipeRefreshLayout.OnRefreshListener, DialogInterface.OnClickListener, onBackPressedFilesExplorer {
+public class filesExplorerFragment extends Fragment implements MenuProvider, AdapterView.OnItemClickListener, AbsListView.MultiChoiceModeListener, sendApiRequest.RespondsListener, SwipeRefreshLayout.OnRefreshListener, DialogInterface.OnClickListener, onBackPressedFilesExplorer {
 
 
     String urlHome;
@@ -106,7 +106,7 @@ public class filseExplorerFragment extends Fragment implements MenuProvider, Ada
     private SharedPreferences spPref;
 
 
-    public filseExplorerFragment() {
+    public filesExplorerFragment() {
         // Required empty public constructor
     }
 
