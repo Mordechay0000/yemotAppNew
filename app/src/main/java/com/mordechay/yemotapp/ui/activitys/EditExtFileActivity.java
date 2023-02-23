@@ -50,6 +50,8 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -62,6 +64,7 @@ import android.widget.TextView;
 
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.appbar.MaterialToolbar;
@@ -69,7 +72,9 @@ import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
 import com.mordechay.yemotapp.BuildConfig;
 import com.mordechay.yemotapp.R;
+import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
+import com.mordechay.yemotapp.network.sendApiRequest;
 import com.mordechay.yemotapp.ui.programmatically.file.FileUtils;
 
 import java.io.BufferedInputStream;
@@ -82,8 +87,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -98,7 +105,7 @@ import java.util.regex.Pattern;
 
 
 
-public class EditExtFileActivity extends AppCompatActivity {
+public class EditExtFileActivity extends AppCompatActivity implements sendApiRequest.RespondsListener {
 
 
 
@@ -106,151 +113,40 @@ public class EditExtFileActivity extends AppCompatActivity {
     public final static String TAG = "EditExtFileActivity";
 
     public final static String PATH = "path";
-    public final static String EDIT = "edit";
-    public final static String MATCH = "match";
-    public final static String CHANGED = "changed";
     public final static String CONTENT = "content";
     public final static String MODIFIED = "modified";
-    public final static String PREF_HIGHLIGHT = "pref_highlight";
-    public final static String PREF_PATHS = "pref_paths";
-    public final static String PREF_SAVE = "pref_save";
-    public final static String PREF_VIEW = "pref_view";
-    public final static String PREF_SIZE = "pref_size";
-    public final static String PREF_SUGGEST = "pref_suggest";
-    public final static String PREF_THEME = "pref_theme";
-    public final static String PREF_TYPE = "pref_type";
-    public final static String PREF_WRAP = "pref_wrap";
 
-    public final static String TEXT_PLAIN = "text/plain";
     public final static String UTF_8 = "UTF-8";
 
-
-    public final static Pattern QUOTED = Pattern.compile
-            // "'([^\\\\']+|\\\\([btnfr\"'\\\\]|" +
-            // "[0-3]?[0-7]{1,2}|u[0-9a-fA-F]{4}))*'|" +
-                    ("\"([^\\\\\"]+|\\\\([btnfr\"'\\\\]|" +
-                                    "[0-3]?[0-7]{1,2}|u[0-9a-fA-F]{4}))*\"",
-                            Pattern.MULTILINE);
-
-    public final static Pattern HTML_TAGS = Pattern.compile
-            ("\\b(html|base|head|link|meta|style|title|body|address|article|" +
-                            "aside|footer|header|h\\d|hgroup|main|nav|section|blockquote|dd|" +
-                            "dir|div|dl|dt|figcaption|figure|hr|li|main|ol|p|pre|ul|a|abbr|" +
-                            "b|bdi|bdo|br|cite|code|data|dfn|em|i|kbd|mark|q|rb|rp|rt|rtc|" +
-                            "ruby|s|samp|small|span|strong|sub|sup|time|tt|u|var|wbr|area|" +
-                            "audio|img|map|track|video|applet|embed|iframe|noembed|object|" +
-                            "param|picture|source|canvas|noscript|script|del|ins|caption|" +
-                            "col|colgroup|table|tbody|td|tfoot|th|thead|tr|button|datalist|" +
-                            "fieldset|form|input|label|legend|meter|optgroup|option|output|" +
-                            "progress|select|textarea|details|dialog|menu|menuitem|summary|" +
-                            "content|element|shadow|slot|template|acronym|applet|basefont|" +
-                            "bgsound|big|blink|center|command|content|dir|element|font|" +
-                            "frame|frameset|image|isindex|keygen|listing|marquee|menuitem|" +
-                            "multicol|nextid|nobr|noembed|noframes|plaintext|shadow|spacer|" +
-                            "strike|tt|xmp|doctype)\\b",
-                    Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
-
-    public final static Pattern HTML_ATTRS = Pattern.compile
-            ("\\b(accept|accesskey|action|align|allow|alt|async|" +
-                            "auto(capitalize|complete|focus|play)|background|" +
-                            "bgcolor|border|buffered|challenge|charset|checked|cite|" +
-                            "class|code(base)?|color|cols|colspan|content(" +
-                            "editable)?|contextmenu|controls|coords|crossorigin|" +
-                            "csp|data|datetime|decoding|def(ault|er)|dir|dirname|" +
-                            "disabled|download|draggable|dropzone|enctype|enterkeyhint|" +
-                            "equiv|for|form(action|novalidate)?|headers|height|" +
-                            "hidden|high|href(lang)?|http|icon|id|importance|" +
-                            "inputmode|integrity|intrinsicsize|ismap|itemprop|keytype|" +
-                            "kind|label|lang|language|list|loading|loop|low|manifest|" +
-                            "max|maxlength|media|method|min|minlength|multiple|muted|" +
-                            "name|novalidate|open|optimum|pattern|ping|placeholder|" +
-                            "poster|preload|property|radiogroup|readonly|referrerpolicy|" +
-                            "rel|required|reversed|rows|rowspan|sandbox|scope|scoped|" +
-                            "selected|shape|size|sizes|slot|span|spellcheck|src|srcdoc|" +
-                            "srclang|srcset|start|step|style|summary|tabindex|target|" +
-                            "title|translate|type|usemap|value|width|wrap)\\b",
-                    Pattern.MULTILINE);
-
-    public final static Pattern HTML_COMMENT =
-            Pattern.compile("<!--.*?-->", Pattern.MULTILINE);
-    public final static Pattern MODE_PATTERN = Pattern.compile
-            ("^\\S+\\s+ed:(.+)$", Pattern.MULTILINE);
-    public final static Pattern OPTION_PATTERN = Pattern.compile
-            ("(\\s+(no)?(vw|ww|sg|cs|hs|th|ts|tf)(:\\w)?)", Pattern.MULTILINE);
-    public final static Pattern WORD_PATTERN = Pattern.compile
-            ("\\w+", Pattern.MULTILINE);
-
-    private final static double KEYBOARD_RATIO = 0.25;
-
-    private final static int LAST_SIZE = 256;
-    private final static int FIRST_SIZE = 256;
     private final static int POSITION_DELAY = 128;
-    private final static int UPDATE_DELAY = 128;
-    private final static int FIND_DELAY = 128;
     private final static int MAX_PATHS = 10;
 
     private final static int REQUEST_READ = 1;
     private final static int REQUEST_SAVE = 2;
     private final static int REQUEST_OPEN = 3;
 
-    private final static int OPEN_DOCUMENT   = 1;
-    private final static int CREATE_DOCUMENT = 2;
-
-    private final static int LIGHT = 1;
-    private final static int DARK  = 2;
-    private final static int BLACK = 3;
-    private final static int RETRO = 4;
 
     private final static int TINY   = 8;
-    private final static int SMALL  = 12;
     private final static int MEDIUM = 18;
-    private final static int LARGE  = 24;
     private final static int HUGE  =  32;
 
     private final static int NORMAL = 1;
     private final static int MONO   = 2;
 
-    private final static int NO_SYNTAX   = 0;
-    private final static int CC_SYNTAX   = 1;
-    private final static int HTML_SYNTAX = 2;
-    private final static int CSS_SYNTAX  = 3;
-    private final static int ORG_SYNTAX  = 4;
-    private final static int MD_SYNTAX   = 5;
-    private final static int SH_SYNTAX   = 6;
-    private final static int DEF_SYNTAX  = 7;
-
     private Uri uri;
     private File file;
     private String path;
     private Uri content;
-    private String match;
     private EditText textView;
-    private TextView customView;
-    private MenuItem searchItem;
-    private SearchView searchView;
     private ScrollView scrollView;
-    private Runnable updateHighlight;
-    private Runnable updateWordCount;
 
     private ScaleGestureDetector scaleDetector;
 
     private Map<String, Integer> pathMap;
-    private List<String> removeList;
-
-    private boolean highlight = false;
-
-    private boolean save = false;
-    private boolean edit = false;
-    private boolean view = false;
-
-    private boolean wrap = false;
     private boolean suggest = true;
-
-    private boolean changed = false;
 
     private long modified;
 
-    private int theme = LIGHT;
     private int size = MEDIUM;
     private int type = MONO;
 
@@ -279,11 +175,6 @@ public class EditExtFileActivity extends AppCompatActivity {
         scrollView = findViewById(R.id.open_file_vscroll);
 
 
-        updateWordCount = () -> wordCountText();
-
-        edit = true;
-
-
             textView.setInputType(InputType.TYPE_CLASS_TEXT |
                     InputType.TYPE_TEXT_FLAG_MULTI_LINE |
                     InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
@@ -308,11 +199,6 @@ public class EditExtFileActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    public void onBackPressed() {
-        finish();
-    }
-
     // setListeners
     private void setListeners()
     {
@@ -330,124 +216,7 @@ public class EditExtFileActivity extends AppCompatActivity {
                         getSystemService(INPUT_METHOD_SERVICE);
                 if (!hasFocus)
                     manager.hideSoftInputFromWindow(v.getWindowToken(), 0);
-
-                if (updateHighlight != null)
-                {
-                    textView.removeCallbacks(updateHighlight);
-                    textView.postDelayed(updateHighlight, UPDATE_DELAY);
-                }
             });
-
-            // onLongClick
-            textView.setOnLongClickListener(v ->
-            {
-                // Do nothing if already editable
-                if (edit)
-                    return false;
-
-                // Get scroll position
-                int y = scrollView.getScrollY();
-                // Get height
-                int height = scrollView.getHeight();
-                // Get width
-                int width = scrollView.getWidth();
-
-                // Get offset
-                int line = textView.getLayout()
-                        .getLineForVertical(y + height / 2);
-                int offset = textView.getLayout()
-                        .getOffsetForHorizontal(line, width / 2);
-                // Set cursor
-                textView.setSelection(offset);
-
-                // Set editable with or without suggestions
-                if (suggest)
-                    textView
-                            .setInputType(InputType.TYPE_CLASS_TEXT |
-                                    InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-                else
-                    textView
-                            .setInputType(InputType.TYPE_CLASS_TEXT |
-                                    InputType.TYPE_TEXT_FLAG_MULTI_LINE |
-                                    InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-
-                // Change size and typeface temporarily as workaround for yet
-                // another obscure feature of some versions of android
-                textView.setTextSize((size == TINY)? HUGE: TINY);
-                textView.setTextSize(size);
-                textView.setTypeface((type == NORMAL)?
-                        Typeface.MONOSPACE:
-                        Typeface.DEFAULT, Typeface.NORMAL);
-                textView.setTypeface((type == NORMAL)?
-                        Typeface.DEFAULT:
-                        Typeface.MONOSPACE, Typeface.NORMAL);
-                // Update boolean
-                edit = true;
-
-                // Restart
-                recreate(this);
-
-                return false;
-            });
-
-            textView.getViewTreeObserver().addOnGlobalLayoutListener(
-                    new ViewTreeObserver.OnGlobalLayoutListener()
-                    {
-                        private boolean keyboard;
-
-                        // onGlobalLayout
-                        @Override
-                        public void onGlobalLayout()
-                        {
-                            if (updateHighlight != null)
-                            {
-                                int rootHeight = scrollView.getRootView().getHeight();
-                                int height = scrollView.getHeight();
-
-                                boolean shown = (((rootHeight - height) /
-                                        (double) rootHeight) >
-                                        KEYBOARD_RATIO);
-
-                                if (shown != keyboard)
-                                {
-                                    if (!shown)
-                                    {
-                                        textView.removeCallbacks(updateHighlight);
-                                        textView.postDelayed(updateHighlight,
-                                                UPDATE_DELAY);
-                                    }
-
-                                    keyboard = shown;
-                                }
-                            }
-                        }
-                    });
-        }
-
-        if (scrollView != null)
-        {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                // onScrollChange
-                scrollView.setOnScrollChangeListener((v, x, y, oldX, oldY) ->
-                {
-                    if (updateHighlight != null)
-                    {
-                        textView.removeCallbacks(updateHighlight);
-                        textView.postDelayed(updateHighlight, UPDATE_DELAY);
-                    }
-                });
-
-            else
-                // onScrollChange
-                scrollView.getViewTreeObserver()
-                        .addOnScrollChangedListener(() ->
-                        {
-                            if (updateHighlight != null)
-                            {
-                                textView.removeCallbacks(updateHighlight);
-                                textView.postDelayed(updateHighlight, UPDATE_DELAY);
-                            }
-                        });
         }
     }
 
@@ -467,9 +236,6 @@ public class EditExtFileActivity extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
 
         path = savedInstanceState.getString(PATH);
-        edit = savedInstanceState.getBoolean(EDIT);
-        changed = savedInstanceState.getBoolean(CHANGED);
-        match = savedInstanceState.getString(MATCH);
         modified = savedInstanceState.getLong(MODIFIED);
         content = savedInstanceState.getParcelable(CONTENT);
         invalidateOptionsMenu();
@@ -482,13 +248,6 @@ public class EditExtFileActivity extends AppCompatActivity {
 
         else
             setTitle(uri.getLastPathSegment());
-
-        if (match == null)
-            match = UTF_8;
-        getSupportActionBar().setSubtitle(match);
-
-        checkHighlight();
-
     }
 
 
@@ -505,10 +264,6 @@ public class EditExtFileActivity extends AppCompatActivity {
 
         // Save current path
         savePath(path);
-
-        // Stop highlighting
-        textView.removeCallbacks(updateHighlight);
-        textView.removeCallbacks(updateWordCount);
     }
 
     // onSaveInstanceState
@@ -519,9 +274,6 @@ public class EditExtFileActivity extends AppCompatActivity {
 
         outState.putParcelable(CONTENT, content);
         outState.putLong(MODIFIED, modified);
-        outState.putBoolean(CHANGED, changed);
-        outState.putString(MATCH, match);
-        outState.putBoolean(EDIT, edit);
         outState.putString(PATH, path);
     }
 
@@ -570,8 +322,6 @@ public class EditExtFileActivity extends AppCompatActivity {
         textView.setTypeface((type == NORMAL)?
                 Typeface.DEFAULT:
                 Typeface.MONOSPACE, Typeface.NORMAL);
-        // Update boolean
-        edit = true;
 
         // Recreate
         recreate(this);
@@ -609,7 +359,6 @@ public class EditExtFileActivity extends AppCompatActivity {
             if (count >= MAX_PATHS)
             {
                 pathMap.remove(name);
-                removeList.add(name);
             }
 
             count++;
@@ -628,16 +377,13 @@ public class EditExtFileActivity extends AppCompatActivity {
     private void getFile()
     {
         // Check permissions
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED)
         {
-            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED)
-            {
-                requestPermissions(new String[]
-                        {Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_OPEN);
-                return;
-            }
+            requestPermissions(new String[]
+                    {Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_OPEN);
+            return;
         }
 
         // Open parent folder
@@ -724,20 +470,20 @@ public class EditExtFileActivity extends AppCompatActivity {
     // readFile
     private void readFile(Uri uri)
     {
-        if (uri == null)
-            return;
+        if (uri == null) {
+            Log.e("error", "error uri == null...");
+            Toast.makeText(this, "שגיאה! לא התקבל נתיב לקובץ", Toast.LENGTH_LONG).show();
+            finish();
+        }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED)
         {
-            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED)
-            {
-                requestPermissions(new String[]
-                        {Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_READ);
-                this.uri = uri;
-                return;
-            }
+            requestPermissions(new String[]
+                    {Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_READ);
+            this.uri = uri;
+            return;
         }
 
         long size = 0;
@@ -752,10 +498,6 @@ public class EditExtFileActivity extends AppCompatActivity {
 
         if (BuildConfig.DEBUG)
             Log.d(TAG, "Size " + size);
-
-        // Stop highlighting
-        textView.removeCallbacks(updateHighlight);
-        textView.removeCallbacks(updateWordCount);
 
         if (BuildConfig.DEBUG)
             Log.d(TAG, "Uri: " + uri);
@@ -797,7 +539,6 @@ public class EditExtFileActivity extends AppCompatActivity {
         EditExtFileActivity.ReadTask read = new EditExtFileActivity.ReadTask(this);
         read.execute(uri);
 
-        changed = false;
         modified = file.lastModified();
         savePath(path);
         invalidateOptionsMenu();
@@ -818,96 +559,29 @@ public class EditExtFileActivity extends AppCompatActivity {
         return uri;
     }
 
-    // saveCheck
-    private void saveCheck()
-    {
-        saveFile();
-    }
-
     // saveFile
     private void saveFile()
     {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-        {
-            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED)
-            {
-                requestPermissions(new String[]
-                        {Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_SAVE);
-                return;
-            }
-        }
-
-        // Stop highlighting
-        textView.removeCallbacks(updateHighlight);
-        textView.removeCallbacks(updateWordCount);
-
-        if (content == null)
-            saveFile(file);
-        else
-                saveFile(content);
+        uploadFile();
     }
 
-    // saveFile
-    private void saveFile(File file)
-    {
-        CharSequence text = textView.getText();
-        write(text, file);
-    }
-
-    // saveFile
-    private void saveFile(Uri uri)
-    {
-        CharSequence text = textView.getText();
-        try (OutputStream outputStream =
-                     getContentResolver().openOutputStream(uri, "rwt"))
-        {
-            write(text, outputStream);
+    private void uploadFile() {
+        String token;
+        token = DataTransfer.getToken();
+        try {
+            String url = Constants.URL_UPLOAD_TEXT_FILE + token + "&what=" + DataTransfer.getFilePath() + "&contents=" + URLEncoder.encode(textView.getText().toString(), UTF_8);
+            new sendApiRequest(this, this, "uploadFile", url);
+        } catch (UnsupportedEncodingException e) {
+            Log.e(TAG, "error encode text");
+            Toast.makeText(this, "שגיאה בשמירת קובץ", Toast.LENGTH_LONG).show();
+            finish();
         }
-
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            return;
-        }
-    }
-
-    // write
-    private void write(CharSequence text, File file)
-    {
-        file.getParentFile().mkdirs();
-
-        String charset = UTF_8;
-
-        if (match != null && !match.equals(getString(R.string.detect)))
-            charset = match;
-
-        try (BufferedWriter writer = new BufferedWriter
-                (new OutputStreamWriter(new FileOutputStream(file), charset)))
-        {
-            writer.append(text);
-            writer.flush();
-        }
-
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            return;
-        }
-
-        changed = false;
-        invalidateOptionsMenu();
-        modified = file.lastModified();
-        savePath(file.getPath());
     }
 
     // write
     private void write(CharSequence text, OutputStream os)
     {
         String charset = UTF_8;
-        if (match != null && !match.equals(getString(R.string.detect)))
-            charset = match;
 
         try (BufferedWriter writer =
                      new BufferedWriter(new OutputStreamWriter(os, charset)))
@@ -922,317 +596,18 @@ public class EditExtFileActivity extends AppCompatActivity {
             return;
         }
 
-        changed = false;
         invalidateOptionsMenu();
     }
 
-    // checkHighlight
-    private void checkHighlight()
-    {
-        // Check extension
-        if (highlight && file != null)
-        {
-            String ext = FileUtils.getExtension(file.getName());
-            if (ext != null)
-            {
-                // Add callback
-                if (textView != null)
-                {
-                    if (updateHighlight == null)
-                        updateHighlight = () -> highlightText();
-
-                    textView.removeCallbacks(updateHighlight);
-                    textView.postDelayed(updateHighlight, UPDATE_DELAY);
-
-                    return;
-                }
-            }
-        }
-
-        // Remove highlighting
-        if (updateHighlight != null)
-        {
-            textView.removeCallbacks(updateHighlight);
-            textView.postDelayed(updateHighlight, UPDATE_DELAY);
-
-            updateHighlight = null;
-        }
-    }
-
-    // highlightText
-    private void highlightText()
-    {
-        // Get visible extent
-        int top = scrollView.getScrollY();
-        int height = scrollView.getHeight();
-
-        int line = textView.getLayout().getLineForVertical(top);
-        int start = textView.getLayout().getLineStart(line);
-        int first = textView.getLayout().getLineStart(line + 1);
-
-        line = textView.getLayout().getLineForVertical(top + height);
-        int end = textView.getLayout().getLineEnd(line);
-        int last = (line == 0)? end:
-                textView.getLayout().getLineStart(line - 1);
-
-        // Move selection if outside range
-        if (textView.getSelectionStart() < start)
-            textView.setSelection(first);
-
-        if (textView.getSelectionStart() > end)
-            textView.setSelection(last);
-
-        // Get editable
-        Editable editable = textView.getEditableText();
-
-        // Get current spans
-        ForegroundColorSpan spans[] =
-                editable.getSpans(start, end, ForegroundColorSpan.class);
-        // Remove spans
-        for (ForegroundColorSpan span: spans)
-            editable.removeSpan(span);
-
-        Matcher matcher;
-
-                matcher = HTML_TAGS.matcher(editable);
-                matcher.region(start, end);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.CYAN);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-                matcher.region(start, end).usePattern(HTML_ATTRS);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.MAGENTA);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-                matcher.region(start, end).usePattern(QUOTED);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.RED);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-
-                matcher.region(start, end).usePattern(HTML_COMMENT);
-                while (matcher.find())
-                {
-                    ForegroundColorSpan span = new
-                            ForegroundColorSpan(Color.RED);
-
-                    // Highlight it
-                    editable.setSpan(span, matcher.start(), matcher.end(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-    }
-
-    // wordCountText
-    private void wordCountText()
-    {
-        int words = 0;
-        Matcher matcher = WORD_PATTERN.matcher(textView.getText());
-        while (matcher.find())
-        {
-            words++;
-        }
-
-        if (customView != null)
-        {
-            String string = String.format(Locale.getDefault(), "%d\n%d",
-                    words, textView.length());
-            customView.setText(string);
-        }
-    }
 
 
 
-
-
-
-    // checkMode
-    private void checkMode(CharSequence text)
-    {
-        boolean change = false;
-
-        CharSequence first = text.subSequence
-                (0, Math.min(text.length(), FIRST_SIZE));
-        CharSequence last = text.subSequence
-                (Math.max(0, text.length() - LAST_SIZE), text.length());
-        for (CharSequence sequence: new CharSequence[]{first, last})
-        {
-            Matcher matcher = MODE_PATTERN.matcher(sequence);
-            if (matcher.find())
-            {
-                matcher.region(matcher.start(1), matcher.end(1));
-                matcher.usePattern(OPTION_PATTERN);
-                while (matcher.find())
-                {
-                    boolean no = "no".equals(matcher.group(2));
-
-                    if ("vw".equals(matcher.group(3)))
-                    {
-                        if (view == no)
-                        {
-                            view = !no;
-                            change = true;
-                        }
-                    }
-
-                    else if ("ww".equals(matcher.group(3)))
-                    {
-                        if (wrap == no)
-                        {
-                            wrap = !no;
-                            change = true;
-                        }
-                    }
-
-                    else if ("sg".equals(matcher.group(3)))
-                    {
-                        if (suggest == no)
-                        {
-                            suggest = !no;
-                            change = true;
-                        }
-                    }
-
-                    else if ("hs".equals(matcher.group(3)))
-                    {
-                        if (highlight == no)
-                        {
-                            highlight = !no;
-                            checkHighlight();
-                        }
-                    }
-
-                    else if ("th".equals(matcher.group(3)))
-                    {
-                        if (":l".equals(matcher.group(4)))
-                        {
-                            if (theme != LIGHT)
-                            {
-                                theme = LIGHT;
-                                change = true;
-                            }
-                        }
-
-                        else if (":d".equals(matcher.group(4)))
-                        {
-                            if (theme != DARK)
-                            {
-                                theme = DARK;
-                                change = true;
-                            }
-                        }
-
-                        else if (":b".equals(matcher.group(4)))
-                        {
-                            if (theme != BLACK)
-                            {
-                                theme = BLACK;
-                                change = true;
-                            }
-                        }
-
-                        else if (":r".equals(matcher.group(4)))
-                        {
-                            if (theme != RETRO)
-                            {
-                                theme = RETRO;
-                                change = true;
-                            }
-                        }
-                    }
-
-                    else if ("ts".equals(matcher.group(3)))
-                    {
-                        if (":l".equals(matcher.group(4)))
-                        {
-                            if (size != LARGE)
-                            {
-                                size = LARGE;
-                                textView.setTextSize(size);
-                            }
-                        }
-
-                        else if (":m".equals(matcher.group(4)))
-                        {
-                            if (size != MEDIUM)
-                            {
-                                size = MEDIUM;
-                                textView.setTextSize(size);
-                            }
-                        }
-
-                        else if (":s".equals(matcher.group(4)))
-                        {
-                            if (size != SMALL)
-                            {
-                                size = SMALL;
-                                textView.setTextSize(size);
-                            }
-                        }
-                    }
-
-                    else if ("tf".equals(matcher.group(3)))
-                    {
-                        if (":m".equals(matcher.group(4)))
-                        {
-                            if (type != MONO)
-                            {
-                                type = MONO;
-                                textView.setTypeface
-                                        (Typeface.MONOSPACE, Typeface.NORMAL);
-                            }
-                        }
-
-                        else if (":p".equals(matcher.group(4)))
-                        {
-                            if (type != NORMAL)
-                            {
-                                type = NORMAL;
-                                textView.setTypeface
-                                        (Typeface.DEFAULT, Typeface.NORMAL);
-                            }
-                        }
-                    }
-
-                    else if ("cs".equals(matcher.group(3)))
-                    {
-                        if (":u".equals(matcher.group(4)))
-                        {
-                            match = UTF_8;
-                        }
-                    }
-                }
-            }
-        }
-
-        if (change)
-            recreate(this);
-    }
 
     // loadText
     private void loadText(CharSequence text)
     {
         if (textView != null)
             textView.setText(text);
-
-        changed = false;
 
         // Check for saved position
         if (pathMap.containsKey(path))
@@ -1244,23 +619,9 @@ public class EditExtFileActivity extends AppCompatActivity {
             textView.postDelayed(() ->
                             scrollView.smoothScrollTo(0, 0),
                     POSITION_DELAY);
-        // Check mode
-        checkMode(text);
 
-        // Check highlighting
-        checkHighlight();
 
-        // Set read only
-        if (view)
-        {
-            textView.setRawInputType(InputType.TYPE_NULL);
 
-            // Update boolean
-            edit = false;
-        }
-
-        else
-        {
             // Set editable with or without suggestions
             if (suggest)
                 textView.setInputType(InputType.TYPE_CLASS_TEXT |
@@ -1278,12 +639,20 @@ public class EditExtFileActivity extends AppCompatActivity {
             textView.setTypeface((type == NORMAL)?
                     Typeface.DEFAULT:
                     Typeface.MONOSPACE, Typeface.NORMAL);
-            // Update boolean
-            edit = true;
-        }
+
 
         // Dismiss keyboard
         textView.clearFocus();
+    }
+
+    @Override
+    public void onSuccess(String result, String type) {
+        onBackPressed();
+    }
+
+    @Override
+    public void onFailure(int responseCode, String responseMessage) {
+
     }
 
     // QueryTextListener
@@ -1430,111 +799,6 @@ public class EditExtFileActivity extends AppCompatActivity {
         }
     }
 
-    // FindTask
-    private static class FindTask
-            extends AsyncTask<String, Void, List<File>>
-    {
-        private WeakReference<EditExtFileActivity> editorWeakReference;
-        private Pattern pattern;
-        private String search;
-
-        // FindTask
-        public FindTask(EditExtFileActivity editor)
-        {
-            editorWeakReference = new WeakReference<>(editor);
-        }
-
-        // doInBackground
-        @Override
-        protected List<File> doInBackground(String... params)
-        {
-            // Create a list of matches
-            List<File> matchList = new ArrayList<>();
-            final EditExtFileActivity editor = editorWeakReference.get();
-            if (editor == null)
-                return matchList;
-
-            search = params[0];
-            // Check pattern
-            try
-            {
-                pattern = Pattern.compile(search, Pattern.MULTILINE);
-            }
-
-            catch (Exception e)
-            {
-                return matchList;
-            }
-
-            // Get entry list
-            List<File> entries = new ArrayList<>();
-            for (String path : editor.pathMap.keySet())
-            {
-                File entry = new File(path);
-                entries.add(entry);
-            }
-
-            // Check the entries
-            for (File file : entries)
-            {
-                CharSequence content = editor.readFile(file);
-                Matcher matcher = pattern.matcher(content);
-                if (matcher.find())
-                    matchList.add(file);
-            }
-
-            return matchList;
-        }
-
-        // onPostExecute
-        @Override
-        protected void onPostExecute(List<File> matchList)
-        {
-            final EditExtFileActivity editor = editorWeakReference.get();
-            if (editor == null)
-                return;
-
-            // Build dialog
-            AlertDialog.Builder builder = new AlertDialog.Builder(editor);
-            builder.setTitle("חפש");
-
-            // If found populate dialog
-            if (!matchList.isEmpty())
-            {
-                List<String> choiceList = new ArrayList<>();
-                for (File file : matchList)
-                {
-                    // Remove path prefix
-                    String path = file.getPath();
-                    String name =
-                            path.replaceFirst(Environment
-                                    .getExternalStorageDirectory()
-                                    .getPath() + File.separator, "");
-
-                    choiceList.add(name);
-                }
-
-                String[] choices = choiceList.toArray(new String[0]);
-                builder.setItems(choices, (dialog, which) ->
-                {
-                    File file = matchList.get(which);
-                    Uri uri = Uri.fromFile(file);
-                    // Open the entry chosen
-                    editor.readFile(uri);
-
-                    // Put the search text back - why it
-                    // disappears I have no idea or why I have to
-                    // do it after a delay
-                    editor.searchView.postDelayed(() ->
-                            editor.searchView.setQuery(search, false), FIND_DELAY);
-                });
-            }
-
-            builder.setNegativeButton(android.R.string.cancel, null);
-            builder.show();
-        }
-    }
-
     // ReadTask
     private static class ReadTask
             extends AsyncTask<Uri, Void, CharSequence>
@@ -1555,23 +819,16 @@ public class EditExtFileActivity extends AppCompatActivity {
             if (editor == null)
                 return stringBuilder;
 
-            // Default UTF-8
-            if (editor.match == null)
-            {
-                editor.match = UTF_8;
                 if(editor.getActionBar()!= null) {
                     editor.runOnUiThread(() ->
-                            editor.getActionBar().setSubtitle(editor.match));
+                            editor.getActionBar().setSubtitle(UTF_8));
                 }
-            }
 
             try (BufferedInputStream in = new BufferedInputStream
                     (editor.getContentResolver().openInputStream(uris[0])))
             {
                 // Create reader
                 BufferedReader reader = null;
-                if (editor.match.equals(editor.getString(R.string.detect)))
-                {
                     // Detect charset, using UTF-8 hint
                     CharsetMatch match = new
                             CharsetDetector().setDeclaredEncoding(UTF_8)
@@ -1579,23 +836,14 @@ public class EditExtFileActivity extends AppCompatActivity {
 
                     if (match != null)
                     {
-                        editor.match = match.getName();
-                        editor.runOnUiThread(() ->
-                                editor.getActionBar().setSubtitle(editor.match));
                         reader = new BufferedReader(match.getReader());
                     }
 
                     else
                         reader = new BufferedReader
                                 (new InputStreamReader(in));
-
-                    if (BuildConfig.DEBUG && match != null)
-                        Log.d(TAG, "Charset " + editor.match);
-                }
-
-                else
                     reader = new BufferedReader
-                            (new InputStreamReader(in, editor.match));
+                            (new InputStreamReader(in, UTF_8));
 
                 String line;
                 while ((line = reader.readLine()) != null)
@@ -1630,5 +878,16 @@ public class EditExtFileActivity extends AppCompatActivity {
         if(file.exists()){
             file.delete();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add("שמור");
+        menu.getItem(0).setIcon(R.drawable.baseline_save_24);
+        menu.getItem(0).setOnMenuItemClickListener(item -> {
+            saveFile();
+            return true;
+        });
+        return super.onCreateOptionsMenu(menu);
     }
 }
