@@ -7,6 +7,7 @@ public class Constants {
     public static final String URL_LOGIN = URL_HOME + "Login?";
     public static final String URL_GET_UNITS_HISTORY = URL_HOME + "GetTransactions?token=";
     public static final String URL_DOWNLOAD_FILE = URL_HOME + "DownloadFile?token=";
+    public static final String URL_UPLOAD_TEXT_FILE = URL_HOME + "UploadTextFile?token=";
     public static final String URL_SEND_SMS = URL_HOME + "SendSms?token=";
     public static final String URL_TRANSFER_UNITS = URL_HOME + "TransferUnits?token=";
     public static final String URL_DOUBLE_AUTH = URL_HOME + "DoubleAuth?token=";
