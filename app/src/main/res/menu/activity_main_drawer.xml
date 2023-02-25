@@ -14,7 +14,7 @@
         <item
             android:id= "@+id/nav_units"
             android:icon= "@drawable/ic_baseline_attach_money_24"
-            android:title= "יחידות" />
+            android:title= "@string/units" />
         <item
             android:id= "@+id/nav_explorer"
             android:icon= "@drawable/ic_baseline_explore_24"
@@ -22,26 +22,26 @@
         <item
             android:id= "@+id/nav_call"
             android:icon= "@drawable/ic_baseline_call_24"
-            android:title= "שיחות במערכת" />
+            android:title= "@string/system_calls" />
         <item
             android:id= "@+id/nav_sms"
             android:icon= "@drawable/ic_baseline_sms_24"
-            android:title= "סמס" />
+            android:title= "@string/sms" />
         <item
             android:id= "@+id/nav_fax"
             android:icon= "@drawable/ic_baseline_fax_24"
-            android:title= "פקס" />
+            android:title= "@string/fax" />
         <item
             android:id= "@+id/nav_sec"
             android:icon= "@drawable/ic_baseline_security_24"
-            android:title= "אבטחה" />
+            android:title= "@string/securing" />
         <item
             android:id= "@+id/nav_sip"
             android:icon= "@drawable/ic_baseline_dialer_sip_24"
-            android:title= "sip" />
+            android:title= "@string/sip" />
         <item
             android:id= "@+id/nav_more_actions"
             android:icon= "@drawable/ic_baseline_more_vert_24"
-            android:title= "אפשרויות נוספות" />
+            android:title= "@string/more_option" />
     </group>
 </menu>
