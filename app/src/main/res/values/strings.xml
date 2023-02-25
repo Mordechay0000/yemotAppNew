@@ -51,5 +51,10 @@
     <string name="system_logout">logout from system</string>
 
     <string name="detect">Detect</string>
+    <string name="sip">sip</string>
+    <string name="system_calls">calls in system</string>
+    <string name="sms">sms</string>
+    <string name="securing">securing</string>
+    <string name="more_option">more options</string>
 
 </resources>

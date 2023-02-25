@@ -43,4 +43,9 @@
     <string name="selected">" נבחרו"</string>
     <string name="system_logout">התנתקות מהמערכת</string>
     <string name="paste_later_copy_move">לאחר העתקה/הדבקה</string>
+    <string name="system_calls">שיחות במערכת</string>
+    <string name="sms">סמס</string>
+    <string name="securing">אבטחה</string>
+    <string name="sip">sip</string>
+    <string name="more_option">אפשרויות נוספות</string>
 </resources>
