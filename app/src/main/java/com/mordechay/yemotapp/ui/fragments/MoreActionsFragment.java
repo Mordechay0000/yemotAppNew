@@ -114,14 +114,14 @@ public class MoreActionsFragment extends Fragment implements View.OnClickListene
                 lnrProgress.setVisibility(View.VISIBLE);
                 String specialIdNumber = edtSpecialIdNumber.getText().toString();
                 String specialIdType = rdbSpecialIdCALL.isChecked() ? "CALL" : "SMS";
-                new sendApiRequest(requireActivity(), this, "SpecialIdOne", Constants.URL_VALIDATION_CALLER_ID + DataTransfer.getToken() + "&action=send&callerId=" + specialIdNumber + "&validType=" + specialIdType);
+                new sendApiRequest(requireActivity(), this, "SpecialIdOne", Constants.URL_SPECIAL_ID_VALIDATION_CALLER_ID + DataTransfer.getToken() + "&action=send&callerId=" + specialIdNumber + "&validType=" + specialIdType);
             }
             }else if (view == btnSpecialIdConfirm) {
             dialogSpecialIdOne.setMessage("");
             lnrSpecialIdConfirm.setVisibility(View.GONE);
             lnrProgress.setVisibility(View.VISIBLE);
             String specialIdNumber = edtSpecialIdNumberConfirm.getText().toString();
-            new sendApiRequest(requireActivity(), this, "SpecialIdTwo", Constants.URL_VALIDATION_CALLER_ID + DataTransfer.getToken() + "&action=valid&reId=" + reqId + "&code=" + specialIdNumber);
+            new sendApiRequest(requireActivity(), this, "SpecialIdTwo", Constants.URL_SPECIAL_ID_VALIDATION_CALLER_ID + DataTransfer.getToken() + "&action=valid&reId=" + reqId + "&code=" + specialIdNumber);
 
         }else if (view == btnIncomingMinutes) {
 
@@ -271,7 +271,7 @@ public class MoreActionsFragment extends Fragment implements View.OnClickListene
     }
 
     @Override
-    public void onFailure(int responseCode, String responseMessage) {
+    public void onFailure(String url, int responseCode, String responseMessage) {
 
     }
 

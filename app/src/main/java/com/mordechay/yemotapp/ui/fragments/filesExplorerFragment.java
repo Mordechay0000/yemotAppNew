@@ -357,7 +357,7 @@ public class filesExplorerFragment extends Fragment implements MenuProvider, Ada
     }
 
     @Override
-    public void onFailure(int responseCode, String responseMessage) {
+    public void onFailure(String url, int responseCode, String responseMessage) {
         Log.e(String.valueOf(responseCode), responseMessage);
         swprl.setRefreshing(false);
     }

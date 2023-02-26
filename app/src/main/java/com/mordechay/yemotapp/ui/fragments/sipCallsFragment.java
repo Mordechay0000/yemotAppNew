@@ -148,7 +148,7 @@ public class sipCallsFragment extends Fragment implements sendApiRequest.Respond
         }
     }
             @Override
-    public void onFailure(int responseCode, String responseMessage) {
+    public void onFailure(String url, int responseCode, String responseMessage) {
 swprl.setRefreshing(false);
     }
 

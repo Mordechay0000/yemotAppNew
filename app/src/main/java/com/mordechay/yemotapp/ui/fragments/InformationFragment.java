@@ -144,7 +144,7 @@ public class InformationFragment extends Fragment implements View.OnClickListene
 
 
     @Override
-    public void onFailure(int responseCode, String responseMessage) {
+    public void onFailure(String url, int responseCode, String responseMessage) {
         swipeRefreshLayout.setRefreshing(false);
         Log.e(String.valueOf(responseCode), responseMessage);
     }

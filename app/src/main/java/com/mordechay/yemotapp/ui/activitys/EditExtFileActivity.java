@@ -638,7 +638,7 @@ public class EditExtFileActivity extends AppCompatActivity implements sendApiReq
     }
 
     @Override
-    public void onFailure(int responseCode, String responseMessage) {
+    public void onFailure(String url, int responseCode, String responseMessage) {
 
     }
 

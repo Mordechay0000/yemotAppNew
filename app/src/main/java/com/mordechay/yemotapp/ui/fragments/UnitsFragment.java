@@ -301,7 +301,7 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
     }
 
     @Override
-    public void onFailure(int responseCode, String responseMessage) {
+    public void onFailure(String url, int responseCode, String responseMessage) {
         spr.setRefreshing(false);
 Log.e("error", String.valueOf(responseCode) + responseMessage);
     }

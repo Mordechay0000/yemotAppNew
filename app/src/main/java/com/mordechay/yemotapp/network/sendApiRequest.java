@@ -31,7 +31,7 @@ public class sendApiRequest{
     public interface RespondsListener {
 
         void onSuccess(String result, String type);
-        void onFailure(int responseCode, String responseMessage);
+        void onFailure(String url, int responseCode, String responseMessage);
     }
 
 
@@ -69,14 +69,14 @@ public class sendApiRequest{
                             if (jsonObject != null) {
                                 if (!jsonObject.isNull("message")) {
                                     String msg = jsonObject.optString("message");
-                                    respondsListener.onFailure(code, msg);
+                                    respondsListener.onFailure(this.networkurl, code, msg);
                                 }
                             }
 
 
                         } else {
                             String errorMsg = error.getMessage();
-                            respondsListener.onFailure(0, errorMsg);
+                            respondsListener.onFailure(this.networkurl, 0, errorMsg);
                             saveUrl();
                         }
                         if(!errorNoInternetView.isShowing()) {
