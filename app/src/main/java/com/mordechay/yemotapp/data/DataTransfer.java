@@ -26,7 +26,6 @@ public class DataTransfer {
 
     //login
     private static String token;
-    private static String tokenSecurity;
     private static String infoNumber;
     private static String infoPassword;
 
@@ -218,14 +217,6 @@ public class DataTransfer {
         DataTransfer.token = token;
     }
 
-    public static String getTokenSecurity() {
-        return tokenSecurity;
-    }
-
-    public static void setTokenSecurity(String tokenSecurity) {
-        DataTransfer.tokenSecurity = tokenSecurity;
-    }
-
     public static String getInfoNumber() {
         return infoNumber;
     }
@@ -272,6 +263,35 @@ public static void setFileUrl(String fileUrl) {
 
     public static void setFileType(String fileType) {
         DataTransfer.fileType = fileType;
+    }
+
+    public static void reset(){
+        setErrorNoInternetShowing(false);
+        setProgressViewShowing(false);
+        setListUrl(new ArrayList<>());
+        setListType(new ArrayList<>());
+        setUsername(null);
+        setUid(null);
+        setToken(null);
+        setInfoNumber(null);
+        setInfoPassword(null);
+        setInfoName(null);
+        setInfoOrganization(null);
+        setInfoContactName(null);
+        setInfoPhones(null);
+        setInfoInvoiceName(null);
+        setInfoInvoiceAddress(null);
+        setInfoFax(null);
+        setInfoEmail(null);
+        setInfoCreditFile(null);
+        setInfoAccessPassword(null);
+        setInfoRecordPassword(null);
+        setInfoUnits(null);
+        setInfoUnitsExpireDate(null);
+        setFileUrl(null);
+        setFileName(null);
+        setFilePath(null);
+        setFileType(null);
     }
 }
 
