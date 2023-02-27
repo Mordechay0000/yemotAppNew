@@ -10,10 +10,10 @@ import com.mordechay.yemotapp.ui.fragments.start.fiveFragment;
 import com.mordechay.yemotapp.ui.fragments.start.oneFragment;
 import com.mordechay.yemotapp.ui.fragments.start.twoFragment;
 
-public class securingAdapter extends FragmentStateAdapter {
+public class SecuringAdapter extends FragmentStateAdapter {
     private static final int NUM_PAGES = 3;
 
-    public securingAdapter(FragmentManager fragmentManager, Lifecycle lifecycle) {
+    public SecuringAdapter(FragmentManager fragmentManager, Lifecycle lifecycle) {
         super(fragmentManager, lifecycle);
     }
 

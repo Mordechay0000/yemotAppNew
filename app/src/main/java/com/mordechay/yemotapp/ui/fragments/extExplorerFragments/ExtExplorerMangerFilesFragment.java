@@ -1,4 +1,4 @@
-package com.mordechay.yemotapp.ui.fragments;
+package com.mordechay.yemotapp.ui.fragments.extExplorerFragments;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -56,7 +56,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 @SuppressLint("NonConstantResourceId")
-public class filesExplorerFragment extends Fragment implements MenuProvider, AdapterView.OnItemClickListener, AbsListView.MultiChoiceModeListener, sendApiRequest.RespondsListener, SwipeRefreshLayout.OnRefreshListener, DialogInterface.OnClickListener, onBackPressedFilesExplorer {
+public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProvider, AdapterView.OnItemClickListener, AbsListView.MultiChoiceModeListener, sendApiRequest.RespondsListener, SwipeRefreshLayout.OnRefreshListener, DialogInterface.OnClickListener, onBackPressedFilesExplorer {
 
 
     String urlHome;
@@ -106,7 +106,7 @@ public class filesExplorerFragment extends Fragment implements MenuProvider, Ada
     private SharedPreferences spPref;
 
 
-    public filesExplorerFragment() {
+    public ExtExplorerMangerFilesFragment() {
         // Required empty public constructor
     }
 
@@ -118,7 +118,7 @@ public class filesExplorerFragment extends Fragment implements MenuProvider, Ada
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_filse_explorer, container, false);
+        View v = inflater.inflate(R.layout.fragment_ext_explorer_manger_files, container, false);
 
         token = DataTransfer.getToken();
 

@@ -79,7 +79,7 @@
         </activity>
 
         <receiver
-            android:name=".ui.fragments.filesExplorerFragment$DownloadCompleteReceiver"
+            android:name=".ui.fragments.extExplorerFragments.ExtExplorerMangerFilesFragment$DownloadCompleteReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
