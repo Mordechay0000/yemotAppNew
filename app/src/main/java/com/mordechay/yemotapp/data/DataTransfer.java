@@ -55,6 +55,11 @@ public class DataTransfer {
     private static String filePath;
     private static String fileType;
 
+    /*
+    url transfer information for fragment
+     */
+
+    private static String thisWhat;
 
 
     public static boolean isErrorNoInternetShowing() {
@@ -265,6 +270,14 @@ public static void setFileUrl(String fileUrl) {
         DataTransfer.fileType = fileType;
     }
 
+    public static String getThisWhat() {
+        return thisWhat;
+    }
+
+    public static void setThisWhat(String thisWhat) {
+        DataTransfer.thisWhat = thisWhat;
+    }
+
     public static void reset(){
         setErrorNoInternetShowing(false);
         setProgressViewShowing(false);
@@ -292,6 +305,7 @@ public static void setFileUrl(String fileUrl) {
         setFileName(null);
         setFilePath(null);
         setFileType(null);
+        setThisWhat(null);
     }
 }
 

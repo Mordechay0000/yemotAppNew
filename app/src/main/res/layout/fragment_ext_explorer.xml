@@ -11,10 +11,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:tabGravity="fill"
-        app:tabMode="fixed" />
+        app:tabMode="fixed">
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/ext_explorer_fragment_view_pager2"
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ניהול קבצים"/>
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="הודעות מערכת"/>
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="הגדרות מתקדמות"/>
+    </com.google.android.material.tabs.TabLayout>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragmentContainerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </LinearLayout>

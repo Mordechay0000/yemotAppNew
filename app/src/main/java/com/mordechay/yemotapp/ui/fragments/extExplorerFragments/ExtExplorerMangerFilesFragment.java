@@ -54,6 +54,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 @SuppressLint("NonConstantResourceId")
 public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProvider, AdapterView.OnItemClickListener, AbsListView.MultiChoiceModeListener, sendApiRequest.RespondsListener, SwipeRefreshLayout.OnRefreshListener, DialogInterface.OnClickListener, onBackPressedFilesExplorer {
@@ -68,11 +69,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
     String urlUpdateExtFolder;
     String urlHomeUploadFile;
 
-
-    ArrayList<String> urlStack;
-    String thisWhat = "ivr2:/";
-    ArrayList<String> thisWhatStack;
-
+    String thisWhat;
     String whatList;
 
     boolean isCopy = false;
@@ -129,17 +126,18 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
         swprl.setOnRefreshListener(this);
         swprl.setRefreshing(true);
 
+        thisWhat = DataTransfer.getThisWhat();
+        if(thisWhat == null){
+            thisWhat = "ivr2:/";
+        }
+
         urlHome = "https://www.call2all.co.il/ym/api/GetIVR2Dir?token=" + token + "&orderBy=name&orderDir=asc&path=";
-        urlStart = urlHome + "/";
+        urlStart = urlHome + thisWhat;
         urlAction = "https://www.call2all.co.il/ym/api/FileAction?token=" + token;
         urlUpdateExtFolder = "https://www.call2all.co.il/ym/api/UpdateExtension?token=" + token;
         urlHomeUploadFile = "https://www.call2all.co.il/ym/api/UploadFile?token=" + token;
 
         url = urlStart;
-        urlStack = new ArrayList<>();
-        urlStack.add(url);
-        thisWhatStack = new ArrayList<>();
-        thisWhatStack.add(thisWhat);
         list = v.findViewById(R.id.list1111);
         list.setOnItemClickListener(this);
         list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
@@ -165,9 +163,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         if(aryTypeFile.get(i).equalsIgnoreCase("DIR")) {
             url = urlHome + aryWhat.get(i);
-            urlStack.add(url);
             thisWhat = aryWhat.get(i);
-            thisWhatStack.add(thisWhat);
             refresh();
         } else {
             DataTransfer.setFileUrl(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken()  +"&path="+ aryWhat.get(i));
@@ -318,10 +314,10 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                         aryyyyyyy.add(aryFileType);
                         aryyyyyyy.add(aryWhat);
 
-
-                        CustomAdapter csta = new CustomAdapter(requireActivity(),  new newList().getAdapter(getActivity(), aryyyyyyy));
-                        list.setAdapter(csta);
-
+                        if(getActivity() != null) {
+                            CustomAdapter csta = new CustomAdapter(getActivity(), new newList().getAdapter(getActivity(), aryyyyyyy));
+                            list.setAdapter(csta);
+                        }
                     }
                 } catch (JSONException e) {
                     Log.e("error json parse", result + "|" + urlInfo);
@@ -633,14 +629,17 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
 
 
     public boolean onBackPressedFilesExplorer() {
-        if (urlStack.size() <= 1) {
+        String[] parts = thisWhat.split("/"); // פיצול המחרוזת למערך תתי מחרוזות על פי התו /
+        String prefix = "ivr2:/";
+        for (int i = 1; i < parts.length; i++) {
+            parts[i] = prefix + String.join("/", Arrays.copyOfRange(parts, 1, i+1)) + "/";
+        }
+        if (parts.length <= 1) {
 return false;
         } else {
-            url = urlStack.get(urlStack.size() - 2);
-            thisWhat = thisWhatStack.get(urlStack.size() - 2);
+            thisWhat = parts[parts.length - 2];
+            url = urlHome + thisWhat;
             Log.e("test", url);
-            urlStack.remove(urlStack.size() - 1);
-            thisWhatStack.remove(thisWhatStack.size() - 1);
             refresh();
 return true;
         }
@@ -737,6 +736,7 @@ return true;
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        DataTransfer.setThisWhat(thisWhat);
         requireActivity().removeMenuProvider(this);
     }
 }

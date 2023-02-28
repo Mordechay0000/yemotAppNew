@@ -22,7 +22,6 @@ import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.interfaces.securingListOnItemActionClickListener;
 import com.mordechay.yemotapp.network.sendApiRequest;
-import com.mordechay.yemotapp.ui.fragments.securingFragments.SecuringAdapter;
 import com.mordechay.yemotapp.ui.programmatically.list_for_securing_login_log.SecuringSessionItem;
 import com.mordechay.yemotapp.ui.programmatically.list_for_securing_login_log.SessionListCustomAdapter;
 
@@ -69,16 +68,6 @@ public class securingFragment extends Fragment implements sendApiRequest.Respond
         btnVerify = v.findViewById(R.id.btnVerify);
         btnVerify.setOnClickListener(this);
 
-        ViewPager2 viewPager = v.findViewById(R.id.securing_fragment_view_pager2);
-        SecuringAdapter my = new SecuringAdapter(getChildFragmentManager(), getLifecycle());
-        viewPager.setAdapter(my);
-
-        TabLayout tabLayout = v.findViewById(R.id.securing_fragment_tab_layout);
-        new TabLayoutMediator(tabLayout, viewPager,
-                (tab, position) -> {
-            tab.setText(tabsText[position]);
-                }
-        ).attach();
 
         new sendApiRequest(requireActivity(), this, "token_information" , Constants.URL_SECURING_GET_TOKEN_INFORMATION + DataTransfer.getToken());
         return v;

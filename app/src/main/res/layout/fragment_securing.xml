@@ -42,11 +42,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:tabGravity="fill"
-            app:tabMode="fixed" />
+            app:tabMode="fixed" >
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/securing_fragment_view_pager2"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/securing_fragment_tab_session"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="סשנים פעילים"/>
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/securing_fragment_tab_two"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="two"/>
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/securing_fragment_tab_three"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="three"/>
+        </com.google.android.material.tabs.TabLayout>
+
     </LinearLayout>
 </LinearLayout>
