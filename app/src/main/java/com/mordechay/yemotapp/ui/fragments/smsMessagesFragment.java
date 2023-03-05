@@ -4,6 +4,9 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
@@ -22,6 +25,7 @@ import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.network.sendApiRequest;
+import com.mordechay.yemotapp.ui.programmatically.list.CustomAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,9 +43,8 @@ public class smsMessagesFragment extends Fragment implements SwipeRefreshLayout.
     String url;
 
 
-    ListView list;
-
-    ArrayList<String> aryImage;
+    RecyclerView recyclerView;
+    CustomAdapter adapter;
 
     FloatingActionButton btn;
 
@@ -91,7 +94,9 @@ private EditText edtFrom;
         url = urlHome;
 
 
-        list = v.findViewById(R.id.list1111);
+        recyclerView = v.findViewById(R.id.sms_messages_recycler_view);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         new sendApiRequest(getActivity(), this, "url", url);
 
@@ -123,6 +128,7 @@ refresh();
     @Override
     public void onSuccess(String result, String type) {
         if (type.equals("url")) {
+            adapter = new CustomAdapter(null, R.layout.item_sms_messages, new int[]{R.id.textView1, R.id.textView2, R.id.textView3, R.id.textView4, R.id.textView5, R.id.textView6, R.id.textView7});
             try {
                 JSONObject jsb = new JSONObject(result);
                 JSONArray jsa;
@@ -131,17 +137,6 @@ refresh();
                 } else {
                     jsa = new JSONArray();
                 }
-
-
-                aryImage = new ArrayList<>();
-                ArrayList CallerId = new ArrayList();
-                ArrayList To	= new ArrayList();
-                ArrayList Message= new ArrayList();
-                ArrayList Billing= new ArrayList();
-                ArrayList RunBy= new ArrayList();
-                ArrayList Time= new ArrayList();
-                ArrayList DeliveryReport= new ArrayList();
-
 
                 for (int i = 0; i < jsa.length(); i++) {
                     JSONObject js = jsa.getJSONObject(i);
@@ -154,15 +149,13 @@ refresh();
                     }else{
                         image = String.valueOf(R.drawable.ic_baseline_sms_24);
                     }
-                    aryImage.add(image);
 
-
-                    CallerId.add(js.getString("CallerId"));
-                    To.add(js.getString("To"));
-                    Message.add(js.getString("Message"));
-                    Billing.add(js.getInt("Billing"));
-                    RunBy.add(js.getString("RunBy"));
-                    Time.add(js.getString("Time"));
+                    String callerId = js.getString("CallerId");
+                    String to = js.getString("To");
+                    String message = js.getString("Message");
+                    String billing = String.valueOf(js.getInt("Billing"));
+                    String runBy = js.getString("RunBy");
+                    String time = js.getString("Time");
 
                     String strForIsDeliveryText;
                     switch (isDelivery) {
@@ -197,27 +190,9 @@ refresh();
                             strForIsDeliveryText = isDelivery;
                     }
 
-
-                    DeliveryReport.add(strForIsDeliveryText);
+                    adapter.addItem(Integer.parseInt(image), new String[]{callerId, to, message, billing, runBy, time, strForIsDeliveryText});
                 }
-
-
-                ArrayList<ArrayList<String>> aryy = new ArrayList<ArrayList<String>>();
-                aryy.add(aryImage);
-                aryy.add(CallerId);
-                aryy.add(To);
-                aryy.add(Message);
-                aryy.add(Billing);
-                aryy.add(RunBy);
-                aryy.add(Time);
-                aryy.add(DeliveryReport);
-
-                try {
-                    //CustomAdapter csta = new CustomAdapter(requireContext(), new newList().getAdapter(getActivity(), aryy));
-                    //list.setAdapter(csta);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                recyclerView.setAdapter(adapter);
             } catch (JSONException e) {
                 Log.e("error parse json", e.getMessage());
             }

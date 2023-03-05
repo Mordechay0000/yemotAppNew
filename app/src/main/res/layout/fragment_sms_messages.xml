@@ -35,15 +35,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <ListView
-                android:id="@+id/list1111"
-                style="@android:style/Widget.Material.Light.ListView"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/sms_messages_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layoutDirection="rtl"
                 android:textDirection="rtl">
+            </androidx.recyclerview.widget.RecyclerView>
 
-            </ListView>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
