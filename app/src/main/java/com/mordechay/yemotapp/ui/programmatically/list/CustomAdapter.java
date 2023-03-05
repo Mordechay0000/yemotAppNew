@@ -40,6 +40,13 @@ public class CustomAdapter extends SelectableAdapter<CustomAdapter.ViewHolder> {
     public void addItem(int img, String[] txt){
         items.add(new ItemData(img, txt));
     }
+    public void addItem(int img, String[] txt, String[] txtInfo){
+        items.add(new ItemData(img, txt, txtInfo));
+    }
+
+    public ItemData getItem(int position){
+        return items.get(position);
+    }
 
     public void removeItem(int position) {
         items.remove(position);
