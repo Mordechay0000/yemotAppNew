@@ -25,7 +25,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -48,9 +47,6 @@ import com.mordechay.yemotapp.interfaces.onBackPressedFilesExplorer;
 import com.mordechay.yemotapp.network.sendApiRequest;
 import com.mordechay.yemotapp.ui.activitys.EditExtFileActivity;
 import com.mordechay.yemotapp.ui.programmatically.list.CustomAdapter;
-import com.mordechay.yemotapp.ui.programmatically.list.ItemData;
-import com.mordechay.yemotapp.ui.programmatically.list.SelectableAdapter;
-import com.mordechay.yemotapp.ui.programmatically.list.newList;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -168,7 +164,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                     actionMode.finish();
                 }
                 try {
-                    adapter = new CustomAdapter(this);
+                    adapter = new CustomAdapter(this, R.layout.item_file_explorer_manger_file, new int[]{R.id.textView1, R.id.textView2, R.id.textView3, R.id.textView4, R.id.textView5});
                     aryImage = new ArrayList<>();
                     aryName = new ArrayList<>();
                     aryExtType = new ArrayList<>();
@@ -213,7 +209,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                                     aryWhat.add("");
                                 }
                                 aryTypeFile.add("DIR");
-                                adapter.addItem(Integer.parseInt(aryImage.get(aryImage.size()-1)), aryName.get(aryName.size()-1), aryExtType.get(aryExtType.size()-1), aryExtTitle.get(aryExtTitle.size()-1), aryFileType.get(aryFileType.size()-1), aryWhat.get(aryWhat.size()-1));
+                                adapter.addItem(Integer.parseInt(aryImage.get(aryImage.size()-1)), new String[]{aryName.get(aryName.size()-1), aryExtType.get(aryExtType.size()-1), aryExtTitle.get(aryExtTitle.size()-1), aryFileType.get(aryFileType.size()-1), aryWhat.get(aryWhat.size()-1)});
                             }
                         }
                         int aryExtTypeSize = aryExtType.size();
@@ -249,7 +245,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                                 aryImage.add(String.valueOf(filter.getImageResources(aryName.get(i - 1 +aryImageSize ).substring(aryName.get(i - 1 + aryImageSize).lastIndexOf(".") + 1))));
                                 aryExtTitle.add("");
                                 aryFileType.add("");
-                                adapter.addItem(Integer.parseInt(aryImage.get(aryImage.size()-1)), aryName.get(aryName.size()-1), aryExtType.get(aryExtType.size()-1), aryExtTitle.get(aryExtTitle.size()-1), aryFileType.get(aryFileType.size()-1), aryWhat.get(aryWhat.size()-1));
+                                adapter.addItem(Integer.parseInt(aryImage.get(aryImage.size()-1)), new String[]{aryName.get(aryName.size()-1), aryExtType.get(aryExtType.size()-1), aryExtTitle.get(aryExtTitle.size()-1), aryFileType.get(aryFileType.size()-1), aryWhat.get(aryWhat.size()-1)});
                             }
                         }
                         aryExtTypeSize = aryExtType.size();
@@ -288,7 +284,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                                                         lastIndexOf(".") + 1))));
                                 aryExtTitle.add("");
                                 aryFileType.add("");
-                                adapter.addItem(Integer.parseInt(aryImage.get(aryImage.size()-1)), aryName.get(aryName.size()-1), aryExtType.get(aryExtType.size()-1), aryExtTitle.get(aryExtTitle.size()-1), aryFileType.get(aryFileType.size()-1), aryWhat.get(aryWhat.size()-1));
+                                adapter.addItem(Integer.parseInt(aryImage.get(aryImage.size()-1)), new String[]{aryName.get(aryName.size()-1), aryExtType.get(aryExtType.size()-1), aryExtTitle.get(aryExtTitle.size()-1), aryFileType.get(aryFileType.size()-1), aryWhat.get(aryWhat.size()-1)});
                             }
                         }
                         if(getActivity() != null) {

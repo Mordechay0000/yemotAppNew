@@ -22,8 +22,6 @@ import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.network.sendApiRequest;
-import com.mordechay.yemotapp.ui.programmatically.list.CustomAdapter;
-import com.mordechay.yemotapp.ui.programmatically.list.newList;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,7 +30,6 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Objects;
 
 
 public class smsMessagesFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, sendApiRequest.RespondsListener, View.OnClickListener {

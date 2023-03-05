@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,21 +21,24 @@ import java.util.List;
 public class CustomAdapter extends SelectableAdapter<CustomAdapter.ViewHolder> {
     @SuppressWarnings("unused")
     private static final String TAG = Adapter.class.getSimpleName();
-    private List<ItemData> items;
+    private final List<ItemData> items;
+    private final int txtParentRes;
+    private final ViewHolder.ClickListener clickListener;
 
-    private ViewHolder.ClickListener clickListener;
-
-    public CustomAdapter(ViewHolder.ClickListener clickListener) {
+    public CustomAdapter(ViewHolder.ClickListener clickListener, int txtParentRes, int[] txtRes) {
         super();
 
         this.clickListener = clickListener;
 
         // Create some items
         items = new ArrayList<>();
+
+        this.txtParentRes = txtParentRes;
+        ViewHolder.txtRes = txtRes;
     }
 
-    public void addItem(int img, String txt1, String txt2, String txt3, String txt4, String txt5){
-        items.add(new ItemData(img, txt1, txt2, txt3, txt4, txt5));
+    public void addItem(int img, String[] txt){
+        items.add(new ItemData(img, txt));
     }
 
     public void removeItem(int position) {
@@ -84,11 +86,10 @@ public class CustomAdapter extends SelectableAdapter<CustomAdapter.ViewHolder> {
         notifyItemRangeRemoved(positionStart, itemCount);
     }
 
+    @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final int layout = R.layout.item_file_explorer_manger_file;
-
-        View v = LayoutInflater.from(parent.getContext()).inflate(layout, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(txtParentRes, parent, false);
         return new ViewHolder(v, clickListener);
     }
 
@@ -97,11 +98,10 @@ public class CustomAdapter extends SelectableAdapter<CustomAdapter.ViewHolder> {
         final ItemData item = items.get(position);
 
         holder.img.setImageResource(item.getImage());
-        holder.txt1.setText(item.getTxt1());
-        holder.txt2.setText(item.getTxt2());
-        holder.txt3.setText(item.getTxt3());
-        holder.txt4.setText(item.getTxt4());
-        holder.txt5.setText(item.getTxt5());
+
+        for (int i = 0; i < holder.txt.length; i++) {
+            holder.txt[i].setText(item.getTxt()[i]);
+        }
 
         // Highlight the item if it's selected
         holder.selectedOverlay.setVisibility(isSelected(position) ? View.VISIBLE : View.INVISIBLE);
@@ -118,24 +118,21 @@ public class CustomAdapter extends SelectableAdapter<CustomAdapter.ViewHolder> {
         private static final String TAG = ViewHolder.class.getSimpleName();
 
         ImageView img;
-        TextView txt1;
-        TextView txt2;
-        TextView txt3;
-        TextView txt4;
-        TextView txt5;
+        static int[] txtRes;
+        TextView[] txt;
         View selectedOverlay;
 
-        private ClickListener listener;
+        private final ClickListener listener;
 
         public ViewHolder(View itemView, ClickListener listener) {
             super(itemView);
 
             img = (ImageView) itemView.findViewById(R.id.item_file_explorer_manger_file_imageView);
-            txt1 = (TextView) itemView.findViewById(R.id.textView1);
-            txt2 = (TextView) itemView.findViewById(R.id.textView2);
-            txt3 = (TextView) itemView.findViewById(R.id.textView3);
-            txt4 = (TextView) itemView.findViewById(R.id.textView4);
-            txt5 = (TextView) itemView.findViewById(R.id.textView5);
+
+            txt = new TextView[txtRes.length];
+            for(int i = 0; i < txtRes.length; i++) {
+                txt[i] = itemView.findViewById(txtRes[i]);
+            }
             selectedOverlay = itemView.findViewById(R.id.selected_overlay);
 
             this.listener = listener;
