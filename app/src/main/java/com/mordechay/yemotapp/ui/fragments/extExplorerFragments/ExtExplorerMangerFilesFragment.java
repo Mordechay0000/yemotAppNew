@@ -74,13 +74,6 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
     boolean isCopy = false;
 
     RecyclerView recyclerView;
-    ArrayList<String> aryImage;
-    ArrayList<String> aryName;
-    ArrayList<String> aryExtType;
-    ArrayList<String> aryExtTitle;
-    ArrayList<String> aryFileType;
-    ArrayList<String> aryWhat;
-    ArrayList<String> aryTypeFile;
     
     SwipeRefreshLayout swprl;
 
@@ -98,7 +91,12 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
     private SharedPreferences spPref;
     private ActionMode actionMode;
     private CustomAdapter adapter;
-
+    private final int NAME_POSITION = 0;
+    private final int EXT_TYPE_POSITION = 1;
+    private final int EXT_TITLE_POSITION = 2;
+    private final int FILE_TYPE_POSITION = 3;
+    private final int WHAT_POSITION = 4;
+    private final int TYPE_FILE_POSITION_INFO = 0;
 
     public ExtExplorerMangerFilesFragment() {
         // Required empty public constructor
@@ -142,7 +140,6 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
 
         spPref = PreferenceManager.getDefaultSharedPreferences(requireContext());
 
-
         new sendApiRequest(getActivity(), this, "url", url);
 
 
@@ -152,7 +149,8 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
 
     public void refresh() {
         swprl.setRefreshing(true);
-        new sendApiRequest(getActivity(), this, "url", url);
+        if(getActivity() != null)
+            new sendApiRequest(getActivity(), this, "url", url);
     }
 
 
@@ -165,13 +163,6 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                 }
                 try {
                     adapter = new CustomAdapter(this, R.layout.item_file_explorer_manger_file, new int[]{R.id.textView1, R.id.textView2, R.id.textView3, R.id.textView4, R.id.textView5});
-                    aryImage = new ArrayList<>();
-                    aryName = new ArrayList<>();
-                    aryExtType = new ArrayList<>();
-                    aryExtTitle = new ArrayList<>();
-                    aryFileType = new ArrayList<>();
-                    aryWhat = new ArrayList<>();
-                    aryTypeFile = new ArrayList<>();
 
 
                     JSONObject jsonObject = new JSONObject(result);
@@ -182,109 +173,95 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
 
                             for (int i = 1; i <= jsonArray.length(); i++) {
                                 JSONObject jsonObject1 = jsonArray.getJSONObject(i - 1);
-                                aryImage.add(String.valueOf(R.drawable.ic_baseline_folder_open_24));
+                                String image = String.valueOf(R.drawable.ic_baseline_folder_open_24);
+                                String name = "";
                                 if (!jsonObject1.isNull("name")) {
-                                    aryName.add(jsonObject1.getString("name"));
-                                } else {
-                                    aryName.add("");
+                                    name = jsonObject1.getString("name");
                                 }
+                                String extType = "";
                                 if (!jsonObject1.isNull("extType")) {
-                                    aryExtType.add(jsonObject1.getString("extType"));
-                                } else {
-                                    aryExtType.add("");
+                                    extType = jsonObject1.getString("extType");
                                 }
+                                String extTitle = "";
                                 if (!jsonObject1.isNull("extTitle")) {
-                                    aryExtTitle.add(jsonObject1.getString("extTitle"));
-                                } else {
-                                    aryExtTitle.add("");
+                                    extTitle = jsonObject1.getString("extTitle");
                                 }
+                                String fileType = "";
                                 if (!jsonObject1.isNull("fileType")) {
-                                    aryFileType.add(jsonObject1.getString("fileType"));
-                                } else {
-                                    aryFileType.add("");
+                                    fileType = jsonObject1.getString("fileType");
                                 }
+                                String what = "";
                                 if (!jsonObject1.isNull("what")) {
-                                    aryWhat.add(jsonObject1.getString("what"));
-                                } else {
-                                    aryWhat.add("");
+                                    what = jsonObject1.getString("what");
                                 }
-                                aryTypeFile.add("DIR");
-                                adapter.addItem(Integer.parseInt(aryImage.get(aryImage.size()-1)), new String[]{aryName.get(aryName.size()-1), aryExtType.get(aryExtType.size()-1), aryExtTitle.get(aryExtTitle.size()-1), aryFileType.get(aryFileType.size()-1), aryWhat.get(aryWhat.size()-1)});
+                                String typeFile = "DIR";
+                                adapter.addItem(Integer.parseInt(image), new String[]{name, extType, extTitle, fileType, what}, new String[]{typeFile});
                             }
                         }
-                        int aryExtTypeSize = aryExtType.size();
-                        int aryImageSize = aryImage.size();
                         if (!jsonObject.isNull("files")) {
                             JSONArray jsonArray = jsonObject.getJSONArray("files");
 
                             for (int i = 1; i <= jsonArray.length(); i++) {
                                 JSONObject jsonObject1 = jsonArray.getJSONObject(i - 1);
 
+                                String name = "";
                                 if (!jsonObject1.isNull("name")) {
-                                    aryName.add(jsonObject1.getString("name"));
-                                } else {
-                                    aryName.add("");
+                                    name = jsonObject1.getString("name");
                                 }
+                                String extType = "";
                                 if (!jsonObject1.isNull("fileType")) {
-                                    aryExtType.add(jsonObject1.getString("fileType"));
-                                } else {
-                                    aryExtType.add("");
+                                    extType = jsonObject1.getString("fileType");
                                 }
+                                String what = "";
                                 if (!jsonObject1.isNull("what")) {
-                                    aryWhat.add(jsonObject1.getString("what"));
+                                    what = jsonObject1.getString("what");
+                                }
+                                String typeFile = "";
+                                if (extType.equals("") || extType.isEmpty()) {
+                                    typeFile = "FILE";
                                 } else {
-                                    aryWhat.add("");
+                                    typeFile = extType;
                                 }
 
-                                if (aryExtType.get(i - 1 + aryExtTypeSize).equals("") || aryExtType.get(i - 1 + aryExtTypeSize).isEmpty()) {
-                                    aryTypeFile.add("FILE");
-                                } else {
-                                    aryTypeFile.add(aryExtType.get(i - 1 + aryExtTypeSize));
-                                }
-
-                                aryImage.add(String.valueOf(filter.getImageResources(aryName.get(i - 1 +aryImageSize ).substring(aryName.get(i - 1 + aryImageSize).lastIndexOf(".") + 1))));
-                                aryExtTitle.add("");
-                                aryFileType.add("");
-                                adapter.addItem(Integer.parseInt(aryImage.get(aryImage.size()-1)), new String[]{aryName.get(aryName.size()-1), aryExtType.get(aryExtType.size()-1), aryExtTitle.get(aryExtTitle.size()-1), aryFileType.get(aryFileType.size()-1), aryWhat.get(aryWhat.size()-1)});
+                                String image = String.valueOf(filter.getImageResources(name.substring(name.lastIndexOf(".") + 1)));
+                                String extTitle = "";
+                                String fileType = "";
+                                adapter.addItem(Integer.parseInt(image), new String[]{name, extType, extTitle, fileType, what}, new String[]{typeFile});
                             }
                         }
-                        aryExtTypeSize = aryExtType.size();
-                        aryImageSize = aryImage.size();
                         if (!jsonObject.isNull("ini")) {
                             JSONArray jsonArray = jsonObject.getJSONArray("ini");
 
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 JSONObject jsonObject1 = jsonArray.getJSONObject(i);
 
+                                String name = "";
                                 if (!jsonObject1.isNull("name")) {
-                                    aryName.add(jsonObject1.getString("name"));
-                                } else {
-                                    aryName.add("");
+                                    name = jsonObject1.getString("name");
                                 }
+                                String extType = "";
                                 if (!jsonObject1.isNull("fileType")) {
-                                    aryExtType.add(jsonObject1.getString("fileType"));
-                                } else {
-                                    aryExtType.add("");
+                                    extType = jsonObject1.getString("fileType");
                                 }
+                                String what = "";
                                 if (!jsonObject1.isNull("what")) {
-                                    aryWhat.add(jsonObject1.getString("what"));
-                                } else {
-                                    aryWhat.add("");
+                                    what = jsonObject1.getString("what");
                                 }
 
-                                if (aryExtType.get(i + aryExtTypeSize).equals("") || aryExtType.get(i + aryExtTypeSize).isEmpty()) {
-                                    aryTypeFile.add("ini");
+                                String typeFile = "";
+                                if (extType.equals("") || extType.isEmpty()) {
+                                    typeFile = "ini";
                                 } else {
-                                    aryTypeFile.add(aryExtType.get(i + aryExtTypeSize));
+                                    typeFile = extType;
                                 }
 
-                                aryImage.add(String.valueOf(
-                                        filter.getImageResources(aryName.get(i +aryImageSize ).
-                                                substring(aryName.get(i + aryImageSize).
-                                                        lastIndexOf(".") + 1))));
-                                aryExtTitle.add("");
-                                aryFileType.add("");
-                                adapter.addItem(Integer.parseInt(aryImage.get(aryImage.size()-1)), new String[]{aryName.get(aryName.size()-1), aryExtType.get(aryExtType.size()-1), aryExtTitle.get(aryExtTitle.size()-1), aryFileType.get(aryFileType.size()-1), aryWhat.get(aryWhat.size()-1)});
+                                String image = String.valueOf(
+                                        filter.getImageResources(name.
+                                                substring(name.
+                                                        lastIndexOf(".") + 1)));
+                                String extTitle = "";
+                                String fileType = "";
+                                adapter.addItem(Integer.parseInt(image), new String[]{name, extType, extTitle, fileType, what}, new String[]{typeFile});
                             }
                         }
                         if(getActivity() != null) {
@@ -300,14 +277,18 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                 try {
                     JSONObject jsonObject = new JSONObject(result);
                     if (!jsonObject.isNull("success") && jsonObject.getBoolean("success")) {
-                        Toast.makeText(getActivity(), "הפעולה בוצעה בהצלחה", Toast.LENGTH_LONG).show();
+                        if(getActivity() != null)
+                            Toast.makeText(getActivity(), "הפעולה בוצעה בהצלחה", Toast.LENGTH_LONG).show();
                         refresh();
                     }else if (!jsonObject.isNull("message") && jsonObject.getString("meddsge").equals("simultaneous file operation rejected")){
-                        Toast.makeText(getActivity(), "פעולת קובץ בו-זמנית נדחתה", Toast.LENGTH_LONG).show();
+                        if(getActivity() != null)
+                            Toast.makeText(getActivity(), "פעולת קובץ בו-זמנית נדחתה", Toast.LENGTH_LONG).show();
                     }else if(!jsonObject.isNull("message")){
-                        Toast.makeText(getActivity(), "שגיאה: \n \n " + jsonObject.getString("message"), Toast.LENGTH_LONG).show();
+                        if(getActivity() != null)
+                            Toast.makeText(getActivity(), "שגיאה: \n \n " + jsonObject.getString("message"), Toast.LENGTH_LONG).show();
                     }else{
-                        Toast.makeText(getActivity(), "שגיאה לא ידועה: \n \n " + jsonObject.getString("responseStatus"), Toast.LENGTH_LONG).show();
+                        if(getActivity() != null)
+                            Toast.makeText(getActivity(), "שגיאה לא ידועה: \n \n " + jsonObject.getString("responseStatus"), Toast.LENGTH_LONG).show();
                     }
                 } catch (JSONException e) {
                     Log.e("error json parse", result + "|" + urlInfo);
@@ -348,7 +329,8 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                             String _urlAction = urlAction + "&action=delete" + whatString;
                             Log.e("urlAction", _urlAction);
                             swprl.setRefreshing(true);
-                            new sendApiRequest(getActivity(), this, "action", _urlAction);
+                            if(getActivity() != null)
+                                new sendApiRequest(getActivity(), this, "action", _urlAction);
                         });
                         builder.setNegativeButton("ביטול", null);
                         // Create and show the AlertDialog
@@ -358,7 +340,8 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                         String _urlAction = urlAction + "&action=delete" + whatString;
                         Log.e("urlAction", _urlAction);
                         swprl.setRefreshing(true);
-                        new sendApiRequest(getActivity(), this, "action", _urlAction);
+                        if(getActivity() != null)
+                            new sendApiRequest(getActivity(), this, "action", _urlAction);
                     }
                     break;
                 case "move":
@@ -395,7 +378,8 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                     swprl.setRefreshing(true);
                     String _urlAction = urlAction + "&action=" + act + whatList + "&target=" + thisWhat;
                     Log.e("urlAction", _urlAction);
-                    new sendApiRequest(getActivity(), this, "action", _urlAction);
+                    if(getActivity() != null)
+                        new sendApiRequest(getActivity(), this, "action", _urlAction);
                     isCopy = false;
                     menu.getItem(2).setVisible(false);
                 });
@@ -414,13 +398,15 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
             swprl.setRefreshing(true);
             String _urlAction = urlAction + "&action=" + act + whatList + "&target=" + thisWhat;
             Log.e("urlAction", _urlAction);
-            new sendApiRequest(getActivity(), this, "action", _urlAction);
+                if(getActivity() != null)
+                    new sendApiRequest(getActivity(), this, "action", _urlAction);
             isCopy = false;
             menu.getItem(2).setVisible(false);}
         } else if (action.equals("createFolder")) {
             swprl.setRefreshing(true);
             String _urlCreatedFolder = urlUpdateExtFolder + "&path=" + thisWhat + "/" + edtDialog.getText();
-            new sendApiRequest(getActivity(), this, "action", _urlCreatedFolder);
+            if(getActivity() != null)
+                new sendApiRequest(getActivity(), this, "action", _urlCreatedFolder);
         }
     }
 
@@ -478,10 +464,9 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
     public String createWhatString() {
         ArrayList<Integer> listArray = getArrayListSelected();
         StringBuilder whatListString = new StringBuilder();
-
         for (int i = 0; i < listArray.size(); i++) {
 
-            whatListString.append("&what").append(i).append("=").append(aryWhat.get(listArray.get(i)));
+            whatListString.append("&what").append(i).append("=").append(adapter.getItem(listArray.get(i)).getTxt()[WHAT_POSITION]);
 
         }
         Log.e("list", whatListString.toString());
@@ -505,7 +490,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
         renameWhatList = what;
         renameWhatString = createWhatString();
         edtRenameDialog = new EditText(getActivity());
-        edtRenameDialog.setText(String.valueOf(aryName.get(what.get(0))));
+        edtRenameDialog.setText(String.valueOf(adapter.getItem(what.get(0)).getTxt()[NAME_POSITION]));
         MaterialAlertDialogBuilder rnmDialog = new MaterialAlertDialogBuilder(requireActivity())
                 .setTitle("שינוי שם")
                 .setMessage("נבחרו " + what.size() + " קבצים לשינוי שם." + "\n" + "\n" + "אנא הזן שם:")
@@ -526,13 +511,15 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
             String edtRenameWhatText = edtRenameDialog.getText().toString();
             String _urlAction = urlAction + "&action=" + "move" + renameWhatString + "&target=" + thisWhat + edtRenameWhatText;
             Log.e("urlAction", _urlAction);
-            new sendApiRequest(getActivity(), this, "action", _urlAction);
+            if(getActivity() != null)
+                new sendApiRequest(getActivity(), this, "action", _urlAction);
         }else{
             for(int i = 0; i < renameWhatList.size(); i++){
                 String edtRenameWhatText = edtRenameDialog.getText().toString() + " (" + (i+1) + ")";
                 String _urlAction = urlAction + "&action=" + "move" + renameWhatString + "&target=" + thisWhat + edtRenameWhatText;
                 Log.e("urlAction", _urlAction);
-                new sendApiRequest(getActivity(), this, "action", _urlAction);
+                if(getActivity() != null)
+                    new sendApiRequest(getActivity(), this, "action", _urlAction);
             }
         }
     }
@@ -580,7 +567,8 @@ return true;
             requireContext().registerReceiver(receiver, filter);
             request.setDestinationInExternalFilesDir(requireContext(), Environment.DIRECTORY_DOWNLOADS,url.substring(url.lastIndexOf("/")+1));
         }else {
-            Toast.makeText(getActivity(), "ההורדה מתבצעת.", Toast.LENGTH_SHORT).show();
+            if(getActivity() != null)
+                Toast.makeText(getActivity(), "ההורדה מתבצעת.", Toast.LENGTH_SHORT).show();
 
             //Set the title of this download, to be displayed in notifications (if enabled).
             request.setTitle(url.substring(url.lastIndexOf("/") + 1));
@@ -681,23 +669,23 @@ return true;
         if (actionMode != null) {
             toggleSelection(position);
         } else {
-            if(aryTypeFile.get(position).equalsIgnoreCase("DIR")) {
-                url = urlHome + aryWhat.get(position);
-                thisWhat = aryWhat.get(position);
+            if(adapter.getItem(position).getTxtInfo()[TYPE_FILE_POSITION_INFO].equalsIgnoreCase("DIR")) {
+                thisWhat = adapter.getItem(position).getTxt()[WHAT_POSITION];
+                url = urlHome + thisWhat;
                 refresh();
             } else {
-                DataTransfer.setFileUrl(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken()  +"&path="+ aryWhat.get(position));
-                DataTransfer.setFileName(aryName.get(position));
-                DataTransfer.setFilePath(thisWhat + "/"+ aryName.get(position));
-                DataTransfer.setFileType(filter.getTypes(aryTypeFile.get(position)));
-                downloadFile(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken() +"&path=" + aryWhat.get(position), filter.getTypes(aryTypeFile.get(position)));
+                DataTransfer.setFileUrl(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken()  +"&path="+ adapter.getItem(position).getTxt()[WHAT_POSITION]);
+                DataTransfer.setFileName(adapter.getItem(position).getTxt()[NAME_POSITION]);
+                DataTransfer.setFilePath(thisWhat + "/"+ adapter.getItem(position).getTxt()[NAME_POSITION]);
+                DataTransfer.setFileType(filter.getTypes(adapter.getItem(position).getTxtInfo()[TYPE_FILE_POSITION_INFO]));
+                downloadFile(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken() +"&path=" + adapter.getItem(position).getTxt()[WHAT_POSITION], filter.getTypes(adapter.getItem(position).getTxtInfo()[TYPE_FILE_POSITION_INFO]));
             }
         }
     }
 
     @Override
     public boolean onItemLongClicked(int position) {
-        if (actionMode == null) {
+        if (actionMode == null && getActivity() != null) {
             actionMode = getActivity().startActionMode(this);
         }
 
