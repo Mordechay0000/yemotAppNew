@@ -27,13 +27,15 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.appbar.MaterialToolbar;
@@ -46,7 +48,8 @@ import com.mordechay.yemotapp.interfaces.onBackPressedFilesExplorer;
 import com.mordechay.yemotapp.network.sendApiRequest;
 import com.mordechay.yemotapp.ui.activitys.EditExtFileActivity;
 import com.mordechay.yemotapp.ui.programmatically.list.CustomAdapter;
-import com.mordechay.yemotapp.ui.programmatically.list.DataModel;
+import com.mordechay.yemotapp.ui.programmatically.list.ItemData;
+import com.mordechay.yemotapp.ui.programmatically.list.SelectableAdapter;
 import com.mordechay.yemotapp.ui.programmatically.list.newList;
 
 import org.json.JSONArray;
@@ -57,7 +60,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 @SuppressLint("NonConstantResourceId")
-public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProvider, AdapterView.OnItemClickListener, AbsListView.MultiChoiceModeListener, sendApiRequest.RespondsListener, SwipeRefreshLayout.OnRefreshListener, DialogInterface.OnClickListener, onBackPressedFilesExplorer {
+public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProvider, AbsListView.MultiChoiceModeListener, sendApiRequest.RespondsListener, SwipeRefreshLayout.OnRefreshListener, DialogInterface.OnClickListener, onBackPressedFilesExplorer, View.OnClickListener, CustomAdapter.ViewHolder.ClickListener {
 
 
     String urlHome;
@@ -74,9 +77,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
 
     boolean isCopy = false;
 
-    ListView list;
-    ArrayList<DataModel> adapter;
-
+    RecyclerView recyclerView;
     ArrayList<String> aryImage;
     ArrayList<String> aryName;
     ArrayList<String> aryExtType;
@@ -84,9 +85,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
     ArrayList<String> aryFileType;
     ArrayList<String> aryWhat;
     ArrayList<String> aryTypeFile;
-
-    ActionMode actMode;
-
+    
     SwipeRefreshLayout swprl;
 
     MaterialAlertDialogBuilder dialog;
@@ -101,6 +100,8 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
     long downloadID;
     private MaterialToolbar toolbar;
     private SharedPreferences spPref;
+    private ActionMode actionMode;
+    private CustomAdapter adapter;
 
 
     public ExtExplorerMangerFilesFragment() {
@@ -122,7 +123,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
         toolbar = requireActivity().findViewById(R.id.topAppBar);
         requireActivity().addMenuProvider(this);
 
-        swprl = v.findViewById(R.id.swipeRefresh);
+        swprl = v.findViewById(R.id.ExtExplorerMangerFiles_SwipeRefresh);
         swprl.setOnRefreshListener(this);
         swprl.setRefreshing(true);
 
@@ -138,10 +139,10 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
         urlHomeUploadFile = "https://www.call2all.co.il/ym/api/UploadFile?token=" + token;
 
         url = urlStart;
-        list = v.findViewById(R.id.list1111);
-        list.setOnItemClickListener(this);
-        list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-        list.setMultiChoiceModeListener(this);
+        recyclerView = (RecyclerView) v.findViewById(R.id.ExtExplorerMangerFiles_ext_recycler_view);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
 
         spPref = PreferenceManager.getDefaultSharedPreferences(requireContext());
 
@@ -160,30 +161,14 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
 
 
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        if(aryTypeFile.get(i).equalsIgnoreCase("DIR")) {
-            url = urlHome + aryWhat.get(i);
-            thisWhat = aryWhat.get(i);
-            refresh();
-        } else {
-            DataTransfer.setFileUrl(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken()  +"&path="+ aryWhat.get(i));
-            DataTransfer.setFileName(aryName.get(i));
-            DataTransfer.setFilePath(thisWhat + "/"+ aryName.get(i));
-            DataTransfer.setFileType(filter.getTypes(aryTypeFile.get(i)));
-            downloadFile(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken() +"&path=" + aryWhat.get(i), filter.getTypes(aryTypeFile.get(i)));
-        }
-    }
-
-
-    @Override
     public void onSuccess(String result, String type) {
         switch (type) {
             case "url":
-                if (actMode != null) {
-                    actMode.finish();
+                if (actionMode != null) {
+                    actionMode.finish();
                 }
-                adapter = new ArrayList<>();
                 try {
+                    adapter = new CustomAdapter(this);
                     aryImage = new ArrayList<>();
                     aryName = new ArrayList<>();
                     aryExtType = new ArrayList<>();
@@ -228,8 +213,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                                     aryWhat.add("");
                                 }
                                 aryTypeFile.add("DIR");
-
-
+                                adapter.addItem(Integer.parseInt(aryImage.get(aryImage.size()-1)), aryName.get(aryName.size()-1), aryExtType.get(aryExtType.size()-1), aryExtTitle.get(aryExtTitle.size()-1), aryFileType.get(aryFileType.size()-1), aryWhat.get(aryWhat.size()-1));
                             }
                         }
                         int aryExtTypeSize = aryExtType.size();
@@ -263,6 +247,9 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                                 }
 
                                 aryImage.add(String.valueOf(filter.getImageResources(aryName.get(i - 1 +aryImageSize ).substring(aryName.get(i - 1 + aryImageSize).lastIndexOf(".") + 1))));
+                                aryExtTitle.add("");
+                                aryFileType.add("");
+                                adapter.addItem(Integer.parseInt(aryImage.get(aryImage.size()-1)), aryName.get(aryName.size()-1), aryExtType.get(aryExtType.size()-1), aryExtTitle.get(aryExtTitle.size()-1), aryFileType.get(aryFileType.size()-1), aryWhat.get(aryWhat.size()-1));
                             }
                         }
                         aryExtTypeSize = aryExtType.size();
@@ -270,8 +257,8 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                         if (!jsonObject.isNull("ini")) {
                             JSONArray jsonArray = jsonObject.getJSONArray("ini");
 
-                            for (int i = 1; i <= jsonArray.length(); i++) {
-                                JSONObject jsonObject1 = jsonArray.getJSONObject(i - 1);
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject jsonObject1 = jsonArray.getJSONObject(i);
 
                                 if (!jsonObject1.isNull("name")) {
                                     aryName.add(jsonObject1.getString("name"));
@@ -289,34 +276,23 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                                     aryWhat.add("");
                                 }
 
-                                if (aryExtType.get(i - 1 + aryExtTypeSize).equals("") || aryExtType.get(i - 1 + aryExtTypeSize).isEmpty()) {
+                                if (aryExtType.get(i + aryExtTypeSize).equals("") || aryExtType.get(i + aryExtTypeSize).isEmpty()) {
                                     aryTypeFile.add("ini");
                                 } else {
-                                    aryTypeFile.add(aryExtType.get(i - 1 + aryExtTypeSize));
+                                    aryTypeFile.add(aryExtType.get(i + aryExtTypeSize));
                                 }
 
                                 aryImage.add(String.valueOf(
-                                        filter.getImageResources(aryName.get(i - 1 +aryImageSize ).
-                                                substring(aryName.get(i - 1 + aryImageSize).
+                                        filter.getImageResources(aryName.get(i +aryImageSize ).
+                                                substring(aryName.get(i + aryImageSize).
                                                         lastIndexOf(".") + 1))));
+                                aryExtTitle.add("");
+                                aryFileType.add("");
+                                adapter.addItem(Integer.parseInt(aryImage.get(aryImage.size()-1)), aryName.get(aryName.size()-1), aryExtType.get(aryExtType.size()-1), aryExtTitle.get(aryExtTitle.size()-1), aryFileType.get(aryFileType.size()-1), aryWhat.get(aryWhat.size()-1));
                             }
                         }
-
-
-
-
-
-                        ArrayList<ArrayList<String>> aryyyyyyy = new ArrayList<>();
-                        aryyyyyyy.add(aryImage);
-                        aryyyyyyy.add(aryName);
-                        aryyyyyyy.add(aryExtType);
-                        aryyyyyyy.add(aryExtTitle);
-                        aryyyyyyy.add(aryFileType);
-                        aryyyyyyy.add(aryWhat);
-
                         if(getActivity() != null) {
-                            CustomAdapter csta = new CustomAdapter(getActivity(), new newList().getAdapter(getActivity(), aryyyyyyy));
-                            list.setAdapter(csta);
+                            recyclerView.setAdapter(adapter);
                         }
                     }
                 } catch (JSONException e) {
@@ -492,7 +468,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
         ArrayList<Integer> listArray = new ArrayList<>();
 
 
-        SparseBooleanArray checked = list.getCheckedItemPositions();
+        SparseBooleanArray checked = adapter.getCheckedItemPositions();
         int size = checked.size(); // number of name-value pairs in the array
         for (int i = 0; i < size; i++) {
             int key = checked.keyAt(i);
@@ -575,57 +551,6 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
     }
 
 
-    @Override
-    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-        // Respond to clicks on the actions in the CAB
-        switch (item.getItemId()) {
-            case R.id.delete:
-                action("delete");
-                mode.finish();
-                return true;
-            case R.id.move:
-                action("move");
-                mode.finish();
-                return true;
-            case R.id.copy:
-                action("copy");
-                mode.finish();
-                return true;
-            case R.id.rename:
-                action("rename");
-                mode.finish();
-                return true;
-            default:
-                return false;
-        }
-    }
-
-
-
-    @Override
-    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-        // Inflate the menu for the CAB
-        MenuInflater inflater = mode.getMenuInflater();
-        inflater.inflate(R.menu.menu_action_bar_cab, menu);
-        actMode = mode;
-        toolbar.setVisibility(View.GONE);
-        return true;
-    }
-
-    @Override
-    public void onDestroyActionMode(ActionMode actionMode) {
-        // Here you can make any necessary updates to the activity when
-        // the CAB is removed. By default, selected items are deselected/unchecked.
-        actionMode.finish();
-        toolbar.setVisibility(View.VISIBLE);
-        actMode = null;
-    }
-
-
-    @Override
-    public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
-        return false;
-    }
 
 
     public boolean onBackPressedFilesExplorer() {
@@ -676,9 +601,10 @@ return true;
         downloadID =manager.enqueue(request);
     }
 
+    @Override
+    public void onClick(View v) {
 
-
-
+    }
 
 
     public class DownloadCompleteReceiver extends BroadcastReceiver {
@@ -736,8 +662,121 @@ return true;
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if(actionMode != null){
+            actionMode.finish();
+        }
         DataTransfer.setThisWhat(thisWhat);
         requireActivity().removeMenuProvider(this);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+    @Override
+    public void onItemClicked(int position) {
+        if (actionMode != null) {
+            toggleSelection(position);
+        } else {
+            if(aryTypeFile.get(position).equalsIgnoreCase("DIR")) {
+                url = urlHome + aryWhat.get(position);
+                thisWhat = aryWhat.get(position);
+                refresh();
+            } else {
+                DataTransfer.setFileUrl(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken()  +"&path="+ aryWhat.get(position));
+                DataTransfer.setFileName(aryName.get(position));
+                DataTransfer.setFilePath(thisWhat + "/"+ aryName.get(position));
+                DataTransfer.setFileType(filter.getTypes(aryTypeFile.get(position)));
+                downloadFile(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken() +"&path=" + aryWhat.get(position), filter.getTypes(aryTypeFile.get(position)));
+            }
+        }
+    }
+
+    @Override
+    public boolean onItemLongClicked(int position) {
+        if (actionMode == null) {
+            actionMode = getActivity().startActionMode(this);
+        }
+
+        toggleSelection(position);
+
+        return true;
+    }
+
+    /**
+     * Toggle the selection state of an item.
+     *
+     * If the item was the last one in the selection and is unselected, the selection is stopped.
+     * Note that the selection must already be started (actionMode must not be null).
+     *
+     * @param position Position of the item to toggle the selection state
+     */
+    private void toggleSelection(int position) {
+        adapter.toggleSelection(position);
+        int count = adapter.getSelectedItemCount();
+
+        if (count == 0) {
+            actionMode.finish();
+        } else {
+            actionMode.setTitle(count + getString(R.string.selected));
+            actionMode.invalidate();
+        }
+    }
+
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            // Inflate the menu for the CAB
+            MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.menu_action_bar_cab, menu);
+            actionMode = mode;
+            toolbar.setVisibility(View.GONE);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            // Respond to clicks on the actions in the CAB
+            switch (item.getItemId()) {
+                case R.id.delete:
+                    action("delete");
+                    mode.finish();
+                    return true;
+                case R.id.move:
+                    action("move");
+                    mode.finish();
+                    return true;
+                case R.id.copy:
+                    action("copy");
+                    mode.finish();
+                    return true;
+                case R.id.rename:
+                    action("rename");
+                    mode.finish();
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            adapter.clearSelection();
+            actionMode = null;
+            toolbar.setVisibility(View.VISIBLE);
+        }
+    
 }
 

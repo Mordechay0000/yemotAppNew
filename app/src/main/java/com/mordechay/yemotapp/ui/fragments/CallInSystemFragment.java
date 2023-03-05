@@ -19,7 +19,7 @@ import android.widget.ListView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.ui.programmatically.list.CustomAdapter;
-import com.mordechay.yemotapp.ui.programmatically.list.DataModel;
+import com.mordechay.yemotapp.ui.programmatically.list.ItemData;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.network.sendApiRequest;
 import com.mordechay.yemotapp.ui.programmatically.list.newList;
@@ -54,7 +54,7 @@ public class CallInSystemFragment extends Fragment implements AbsListView.MultiC
     boolean isCopy = false;
 
     ListView list;
-    ArrayList<DataModel> adapter;
+    ArrayList<ItemData> adapter;
 
     ArrayList<String> aryNumTo;
     ArrayList<String> aryNumFrom;
@@ -159,8 +159,8 @@ String titleApp;
                 aryy.add(aryExt);
                 aryy.add(aryCallDur);
 try {
-    CustomAdapter csta = new CustomAdapter(this.getContext(), new newList().getAdapter(getActivity(), aryy));
-    list.setAdapter(csta);
+    //CustomAdapter csta = new CustomAdapter(this.getContext(), new newList().getAdapter(getActivity(), aryy));
+    //list.setAdapter(csta);
 } catch (Exception e) {
     e.printStackTrace();
 }

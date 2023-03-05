@@ -216,8 +216,8 @@ refresh();
                 aryy.add(DeliveryReport);
 
                 try {
-                    CustomAdapter csta = new CustomAdapter(requireContext(), new newList().getAdapter(getActivity(), aryy));
-                    list.setAdapter(csta);
+                    //CustomAdapter csta = new CustomAdapter(requireContext(), new newList().getAdapter(getActivity(), aryy));
+                    //list.setAdapter(csta);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -14,19 +14,18 @@
         tools:layout_editor_absoluteY="1dp">
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/swipeRefresh"
+            android:id="@+id/ExtExplorerMangerFiles_SwipeRefresh"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <ListView
-                android:id="@+id/list1111"
-                style="@android:style/Widget.Material.Light.ListView"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/ExtExplorerMangerFiles_ext_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layoutDirection="rtl"
                 android:textDirection="rtl">
 
-            </ListView>
+            </androidx.recyclerview.widget.RecyclerView>
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

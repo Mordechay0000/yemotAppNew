@@ -263,8 +263,8 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
                         aryyyyyyy.add(aryCampaignId);
 
 
-                        CustomAdapter csta = new CustomAdapter(this.getContext(), new newList().getAdapter(getActivity(), aryyyyyyy));
-                        list.setAdapter(csta);
+                        //CustomAdapter csta = new CustomAdapter(this.getContext(), new newList().getAdapter(getActivity(), aryyyyyyy));
+                        //list.setAdapter(csta);
                     }
             } catch (JSONException e) {
                 e.printStackTrace();

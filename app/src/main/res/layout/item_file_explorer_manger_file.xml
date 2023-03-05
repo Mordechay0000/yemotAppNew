@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/selctor_list_view_file"
+    tools:ignore="UselessParent"
+    >
+
+<LinearLayout
+    android:id="@+id/item_file_explorer_manger_file_lnr"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:foreground="?android:attr/selectableItemBackground"
     android:orientation="horizontal"
-    tools:ignore="UselessParent">
+    >
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/item_file_explorer_manger_file_imageView"
         android:layout_width="60dp"
         android:layout_height="60dp"
         tools:ignore="ContentDescription" />
@@ -20,7 +28,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <!--<TextView
+        <TextView
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -74,8 +82,16 @@
             android:textColor="@android:color/black"
             android:textSize="14sp"
             tools:ignore="RtlHardcoded" />
-            -->
 
     </LinearLayout>
 
 </LinearLayout>
+
+    <View
+        android:id="@+id/selected_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/selected_overlay"
+        android:visibility="invisible" />
+
+</androidx.cardview.widget.CardView>

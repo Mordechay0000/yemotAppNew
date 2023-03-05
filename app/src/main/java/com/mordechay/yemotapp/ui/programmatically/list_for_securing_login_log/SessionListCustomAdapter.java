@@ -87,12 +87,9 @@ public class SessionListCustomAdapter extends RecyclerView.Adapter<SessionListCu
             txtDoubleAuthStatus = itemView.findViewById(R.id.txtDoubleAuthStatus);
             btnDelete = itemView.findViewById(R.id.btnDelete);
 
-            btnDelete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (listener != null) {
-                        listener.onItemActionClick(getAdapterPosition());
-                    }
+            btnDelete.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onItemActionClick(getAdapterPosition());
                 }
             });
         }
