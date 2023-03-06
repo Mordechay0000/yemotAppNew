@@ -137,12 +137,16 @@ public class homeActivity extends AppCompatActivity implements MenuProvider, Vie
 
 
     private Fragment findFragmentInstance() {
-        Fragment fragmentHost = getSupportFragmentManager().findFragmentById(R.id.nvgv_fragment);
-        List<Fragment> fragmentList1 = fragmentHost.getChildFragmentManager().getFragments();
-        List<Fragment> fragmentList2 = fragmentList1.get(fragmentList1.size() - 1).getChildFragmentManager().getFragments();
+        try {
+            Fragment fragmentHost = getSupportFragmentManager().findFragmentById(R.id.nvgv_fragment);
+            List<Fragment> fragmentList1 = fragmentHost.getChildFragmentManager().getFragments();
+            List<Fragment> fragmentList2 = fragmentList1.get(fragmentList1.size() - 1).getChildFragmentManager().getFragments();
 
-        fr = fragmentList2.get(fragmentList2.size() - 1);
-        return fr;
+            fr = fragmentList2.get(fragmentList2.size() - 1);
+            return fr;
+        }catch (Exception e){
+            return new Fragment();
+        }
     }
 
 
