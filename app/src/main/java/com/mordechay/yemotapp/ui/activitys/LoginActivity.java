@@ -1,35 +1,29 @@
 package com.mordechay.yemotapp.ui.activitys;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.preference.PreferenceManager;
-
-import org.json.*;
-
-import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.mordechay.yemotapp.*;
+import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.network.sendApiRequest;
 import com.mordechay.yemotapp.ui.programmatically.errors.errorHandler;
 
-import java.util.Locale;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, sendApiRequest.RespondsListener {
 
@@ -88,7 +82,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }else if(view == btnLogout){
             Intent inet = new Intent(this, loginToServerActivity.class)
                     .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            getSharedPreferences(Constants.DEFAULT_SHARED_PREFERENCES, 0).edit().clear().commit();
+            getSharedPreferences(Constants.DEFAULT_SHARED_PREFERENCES, 0).edit().clear().apply();
             mAuth.signOut();
             startActivity(inet);
         }

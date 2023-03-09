@@ -1,10 +1,6 @@
 package com.mordechay.yemotapp.ui.fragments;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -13,20 +9,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.EditText;
 import android.widget.ListView;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.mordechay.yemotapp.data.DataTransfer;
-import com.mordechay.yemotapp.ui.programmatically.list.ItemData;
+import androidx.fragment.app.Fragment;
+
 import com.mordechay.yemotapp.R;
+import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.network.sendApiRequest;
+import com.mordechay.yemotapp.ui.programmatically.list.ItemData;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class CallInSystemFragment extends Fragment implements AbsListView.MultiChoiceModeListener, sendApiRequest.RespondsListener {
@@ -37,20 +34,7 @@ public class CallInSystemFragment extends Fragment implements AbsListView.MultiC
 
     String urlHome;
     String token;
-    String urlInfo;
-    String urlStart;
     String url;
-    String urlAction;
-    String urlUpdateExtFolder;
-
-    ArrayList<String> urlStack;
-    String thisWhat = "/";
-    ArrayList<String> thisWhatStack;
-
-    String whatList;
-
-    boolean isCopy = false;
-
     ListView list;
     ArrayList<ItemData> adapter;
 
@@ -60,18 +44,7 @@ public class CallInSystemFragment extends Fragment implements AbsListView.MultiC
     ArrayList<String> aryExt;
     ArrayList<String> aryCallDur;
     ArrayList<String> aryCallId;
-
-    ActionMode actMode;
-
-    SwipeRefreshLayout swprl;
-
-    MaterialAlertDialogBuilder dialog;
-    EditText edtDialog;
-String titleApp;
-
-    Menu menu;
-    boolean onBack;
-    private ArrayList<String> aryImage;
+    String titleApp;
 
 
     public CallInSystemFragment() {
@@ -89,7 +62,7 @@ String titleApp;
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        titleApp = (String) getActivity().getTitle();
+        titleApp = (String) requireActivity().getTitle();
         View v = inflater.inflate(R.layout.fragment_call_in_system, container, false);
 
 
@@ -114,10 +87,11 @@ String titleApp;
     @Override
     public void onSuccess(String result, String type) {
         if(type.equals("url")){
-            adapter = new ArrayList();
+            adapter = new ArrayList<>();
             try {
                 JSONObject jsb = new JSONObject(result);
                 try {
+                    if(getActivity() != null)
                     getActivity().setTitle("שיחות פעילות במערכת: " + jsb.getString("callsCount"));
                 }catch (NullPointerException e){
                     Log.e("null", e.getMessage());
@@ -134,7 +108,7 @@ String titleApp;
                 aryExt = new ArrayList<>();
                 aryCallDur = new ArrayList<>();
                 aryCallId = new ArrayList<>();
-                aryImage = new ArrayList<>();
+                ArrayList<String> aryImage = new ArrayList<>();
 
 
                 for (int i = 0; i < jsa.length(); i++) {
@@ -149,7 +123,7 @@ String titleApp;
                 }
 
 
-                ArrayList<ArrayList<String>> aryy = new ArrayList<ArrayList<String>>();
+                ArrayList<ArrayList<String>> aryy = new ArrayList<>();
                 aryy.add(aryImage);
                 aryy.add(aryNumTo);
                 aryy.add(aryNumFrom);
@@ -186,7 +160,7 @@ try {
 
     @Override
     public void onDestroy() {
-        getActivity().setTitle(titleApp);
+        requireActivity().setTitle(titleApp);
         super.onDestroy();
     }
 

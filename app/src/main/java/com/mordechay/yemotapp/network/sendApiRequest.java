@@ -49,9 +49,7 @@ public class sendApiRequest{
         if (!errorNoInternetView.isShowing()) {
             Log.d("url", "url" + networkurl);
             StringRequest jsObjRequest = new StringRequest(Request.Method.GET, networkurl,
-                    response -> {
-                        respondsListener.onSuccess(response, this.type);
-                    },
+                    response -> respondsListener.onSuccess(response, this.type),
                     error -> {
                         // dismiss the progress dialog after receiving Constants from API
                         NetworkResponse response = error.networkResponse;
@@ -78,9 +76,9 @@ public class sendApiRequest{
                             String errorMsg = error.getMessage();
                             respondsListener.onFailure(this.networkurl, 0, errorMsg);
                             saveUrl();
-                        }
-                        if(!errorNoInternetView.isShowing()) {
-                            errorNoInternetView.show();
+                            if(!errorNoInternetView.isShowing()) {
+                                errorNoInternetView.show();
+                            }
                         }
                     });
 

@@ -2,7 +2,6 @@ package com.mordechay.yemotapp.network;
 
 import android.app.Activity;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
@@ -10,8 +9,9 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.mordechay.yemotapp.data.Constants;
+import com.mordechay.yemotapp.ui.layoutViews.UpdateAppView;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public class testIsExitsUser {
@@ -20,10 +20,12 @@ public class testIsExitsUser {
 
     private final String mail;
     private final String password;
+    private final UpdateAppView updateAppView;
+
     private JSONObject jsonObject = null;
 
     public interface RespondsListener {
-        void onSuccess(String result);
+        void onSuccess();
         void onFailure(int responseCode, String responseMessage);
     }
 
@@ -34,42 +36,39 @@ public class testIsExitsUser {
         this.respondsListener = respondsListener;
         this.mail = mail;
         this.password = password;
+        this.updateAppView = new UpdateAppView(act);
         sendRequest();
     }
 
 
 
     private void sendRequest() {
-        String url = "https://mordechay-database.000webhostapp.com/IsUser.php?email=" + mail +"&pass="+password;
+        String url = Constants.URL_IS_USER_EXIT + "email=" + mail +"&pass="+password;
 
         Log.d("url", "url" + url);
-        // dismiss the progress dialog after receiving Constants from API
         StringRequest jsObjRequest = new StringRequest(Request.Method.GET,url,
-                respondsListener::onSuccess,
+                result -> {
+                    switch (result) {
+                        case "ok":
+                            respondsListener.onSuccess();
+                            break;
+                        case "Error: Invalid username or password":
+                            respondsListener.onFailure(1, "Error: Invalid username or password");
+                            break;
+                        case "Error: Account blocked":
+                            respondsListener.onFailure(2, "Error: Account blocked");
+                            break;
+                        default:
+                            updateAppView.show();
+                            break;
+                    }
+                },
                 error -> {
                     NetworkResponse response = error.networkResponse;
                     if (response != null) {
-                        int code = response.statusCode;
-
-                        String errorMsg = new String(response.data);
-                        try {
-                            jsonObject = new JSONObject(errorMsg);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-
-                        if(jsonObject != null){
-                            if (!jsonObject.isNull("message")) {
-                                String msg = jsonObject.optString("message");
-                                respondsListener.onFailure(code, msg);
-                            }
-                        }
-
-
+                        updateAppView.show();
                     } else {
                         String errorMsg = error.getMessage();
-                        Toast.makeText(act, "אנא בדקו את החיבור לאינטרנט ונסו שוב", Toast.LENGTH_LONG).show();
                         respondsListener.onFailure(0, errorMsg);
                     }
                 });
