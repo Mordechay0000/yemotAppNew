@@ -7,6 +7,10 @@ public class Constants {
     public static final String URL_HOME = "https://www.call2all.co.il/ym/api/";
     public static final String URL_LOGIN = URL_HOME + "Login?";
     public static final String URL_GET_UNITS_HISTORY = URL_HOME + "GetTransactions?token=";
+    public static final String URL_GET_EXTENSION_CONTENT = URL_HOME + "GetIVR2Dir?token=";
+    public static final String URL_FILE_ACTION = URL_HOME + "FileAction?token=";
+    public static final String URL_UPDATE_EXTENSION = URL_HOME + "UpdateExtension?token=";
+    public static final String URL_UPLOAD_FILE = URL_HOME + "UploadFile?token=";
     public static final String URL_DOWNLOAD_FILE = URL_HOME + "DownloadFile?token=";
     public static final String URL_UPLOAD_TEXT_FILE = URL_HOME + "UploadTextFile?token=";
     public static final String URL_SEND_SMS = URL_HOME + "SendSms?token=";

@@ -85,6 +85,13 @@
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
             </intent-filter>
         </receiver>
+        <receiver
+            android:name=".ui.fragments.extExplorerFragments.ExtExplorerSystemMessagesFragment$DownloadCompleteReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

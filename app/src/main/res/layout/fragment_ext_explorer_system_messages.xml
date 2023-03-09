@@ -4,4 +4,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.fragments.extExplorerFragments.ExtExplorerSystemMessagesFragment" />
+    tools:context=".ui.fragments.extExplorerFragments.ExtExplorerSystemMessagesFragment">
+
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/ExtExplorerSystemMessages_SwipeRefresh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/ExtExplorerSystemMessages_ext_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layoutDirection="rtl"
+                android:textDirection="rtl">
+
+            </androidx.recyclerview.widget.RecyclerView>
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</LinearLayout>

@@ -56,18 +56,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 @SuppressLint("NonConstantResourceId")
-public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProvider, AbsListView.MultiChoiceModeListener, sendApiRequest.RespondsListener, SwipeRefreshLayout.OnRefreshListener, DialogInterface.OnClickListener, onBackPressedFilesExplorer, View.OnClickListener, CustomAdapter.ViewHolder.ClickListener {
+public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProvider, AbsListView.MultiChoiceModeListener, sendApiRequest.RespondsListener, SwipeRefreshLayout.OnRefreshListener, DialogInterface.OnClickListener, onBackPressedFilesExplorer, CustomAdapter.ViewHolder.ClickListener {
 
 
     String urlHome;
     String token;
-    String urlInfo;
-    String urlStart;
     String url;
-    String urlAction;
-    String urlUpdateExtFolder;
-    String urlHomeUploadFile;
-
     String thisWhat;
     String whatList;
 
@@ -126,14 +120,9 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
             thisWhat = "ivr2:/";
         }
 
-        urlHome = "https://www.call2all.co.il/ym/api/GetIVR2Dir?token=" + token + "&orderBy=name&orderDir=asc&path=";
-        urlStart = urlHome + thisWhat;
-        urlAction = "https://www.call2all.co.il/ym/api/FileAction?token=" + token;
-        urlUpdateExtFolder = "https://www.call2all.co.il/ym/api/UpdateExtension?token=" + token;
-        urlHomeUploadFile = "https://www.call2all.co.il/ym/api/UploadFile?token=" + token;
+        url = Constants.URL_GET_EXTENSION_CONTENT+ token + "&orderBy=name&orderDir=asc&path=" + thisWhat;
 
-        url = urlStart;
-        recyclerView = (RecyclerView) v.findViewById(R.id.ExtExplorerMangerFiles_ext_recycler_view);
+        recyclerView = v.findViewById(R.id.ExtExplorerMangerFiles_ext_recycler_view);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -147,6 +136,10 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
     }
 
 
+    @Override
+    public void onRefresh() {
+        refresh();
+    }
     public void refresh() {
         swprl.setRefreshing(true);
         if(getActivity() != null)
@@ -217,7 +210,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                                     what = jsonObject1.getString("what");
                                 }
                                 String typeFile = "";
-                                if (extType.equals("") || extType.isEmpty()) {
+                                if (extType.isEmpty()) {
                                     typeFile = "FILE";
                                 } else {
                                     typeFile = extType;
@@ -249,7 +242,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                                 }
 
                                 String typeFile = "";
-                                if (extType.equals("") || extType.isEmpty()) {
+                                if (extType.isEmpty()) {
                                     typeFile = "ini";
                                 } else {
                                     typeFile = extType;
@@ -269,7 +262,6 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                         }
                     }
                 } catch (JSONException e) {
-                    Log.e("error json parse", result + "|" + urlInfo);
                     e.printStackTrace();
                 }
                 break;
@@ -291,7 +283,6 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                             Toast.makeText(getActivity(), "שגיאה לא ידועה: \n \n " + jsonObject.getString("responseStatus"), Toast.LENGTH_LONG).show();
                     }
                 } catch (JSONException e) {
-                    Log.e("error json parse", result + "|" + urlInfo);
                     e.printStackTrace();
                 }
                 refresh();
@@ -326,7 +317,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                         // Add the buttons
                         builder.setPositiveButton("אישור", (dialog, id) -> {
                             // User clicked confirm button
-                            String _urlAction = urlAction + "&action=delete" + whatString;
+                            String _urlAction = Constants.URL_FILE_ACTION + token + "&action=delete" + whatString;
                             Log.e("urlAction", _urlAction);
                             swprl.setRefreshing(true);
                             if(getActivity() != null)
@@ -337,7 +328,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                         AlertDialog dialog = builder.create();
                         dialog.show();
                     }else {
-                        String _urlAction = urlAction + "&action=delete" + whatString;
+                        String _urlAction = Constants.URL_FILE_ACTION + token + "&action=delete" + whatString;
                         Log.e("urlAction", _urlAction);
                         swprl.setRefreshing(true);
                         if(getActivity() != null)
@@ -376,7 +367,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                         act = "move";
                     }
                     swprl.setRefreshing(true);
-                    String _urlAction = urlAction + "&action=" + act + whatList + "&target=" + thisWhat;
+                    String _urlAction = Constants.URL_FILE_ACTION + token + "&action=" + act + whatList + "&target=" + thisWhat;
                     Log.e("urlAction", _urlAction);
                     if(getActivity() != null)
                         new sendApiRequest(getActivity(), this, "action", _urlAction);
@@ -396,7 +387,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                 act = "move";
             }
             swprl.setRefreshing(true);
-            String _urlAction = urlAction + "&action=" + act + whatList + "&target=" + thisWhat;
+            String _urlAction = Constants.URL_FILE_ACTION + token + "&action=" + act + whatList + "&target=" + thisWhat;
             Log.e("urlAction", _urlAction);
                 if(getActivity() != null)
                     new sendApiRequest(getActivity(), this, "action", _urlAction);
@@ -404,7 +395,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
             menu.getItem(2).setVisible(false);}
         } else if (action.equals("createFolder")) {
             swprl.setRefreshing(true);
-            String _urlCreatedFolder = urlUpdateExtFolder + "&path=" + thisWhat + "/" + edtDialog.getText();
+            String _urlCreatedFolder = Constants.URL_UPDATE_EXTENSION + token + "&path=" + thisWhat + "/" + edtDialog.getText();
             if(getActivity() != null)
                 new sendApiRequest(getActivity(), this, "action", _urlCreatedFolder);
         }
@@ -424,7 +415,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
         if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null) {
             Uri selectedFileUri = data.getData();
             String selectedFilePath = selectedFileUri.getPath();
-            String urlUpload = urlHomeUploadFile + "&path=" + "ivr2:"+thisWhat + "abc.txt";
+            String urlUpload = Constants.URL_UPLOAD_FILE + token + "&path=" + "ivr2:"+thisWhat + "abc.txt";
             Log.e("urlUpload", urlUpload);
             /*
             File fl = new File(selectedFilePath);
@@ -436,13 +427,6 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
 
              */
         }
-    }
-
-
-
-    @Override
-    public void onRefresh() {
-        refresh();
     }
 
 
@@ -509,14 +493,14 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
     private void applyRename() {
         if(renameWhatList.size() == 1){
             String edtRenameWhatText = edtRenameDialog.getText().toString();
-            String _urlAction = urlAction + "&action=" + "move" + renameWhatString + "&target=" + thisWhat + edtRenameWhatText;
+            String _urlAction = Constants.URL_FILE_ACTION + token + "&action=" + "move" + renameWhatString + "&target=" + thisWhat + edtRenameWhatText;
             Log.e("urlAction", _urlAction);
             if(getActivity() != null)
                 new sendApiRequest(getActivity(), this, "action", _urlAction);
         }else{
             for(int i = 0; i < renameWhatList.size(); i++){
                 String edtRenameWhatText = edtRenameDialog.getText().toString() + " (" + (i+1) + ")";
-                String _urlAction = urlAction + "&action=" + "move" + renameWhatString + "&target=" + thisWhat + edtRenameWhatText;
+                String _urlAction = Constants.URL_FILE_ACTION + token + "&action=" + "move" + renameWhatString + "&target=" + thisWhat + edtRenameWhatText;
                 Log.e("urlAction", _urlAction);
                 if(getActivity() != null)
                     new sendApiRequest(getActivity(), this, "action", _urlAction);
@@ -584,40 +568,6 @@ return true;
 
         downloadID =manager.enqueue(request);
     }
-
-    @Override
-    public void onClick(View v) {
-
-    }
-
-
-    public class DownloadCompleteReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
-            if(downloadId == downloadID)
-            {
-                DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-                DownloadManager.Query query = new DownloadManager.Query();
-                query.setFilterById(downloadId);
-                Cursor cursor = manager.query(query);
-                if(cursor.moveToFirst()) {
-                    int columnIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
-                    if (DownloadManager.STATUS_SUCCESSFUL == cursor.getInt(columnIndex)) {
-                        @SuppressLint("Range") String uriString = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
-                        Uri downloadedUri = Uri.parse(uriString);
-                        startActivity(new Intent(requireContext(), EditExtFileActivity.class).setAction(Intent.ACTION_EDIT).setData(downloadedUri));
-
-                    }
-                }
-            }
-        }
-
-    }
-
-
-
 
     @Override
     public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
@@ -718,7 +668,7 @@ return true;
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             // Inflate the menu for the CAB
             MenuInflater inflater = mode.getMenuInflater();
-            inflater.inflate(R.menu.menu_action_bar_cab, menu);
+            inflater.inflate(R.menu.menu_manger_file_action_bar_cab, menu);
             actionMode = mode;
             toolbar.setVisibility(View.GONE);
             return true;
@@ -761,6 +711,35 @@ return true;
             actionMode = null;
             toolbar.setVisibility(View.VISIBLE);
         }
+
+
+
+
+
+    public class DownloadCompleteReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+            if(downloadId == downloadID)
+            {
+                DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+                DownloadManager.Query query = new DownloadManager.Query();
+                query.setFilterById(downloadId);
+                Cursor cursor = manager.query(query);
+                if(cursor.moveToFirst()) {
+                    int columnIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
+                    if (DownloadManager.STATUS_SUCCESSFUL == cursor.getInt(columnIndex)) {
+                        @SuppressLint("Range") String uriString = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+                        Uri downloadedUri = Uri.parse(uriString);
+                        startActivity(new Intent(requireContext(), EditExtFileActivity.class).setAction(Intent.ACTION_EDIT).setData(downloadedUri));
+
+                    }
+                }
+            }
+        }
+
+    }
     
 }
 
