@@ -118,6 +118,9 @@ public class ExtExplorerSystemMessagesFragment extends Fragment implements AbsLi
     public void onSuccess(String result, String type) {
         switch (type) {
             case "url":
+                if (actionMode != null) {
+                    actionMode.finish();
+                }
                 try {
                     adapter = new CustomAdapter(this, R.layout.item_file_explorer_system_messages, new int[]{R.id.textView1, R.id.textView2, R.id.textView3, R.id.textView4, R.id.textView5});
 
