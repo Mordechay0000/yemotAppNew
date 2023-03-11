@@ -330,18 +330,22 @@ public class ExtExplorerSystemMessagesFragment extends Fragment implements AbsLi
 
     @Override
     public void onItemClicked(int position) {
-        if(adapter.getItem(position).getTxtInfo()[IS_EXISTS_POSITION_INFO].equals("true")) {
             if (actionMode != null) {
-                toggleSelection(position);
+                if(adapter.getItem(position).getTxtInfo()[IS_EXISTS_POSITION_INFO].equals("true")) {
+                    toggleSelection(position);
+                }else{
+                    Toast.makeText(getActivity(), "לא נין לבחור קובץ שאינו קיים", Toast.LENGTH_SHORT).show();
+                }
             } else {
-                DataTransfer.setFileUrl(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken() + "&path=" + adapter.getItem(position).getTxt()[WHAT_POSITION]);
+                if(adapter.getItem(position).getTxtInfo()[IS_EXISTS_POSITION_INFO].equals("true")) {
+                    DataTransfer.setFileUrl(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken() + "&path=" + adapter.getItem(position).getTxt()[WHAT_POSITION]);
                 DataTransfer.setFileName(adapter.getItem(position).getTxt()[NAME_POSITION]);
                 DataTransfer.setFilePath(thisWhat + "/" + adapter.getItem(position).getTxt()[NAME_POSITION]);
                 DataTransfer.setFileType(filter.getTypes(adapter.getItem(position).getTxtInfo()[TYPE_FILE_POSITION_INFO]));
                 downloadFile(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken() + "&path=" + adapter.getItem(position).getTxt()[WHAT_POSITION], filter.getTypes(adapter.getItem(position).getTxtInfo()[TYPE_FILE_POSITION_INFO]));
-            }
-        }else {
-            Toast.makeText(getActivity(), "לא נין להוריד קובץ שאינו קיים", Toast.LENGTH_SHORT).show();
+            }else {
+                    Toast.makeText(getActivity(), "לא נין להוריד קובץ שאינו קיים", Toast.LENGTH_SHORT).show();
+                }
         }
     }
 
@@ -357,7 +361,7 @@ public class ExtExplorerSystemMessagesFragment extends Fragment implements AbsLi
             return true;
         }else{
             Toast.makeText(getActivity(), "לא נין לבחור קובץ שאינו קיים", Toast.LENGTH_SHORT).show();
-            return false;
+            return true;
         }
     }
 
