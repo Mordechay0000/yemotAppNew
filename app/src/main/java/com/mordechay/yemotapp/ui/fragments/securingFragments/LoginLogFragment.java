@@ -12,9 +12,10 @@ import android.widget.Button;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
-import com.mordechay.yemotapp.network.sendApiRequest;
+import com.mordechay.yemotapp.network.OnRespondsYmtListener;
+import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 
-public class LoginLogFragment extends Fragment implements View.OnClickListener, sendApiRequest.RespondsListener {
+public class LoginLogFragment extends Fragment implements View.OnClickListener, OnRespondsYmtListener {
 
     public LoginLogFragment() {
         // Required empty public constructor
@@ -41,7 +42,7 @@ public class LoginLogFragment extends Fragment implements View.OnClickListener, 
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.kill_all_session){
-            new sendApiRequest(getActivity(), this, "kill_all_session", Constants.URL_SECURING_KILL_ALL_SESSIONS + DataTransfer.getToken());
+            new SendRequestForYemotServer(getActivity(), this, "kill_all_session", Constants.URL_SECURING_KILL_ALL_SESSIONS + DataTransfer.getToken());
         }
     }
 

@@ -1,5 +1,6 @@
 package com.mordechay.yemotapp.ui.fragments;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
@@ -16,14 +17,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
-import com.mordechay.yemotapp.network.sendApiRequest;
+import com.mordechay.yemotapp.data.filter;
+import com.mordechay.yemotapp.network.OnRespondsYmtListener;
+import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 import com.mordechay.yemotapp.ui.programmatically.list.CustomAdapter;
 
 import org.json.JSONArray;
@@ -31,11 +33,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URLEncoder;
-import java.util.ArrayList;
 
 
-public class UnitsFragment extends Fragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener, sendApiRequest.RespondsListener {
+public class UnitsFragment extends Fragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener, OnRespondsYmtListener {
 
+    private filter flt;
     private Button btnTrans;
     private Button btnFilter;
     private SwipeRefreshLayout spr;
@@ -70,6 +72,9 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_units, container, false);
+
+        flt = new filter(getActivity());
+
         btnTrans = v.findViewById(R.id.button_units_transfer);
         btnFilter = v.findViewById(R.id.button_units_filter);
         btnTrans.setOnClickListener(this);
@@ -87,7 +92,7 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
 
         url = Constants.URL_GET_UNITS_HISTORY + DataTransfer.getToken();
 
-        new sendApiRequest(getActivity(), this, "getUnitsHistory", url);
+        new SendRequestForYemotServer(getActivity(), this, "getUnitsHistory", url);
         
         return v;
     }
@@ -119,7 +124,7 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
             String amount = edtDialogAmount.getText().toString();
 
             String urlTransferUnits = Constants.URL_TRANSFER_UNITS + DataTransfer.getToken() + "&destination=" + URLEncoder.encode(to) + "&amount=" + URLEncoder.encode(amount);
-            new sendApiRequest(getActivity(), this, "transfer_units", urlTransferUnits);
+            new SendRequestForYemotServer(getActivity(), this, "transfer_units", urlTransferUnits);
 
     }else if (view == btnFilter){
             View v = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_filter_units,null);
@@ -157,7 +162,7 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
 
     private void refresh(){
         spr.setRefreshing(true);
-        new sendApiRequest(getActivity(), this, "getUnitsHistory", url);
+        new SendRequestForYemotServer(getActivity(), this, "getUnitsHistory", url);
     }
 
     @Override
@@ -177,7 +182,7 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
                     if (!jsonObject.isNull("transactions")) {
                             JSONArray jsonArray = jsonObject.getJSONArray("transactions");
                             for (int i = 1; i <= jsonArray.length(); i++) {
-                                String image = String.valueOf(R.drawable.ic_baseline_audio_file_24);
+                                Drawable image = flt.getTypeImage("wav");
                                 JSONObject jsonObject1 = jsonArray.getJSONObject(i - 1);
 
                                 String id = "";
@@ -220,7 +225,7 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
                                 if (!jsonObject1.isNull("campaignId")) {
                                     campaignId = String.valueOf(jsonObject1.getInt("campaignId"));
                                 }
-                                adapter.addItem(Integer.parseInt(image), new String[]{transactionTime, amount, description, who, newBalance, expireDate, campaignId}, new String[]{id});
+                                adapter.addItem(image, new String[]{transactionTime, amount, description, who, newBalance, expireDate, campaignId}, new String[]{id});
                             }
 
 

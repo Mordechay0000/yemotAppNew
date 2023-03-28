@@ -1,26 +1,28 @@
 package com.mordechay.yemotapp.ui.programmatically.list;
 
+import android.graphics.drawable.Drawable;
+
 public class ItemData {
 
-    int image;
+    Drawable image;
     String[] txt;
     String[] txtInfo;
 
 
     // create constructor to set the values for all the parameters of the each single view
-    public ItemData(int image, String[] txt) {
+    public ItemData(Drawable image, String[] txt) {
         this.image = image;
         this.txt = txt;
     }
 
-    public ItemData(int image, String[] txt, String[] txtInfo) {
+    public ItemData(Drawable image, String[] txt, String[] txtInfo) {
         this.image = image;
         this.txt = txt;
         this.txtInfo = txtInfo;
     }
 
 
-    public int getImage() {
+    public Drawable getImage() {
         return image;
     }
 

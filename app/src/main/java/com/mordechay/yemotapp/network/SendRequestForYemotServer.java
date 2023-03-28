@@ -17,10 +17,10 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class sendApiRequest{
+public class SendRequestForYemotServer {
     private final String  type;
     private final Activity act;
-    private final RespondsListener respondsListener;
+    private final OnRespondsYmtListener onRespondsYmtListener;
 
     private final String networkurl;
     private final ErrorNoInternetView errorNoInternetView;
@@ -28,29 +28,26 @@ public class sendApiRequest{
 
 
 
-    public interface RespondsListener {
-
-        void onSuccess(String result, String type);
-        void onFailure(String url, int responseCode, String responseMessage);
-    }
 
 
 
-    public sendApiRequest(Activity act, RespondsListener respondsListener, String type, String netnetworkUrl) {
+
+    public SendRequestForYemotServer(Activity act, OnRespondsYmtListener onRespondsYmtListener, String type, String netnetworkUrl) {
         this.act = act;
-        this.respondsListener = respondsListener;
+        this.onRespondsYmtListener = onRespondsYmtListener;
         this.type = type;
         this.networkurl = netnetworkUrl;
-        this.errorNoInternetView = new ErrorNoInternetView(act, respondsListener);
+        this.errorNoInternetView = new ErrorNoInternetView(act, onRespondsYmtListener);
         sendRequest();
     }
 
     private void sendRequest() {
         if (!errorNoInternetView.isShowing()) {
-            Log.d("url", "url" + networkurl);
+            Log.d("url", "url : " + networkurl);
             StringRequest jsObjRequest = new StringRequest(Request.Method.GET, networkurl,
-                    response -> respondsListener.onSuccess(response, this.type),
+                    response -> onRespondsYmtListener.onSuccess(response, this.type),
                     error -> {
+                        Log.d("Error.Response", error.toString());
                         // dismiss the progress dialog after receiving Constants from API
                         NetworkResponse response = error.networkResponse;
                         if (response != null) {
@@ -67,14 +64,14 @@ public class sendApiRequest{
                             if (jsonObject != null) {
                                 if (!jsonObject.isNull("message")) {
                                     String msg = jsonObject.optString("message");
-                                    respondsListener.onFailure(this.networkurl, code, msg);
+                                    onRespondsYmtListener.onFailure(this.networkurl, code, msg);
                                 }
                             }
 
 
                         } else {
                             String errorMsg = error.getMessage();
-                            respondsListener.onFailure(this.networkurl, 0, errorMsg);
+                            onRespondsYmtListener.onFailure(this.networkurl, 0, errorMsg);
                             saveUrl();
                             if(!errorNoInternetView.isShowing()) {
                                 errorNoInternetView.show();

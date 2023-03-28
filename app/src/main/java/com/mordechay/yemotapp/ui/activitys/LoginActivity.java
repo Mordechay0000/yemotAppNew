@@ -19,13 +19,14 @@ import com.google.firebase.auth.FirebaseUser;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
-import com.mordechay.yemotapp.network.sendApiRequest;
+import com.mordechay.yemotapp.network.OnRespondsYmtListener;
+import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 import com.mordechay.yemotapp.ui.programmatically.errors.errorHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener, sendApiRequest.RespondsListener {
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener, OnRespondsYmtListener {
 
 
     private final String TAG = "LoginActivity";
@@ -78,7 +79,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             btnLogin.setVisibility(View.GONE);
             cpi.setVisibility(View.VISIBLE);
             getData();
-            new sendApiRequest(this, this, "url", url);
+            new SendRequestForYemotServer(this, this, "url", url);
         }else if(view == btnLogout){
             Intent inet = new Intent(this, loginToServerActivity.class)
                     .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

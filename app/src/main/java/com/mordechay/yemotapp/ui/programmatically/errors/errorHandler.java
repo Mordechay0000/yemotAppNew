@@ -1,15 +1,10 @@
 package com.mordechay.yemotapp.ui.programmatically.errors;
 
 import android.app.Activity;
-import android.content.Context;
 import android.util.Log;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.mordechay.yemotapp.data.Constants;
-import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.network.SendErrorLogToUrl;
-import com.mordechay.yemotapp.network.sendApiRequest;
-import com.mordechay.yemotapp.ui.activitys.LoginActivity;
 
 import org.json.JSONException;
 

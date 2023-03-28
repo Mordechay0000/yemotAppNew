@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -29,6 +30,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
@@ -44,7 +46,8 @@ import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.data.filter;
 import com.mordechay.yemotapp.interfaces.onBackPressedFilesExplorer;
-import com.mordechay.yemotapp.network.sendApiRequest;
+import com.mordechay.yemotapp.network.OnRespondsYmtListener;
+import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 import com.mordechay.yemotapp.ui.activitys.EditExtFileActivity;
 import com.mordechay.yemotapp.ui.programmatically.list.CustomAdapter;
 
@@ -56,9 +59,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 @SuppressLint("NonConstantResourceId")
-public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProvider, AbsListView.MultiChoiceModeListener, sendApiRequest.RespondsListener, SwipeRefreshLayout.OnRefreshListener, DialogInterface.OnClickListener, onBackPressedFilesExplorer, CustomAdapter.ViewHolder.ClickListener {
+public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProvider, AbsListView.MultiChoiceModeListener, OnRespondsYmtListener, SwipeRefreshLayout.OnRefreshListener, DialogInterface.OnClickListener, onBackPressedFilesExplorer, CustomAdapter.ViewHolder.ClickListener {
 
-
+private filter flt;
     String urlHome;
     String token;
     String url;
@@ -111,6 +114,8 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
         toolbar = requireActivity().findViewById(R.id.topAppBar);
         requireActivity().addMenuProvider(this);
 
+        flt = new filter(getActivity());
+
         swprl = v.findViewById(R.id.ExtExplorerMangerFiles_SwipeRefresh);
         swprl.setOnRefreshListener(this);
         swprl.setRefreshing(true);
@@ -120,7 +125,8 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
             thisWhat = "ivr2:/";
         }
 
-        url = Constants.URL_GET_EXTENSION_CONTENT+ token + "&orderBy=name&orderDir=asc&path=" + thisWhat;
+        urlHome =  Constants.URL_GET_EXTENSION_CONTENT+ token + "&orderBy=name&orderDir=asc&path=";
+        url = urlHome + thisWhat;
 
         recyclerView = v.findViewById(R.id.ExtExplorerMangerFiles_ext_recycler_view);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -129,7 +135,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
 
         spPref = PreferenceManager.getDefaultSharedPreferences(requireContext());
 
-        new sendApiRequest(getActivity(), this, "url", url);
+        new SendRequestForYemotServer(getActivity(), this, "url", url);
 
 
         return v;
@@ -143,7 +149,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
     public void refresh() {
         swprl.setRefreshing(true);
         if(getActivity() != null)
-            new sendApiRequest(getActivity(), this, "url", url);
+            new SendRequestForYemotServer(getActivity(), this, "url", url);
     }
 
 
@@ -166,7 +172,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
 
                             for (int i = 1; i <= jsonArray.length(); i++) {
                                 JSONObject jsonObject1 = jsonArray.getJSONObject(i - 1);
-                                String image = String.valueOf(R.drawable.ic_baseline_folder_open_24);
+                                Drawable image = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.ic_baseline_folder_open_24, getActivity().getTheme());
                                 String name = "";
                                 if (!jsonObject1.isNull("name")) {
                                     name = jsonObject1.getString("name");
@@ -188,7 +194,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                                     what = jsonObject1.getString("what");
                                 }
                                 String typeFile = "DIR";
-                                adapter.addItem(Integer.parseInt(image), new String[]{name, extType, extTitle, fileType, what}, new String[]{typeFile});
+                                adapter.addItem(image, new String[]{name, extType, extTitle, fileType, what}, new String[]{typeFile});
                             }
                         }
                         if (!jsonObject.isNull("files")) {
@@ -216,10 +222,10 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                                     typeFile = extType;
                                 }
 
-                                String image = String.valueOf(filter.getImageResources(name.substring(name.lastIndexOf(".") + 1)));
+                                Drawable image = flt.getTypeImage(name.substring(name.lastIndexOf(".") + 1));
                                 String extTitle = "";
                                 String fileType = "";
-                                adapter.addItem(Integer.parseInt(image), new String[]{name, extType, extTitle, fileType, what}, new String[]{typeFile});
+                                adapter.addItem(image, new String[]{name, extType, extTitle, fileType, what}, new String[]{typeFile});
                             }
                         }
                         if (!jsonObject.isNull("ini")) {
@@ -248,13 +254,13 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                                     typeFile = extType;
                                 }
 
-                                String image = String.valueOf(
-                                        filter.getImageResources(name.
+                                Drawable image =
+                                        flt.getTypeImage(name.
                                                 substring(name.
-                                                        lastIndexOf(".") + 1)));
+                                                        lastIndexOf(".") + 1));
                                 String extTitle = "";
                                 String fileType = "";
-                                adapter.addItem(Integer.parseInt(image), new String[]{name, extType, extTitle, fileType, what}, new String[]{typeFile});
+                                adapter.addItem(image, new String[]{name, extType, extTitle, fileType, what}, new String[]{typeFile});
                             }
                         }
                         if(getActivity() != null) {
@@ -321,7 +327,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                             Log.e("urlAction", _urlAction);
                             swprl.setRefreshing(true);
                             if(getActivity() != null)
-                                new sendApiRequest(getActivity(), this, "action", _urlAction);
+                                new SendRequestForYemotServer(getActivity(), this, "action", _urlAction);
                         });
                         builder.setNegativeButton("ביטול", null);
                         // Create and show the AlertDialog
@@ -332,7 +338,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                         Log.e("urlAction", _urlAction);
                         swprl.setRefreshing(true);
                         if(getActivity() != null)
-                            new sendApiRequest(getActivity(), this, "action", _urlAction);
+                            new SendRequestForYemotServer(getActivity(), this, "action", _urlAction);
                     }
                     break;
                 case "move":
@@ -370,7 +376,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                     String _urlAction = Constants.URL_FILE_ACTION + token + "&action=" + act + whatList + "&target=" + thisWhat;
                     Log.e("urlAction", _urlAction);
                     if(getActivity() != null)
-                        new sendApiRequest(getActivity(), this, "action", _urlAction);
+                        new SendRequestForYemotServer(getActivity(), this, "action", _urlAction);
                     isCopy = false;
                     menu.getItem(2).setVisible(false);
                 });
@@ -390,14 +396,14 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
             String _urlAction = Constants.URL_FILE_ACTION + token + "&action=" + act + whatList + "&target=" + thisWhat;
             Log.e("urlAction", _urlAction);
                 if(getActivity() != null)
-                    new sendApiRequest(getActivity(), this, "action", _urlAction);
+                    new SendRequestForYemotServer(getActivity(), this, "action", _urlAction);
             isCopy = false;
             menu.getItem(2).setVisible(false);}
         } else if (action.equals("createFolder")) {
             swprl.setRefreshing(true);
             String _urlCreatedFolder = Constants.URL_UPDATE_EXTENSION + token + "&path=" + thisWhat + "/" + edtDialog.getText();
             if(getActivity() != null)
-                new sendApiRequest(getActivity(), this, "action", _urlCreatedFolder);
+                new SendRequestForYemotServer(getActivity(), this, "action", _urlCreatedFolder);
         }
     }
 
@@ -496,14 +502,14 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
             String _urlAction = Constants.URL_FILE_ACTION + token + "&action=" + "move" + renameWhatString + "&target=" + thisWhat + edtRenameWhatText;
             Log.e("urlAction", _urlAction);
             if(getActivity() != null)
-                new sendApiRequest(getActivity(), this, "action", _urlAction);
+                new SendRequestForYemotServer(getActivity(), this, "action", _urlAction);
         }else{
             for(int i = 0; i < renameWhatList.size(); i++){
                 String edtRenameWhatText = edtRenameDialog.getText().toString() + " (" + (i+1) + ")";
                 String _urlAction = Constants.URL_FILE_ACTION + token + "&action=" + "move" + renameWhatString + "&target=" + thisWhat + edtRenameWhatText;
                 Log.e("urlAction", _urlAction);
                 if(getActivity() != null)
-                    new sendApiRequest(getActivity(), this, "action", _urlAction);
+                    new SendRequestForYemotServer(getActivity(), this, "action", _urlAction);
             }
         }
     }
@@ -627,8 +633,8 @@ return true;
                 DataTransfer.setFileUrl(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken()  +"&path="+ adapter.getItem(position).getTxt()[WHAT_POSITION]);
                 DataTransfer.setFileName(adapter.getItem(position).getTxt()[NAME_POSITION]);
                 DataTransfer.setFilePath(thisWhat + "/"+ adapter.getItem(position).getTxt()[NAME_POSITION]);
-                DataTransfer.setFileType(filter.getTypes(adapter.getItem(position).getTxtInfo()[TYPE_FILE_POSITION_INFO]));
-                downloadFile(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken() +"&path=" + adapter.getItem(position).getTxt()[WHAT_POSITION], filter.getTypes(adapter.getItem(position).getTxtInfo()[TYPE_FILE_POSITION_INFO]));
+                DataTransfer.setFileType(flt.getTypeMIME(adapter.getItem(position).getTxtInfo()[TYPE_FILE_POSITION_INFO]));
+                downloadFile(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken() +"&path=" + adapter.getItem(position).getTxt()[WHAT_POSITION], flt.getTypeMIME(adapter.getItem(position).getTxtInfo()[TYPE_FILE_POSITION_INFO]));
             }
         }
     }

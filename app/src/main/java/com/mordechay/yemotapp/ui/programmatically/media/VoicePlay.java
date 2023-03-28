@@ -119,7 +119,7 @@ public class VoicePlay extends Service {
 
             // Build the notification
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this, MY_CHANNEL_ID)
-                    .setSmallIcon(R.drawable.ic_baseline_audio_file_24)
+                    .setSmallIcon(R.drawable.baseline_audio_file_24)
                     .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
                             .setMediaSession(MediaSessionCompat.Token.fromToken(mediaSession.getSessionToken())));
 

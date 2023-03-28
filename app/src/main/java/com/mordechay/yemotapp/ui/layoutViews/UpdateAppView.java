@@ -11,7 +11,6 @@ import android.view.Window;
 
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.DataTransfer;
-import com.mordechay.yemotapp.network.sendApiRequest;
 
 public class UpdateAppView implements View.OnClickListener {
     private final Dialog dialog;

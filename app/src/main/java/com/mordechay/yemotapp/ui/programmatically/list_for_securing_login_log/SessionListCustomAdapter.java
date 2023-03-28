@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textview.MaterialTextView;
 import com.mordechay.yemotapp.R;
+import com.mordechay.yemotapp.network.OnRespondsYmtListener;
 import com.mordechay.yemotapp.interfaces.securingListOnItemActionClickListener;
 
 import java.util.List;

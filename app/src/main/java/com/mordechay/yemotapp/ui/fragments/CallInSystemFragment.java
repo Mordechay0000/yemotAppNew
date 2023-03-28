@@ -15,7 +15,8 @@ import androidx.fragment.app.Fragment;
 
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.DataTransfer;
-import com.mordechay.yemotapp.network.sendApiRequest;
+import com.mordechay.yemotapp.network.OnRespondsYmtListener;
+import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 import com.mordechay.yemotapp.ui.programmatically.list.ItemData;
 
 import org.json.JSONArray;
@@ -23,10 +24,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 
-public class CallInSystemFragment extends Fragment implements AbsListView.MultiChoiceModeListener, sendApiRequest.RespondsListener {
+public class CallInSystemFragment extends Fragment implements AbsListView.MultiChoiceModeListener, OnRespondsYmtListener {
 
 
 
@@ -75,7 +75,7 @@ public class CallInSystemFragment extends Fragment implements AbsListView.MultiC
         list = v.findViewById(R.id.list2222);
         list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         list.setMultiChoiceModeListener(this);
-        new sendApiRequest(getActivity(), this, "url", url);
+        new SendRequestForYemotServer(getActivity(), this, "url", url);
         return v;
     }
 
@@ -119,7 +119,7 @@ public class CallInSystemFragment extends Fragment implements AbsListView.MultiC
                     aryExt.add(js.getString("path"));
                     aryCallDur.add(js.getString("duration"));
                     aryCallId.add(js.getString("id"));
-                    aryImage.add(String.valueOf(R.drawable.ic_baseline_audio_file_24));
+                    aryImage.add(String.valueOf(R.drawable.ic_baseline_account_circle_70));
                 }
 
 
@@ -144,7 +144,7 @@ try {
 
 
         try {
-            new sendApiRequest(getActivity(), this, "url", url);
+            new SendRequestForYemotServer(getActivity(), this, "url", url);
         }catch (NullPointerException e){
             Log.e("null", e.getMessage());
         }

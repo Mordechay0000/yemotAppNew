@@ -14,6 +14,7 @@
     <application
         android:allowBackup="true"
         android:appCategory="audio"
+        android:usesCleartextTraffic="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@drawable/ic_launcher_yemot"
@@ -22,6 +23,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.YemotApp"
         tools:targetApi="31">
+        <activity
+            android:name=".ui.activitys.DownloadResourcesActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.activitys.openActivity"
             android:exported="true">
@@ -33,7 +37,7 @@
         </activity>
         <activity
             android:name=".ui.activitys.StartActivity"
-            android:exported="true">
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -56,7 +60,7 @@
         </activity>
         <activity
             android:name=".ui.activitys.loginToServerActivity"
-            android:exported="true"
+            android:exported="false"
             android:label="התחברות" />
         <activity
             android:name=".ui.activitys.SettingsActivity"
@@ -75,8 +79,7 @@
         </activity>
         <activity
             android:name=".ui.activitys.LoginActivity"
-            android:exported="true">
-        </activity>
+            android:exported="false" />
 
         <receiver
             android:name=".ui.fragments.extExplorerFragments.ExtExplorerMangerFilesFragment$DownloadCompleteReceiver"
@@ -92,6 +95,23 @@
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
             </intent-filter>
         </receiver>
+        <receiver
+            android:name=".ui.activitys.DownloadResourcesActivity$DownloadCompleteReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
+            </intent-filter>
+        </receiver>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.mordechay.yemotapp.provider.files"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>

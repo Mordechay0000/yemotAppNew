@@ -60,10 +60,10 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
 import com.mordechay.yemotapp.BuildConfig;
-import com.mordechay.yemotapp.R;
+import com.mordechay.yemotapp.R;import com.mordechay.yemotapp.network.OnRespondsYmtListener;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
-import com.mordechay.yemotapp.network.sendApiRequest;
+import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 import com.mordechay.yemotapp.ui.programmatically.file.FileUtils;
 
 import java.io.BufferedInputStream;
@@ -92,7 +92,7 @@ import java.util.regex.Pattern;
 
 
 
-public class EditExtFileActivity extends AppCompatActivity implements sendApiRequest.RespondsListener {
+public class EditExtFileActivity extends AppCompatActivity implements OnRespondsYmtListener {
 
 
 
@@ -557,7 +557,7 @@ public class EditExtFileActivity extends AppCompatActivity implements sendApiReq
         token = DataTransfer.getToken();
         try {
             String url = Constants.URL_UPLOAD_TEXT_FILE + token + "&what=" + DataTransfer.getFilePath() + "&contents=" + URLEncoder.encode(textView.getText().toString(), UTF_8);
-            new sendApiRequest(this, this, "uploadFile", url);
+            new SendRequestForYemotServer(this, this, "uploadFile", url);
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "error encode text");
             Toast.makeText(this, "שגיאה בשמירת קובץ", Toast.LENGTH_LONG).show();

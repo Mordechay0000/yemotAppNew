@@ -12,14 +12,15 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
-import com.mordechay.yemotapp.network.sendApiRequest;
+import com.mordechay.yemotapp.network.OnRespondsYmtListener;
+import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Locale;
 
-public class openActivity extends AppCompatActivity implements sendApiRequest.RespondsListener {
+public class openActivity extends AppCompatActivity implements OnRespondsYmtListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,21 +36,28 @@ public class openActivity extends AppCompatActivity implements sendApiRequest.Re
         // Initialize Firebase Auth
                     FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
-                    SharedPreferences sp = getSharedPreferences(Constants.DEFAULT_SHARED_PREFERENCES_THIS_SYSTEM,0);
+                    SharedPreferences spThisSystem = getSharedPreferences(Constants.DEFAULT_SHARED_PREFERENCES_THIS_SYSTEM,0);
+                    SharedPreferences spData = getSharedPreferences(Constants.DEFAULT_SHARED_PREFERENCES_DATA, 0);
 
-                    boolean isAgree = getSharedPreferences("agrrement", 0).getBoolean("agrrement", false);
-                    if(!isAgree){
-                        Intent intent = new Intent(openActivity.this, StartActivity.class);
-                        start(intent);
-                    }else if (mAuth.getCurrentUser() == null) {
-                        Intent intent =new Intent(openActivity.this, loginToServerActivity.class);
-                        start(intent);
-                    }else if(sp.getBoolean("isRememberMe", false)){
-                        DataTransfer.setInfoNumber(sp.getString("Number", null));
-                        DataTransfer.setInfoPassword(sp.getString("Password", null));
-                        new sendApiRequest(openActivity.this, openActivity.this, "login", Constants.URL_LOGIN + "username=" + DataTransfer.getInfoNumber() + "&password=" + DataTransfer.getInfoPassword());
-                    } else {
-                        Intent intent =new Intent(openActivity.this, LoginActivity.class);
+                    boolean isResourcedDownloading = spData.getBoolean("rspDownload", false);
+                    if(isResourcedDownloading) {
+                        boolean isAgree = spData.getBoolean("agree", false);
+                        if (!isAgree) {
+                            Intent intent = new Intent(openActivity.this, StartActivity.class);
+                            start(intent);
+                        } else if (mAuth.getCurrentUser() == null) {
+                            Intent intent = new Intent(openActivity.this, loginToServerActivity.class);
+                            start(intent);
+                        } else if (spThisSystem.getBoolean("isRememberMe", false)) {
+                            DataTransfer.setInfoNumber(spThisSystem.getString("Number", null));
+                            DataTransfer.setInfoPassword(spThisSystem.getString("Password", null));
+                            new SendRequestForYemotServer(openActivity.this, openActivity.this, "login", Constants.URL_LOGIN + "username=" + DataTransfer.getInfoNumber() + "&password=" + DataTransfer.getInfoPassword());
+                        } else {
+                            Intent intent = new Intent(openActivity.this, LoginActivity.class);
+                            start(intent);
+                        }
+                    }else{
+                        Intent intent = new Intent(openActivity.this, DownloadResourcesActivity.class);
                         start(intent);
                     }
     }

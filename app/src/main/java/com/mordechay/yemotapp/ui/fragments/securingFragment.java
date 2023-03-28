@@ -5,7 +5,6 @@ import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager2.widget.ViewPager2;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,13 +14,12 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.interfaces.securingListOnItemActionClickListener;
-import com.mordechay.yemotapp.network.sendApiRequest;
+import com.mordechay.yemotapp.network.OnRespondsYmtListener;
+import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 import com.mordechay.yemotapp.ui.programmatically.list_for_securing_login_log.SecuringSessionItem;
 import com.mordechay.yemotapp.ui.programmatically.list_for_securing_login_log.SessionListCustomAdapter;
 
@@ -32,7 +30,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 
-public class securingFragment extends Fragment implements sendApiRequest.RespondsListener, View.OnClickListener, securingListOnItemActionClickListener {
+public class securingFragment extends Fragment implements OnRespondsYmtListener, View.OnClickListener, securingListOnItemActionClickListener {
 
     private int validationCalls;
     private LinearLayout lnrVerify;
@@ -69,7 +67,7 @@ public class securingFragment extends Fragment implements sendApiRequest.Respond
         btnVerify.setOnClickListener(this);
 
 
-        new sendApiRequest(requireActivity(), this, "token_information" , Constants.URL_SECURING_GET_TOKEN_INFORMATION + DataTransfer.getToken());
+        new SendRequestForYemotServer(requireActivity(), this, "token_information" , Constants.URL_SECURING_GET_TOKEN_INFORMATION + DataTransfer.getToken());
         return v;
     }
 
@@ -119,19 +117,19 @@ public class securingFragment extends Fragment implements sendApiRequest.Respond
     @Override
     public void onClick(View view) {
         if(view == btnVerify){
-                new sendApiRequest(requireActivity(), this, "double_auth_one_step", Constants.URL_SECURING_DOUBLE_AUTH + DataTransfer.getToken() + "&action=SendCode");
+                new SendRequestForYemotServer(requireActivity(), this, "double_auth_one_step", Constants.URL_SECURING_DOUBLE_AUTH + DataTransfer.getToken() + "&action=SendCode");
         } else if (view == digBtnVerify) {
             digLnrVerify.setVisibility(View.GONE);
             dialogDoubleAuth.setMessage("");
             digLnrProgress.setVisibility(View.VISIBLE);
             String code = digEdtVerify.getText().toString();
-            new sendApiRequest(requireActivity(), this, "double_auth_two_step", Constants.URL_SECURING_DOUBLE_AUTH + DataTransfer.getToken() + "&action=VerifyCode&code=" + code);
+            new SendRequestForYemotServer(requireActivity(), this, "double_auth_two_step", Constants.URL_SECURING_DOUBLE_AUTH + DataTransfer.getToken() + "&action=VerifyCode&code=" + code);
         }
     }
 
     private void startGetSessionList(){
 
-        new sendApiRequest(requireActivity(), this, "get_sessions", Constants.URL_SECURING_GET_SESSION + DataTransfer.getToken());
+        new SendRequestForYemotServer(requireActivity(), this, "get_sessions", Constants.URL_SECURING_GET_SESSION + DataTransfer.getToken());
     }
 
 

@@ -1,8 +1,10 @@
 package com.mordechay.yemotapp.ui.fragments;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -16,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -24,7 +25,8 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
-import com.mordechay.yemotapp.network.sendApiRequest;
+import com.mordechay.yemotapp.network.OnRespondsYmtListener;
+import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 import com.mordechay.yemotapp.ui.programmatically.list.CustomAdapter;
 
 import org.json.JSONArray;
@@ -33,10 +35,9 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 
 
-public class smsMessagesFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, sendApiRequest.RespondsListener, View.OnClickListener {
+public class smsMessagesFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, OnRespondsYmtListener, View.OnClickListener {
 
     String urlHome;
     String token;
@@ -98,7 +99,7 @@ private EditText edtFrom;
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        new sendApiRequest(getActivity(), this, "url", url);
+        new SendRequestForYemotServer(getActivity(), this, "url", url);
 
         return v;
     }
@@ -106,7 +107,7 @@ private EditText edtFrom;
 
     public void refresh() {
         swprl.setRefreshing(true);
-        new sendApiRequest(getActivity(), this, "url", url);
+        new SendRequestForYemotServer(getActivity(), this, "url", url);
     }
 
 
@@ -143,12 +144,13 @@ refresh();
 
                     String isDelivery = js.getString("DeliveryReport");
 
-                    String image;
+                    int sImage;
                     if(isDelivery.equals("ESME_RINVDSTADR") || isDelivery.equals("ESME_RINVMSGLEN") || isDelivery.equals("ESME_RINVCMDLEN") || isDelivery.equals("ESME_RMSGQFUL")||isDelivery.equals("ESME_RINVNUMDESTS")) {
-                        image = String.valueOf(R.drawable.ic_baseline_sms_failed_24);
+                        sImage = R.drawable.ic_baseline_sms_failed_24;
                     }else{
-                        image = String.valueOf(R.drawable.ic_baseline_sms_24);
+                        sImage = R.drawable.ic_baseline_sms_24;
                     }
+                    Drawable image = ResourcesCompat.getDrawable(getActivity().getResources(), sImage, getActivity().getTheme());
 
                     String callerId = js.getString("CallerId");
                     String to = js.getString("To");
@@ -190,7 +192,7 @@ refresh();
                             strForIsDeliveryText = isDelivery;
                     }
 
-                    adapter.addItem(Integer.parseInt(image), new String[]{callerId, to, message, billing, runBy, time, strForIsDeliveryText});
+                    adapter.addItem(image, new String[]{callerId, to, message, billing, runBy, time, strForIsDeliveryText});
                 }
                 recyclerView.setAdapter(adapter);
             } catch (JSONException e) {
@@ -286,7 +288,7 @@ refresh();
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException(e);
             }
-            new sendApiRequest(getActivity(), this, "send_sms", urlSendSMS);
+            new SendRequestForYemotServer(getActivity(), this, "send_sms", urlSendSMS);
         }
     }
 }

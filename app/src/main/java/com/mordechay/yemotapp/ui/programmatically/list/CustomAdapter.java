@@ -1,6 +1,7 @@
 package com.mordechay.yemotapp.ui.programmatically.list;
 
 
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,10 +38,10 @@ public class CustomAdapter extends SelectableAdapter<CustomAdapter.ViewHolder> {
         ViewHolder.txtRes = txtRes;
     }
 
-    public void addItem(int img, String[] txt){
+    public void addItem(Drawable img, String[] txt){
         items.add(new ItemData(img, txt));
     }
-    public void addItem(int img, String[] txt, String[] txtInfo){
+    public void addItem(Drawable img, String[] txt, String[] txtInfo){
         items.add(new ItemData(img, txt, txtInfo));
     }
 
@@ -104,7 +105,7 @@ public class CustomAdapter extends SelectableAdapter<CustomAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         final ItemData item = items.get(position);
 
-        holder.img.setImageResource(item.getImage());
+        holder.img.setImageDrawable(item.getImage());
 
         for (int i = 0; i < holder.txt.length; i++) {
             holder.txt[i].setText(item.getTxt()[i]);

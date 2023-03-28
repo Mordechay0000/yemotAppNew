@@ -2,7 +2,12 @@ package com.mordechay.yemotapp.data;
 
 public class Constants {
     public static final String DEFAULT_SHARED_PREFERENCES = "User";
+    public static final String DEFAULT_SHARED_PREFERENCES_DATA = "data";
     public static final String DEFAULT_SHARED_PREFERENCES_THIS_SYSTEM = "ThisSystem";
+    public static final String DEFAULT_SHARED_PREFERENCES_FILTER = "filter";
+    //TODO: CHANGE URL AND PATH
+    public static final String URL_DOWNLOAD_RESOURCES = "http://app.y-fox.com/api/download/getInfo.php";
+    public static final String RESOURCES_PATH = "resources";
     public static final String URL_IS_USER_EXIT = "https://mordechay-database.000webhostapp.com/IsUser.php?";
     public static final String URL_HOME = "https://www.call2all.co.il/ym/api/";
     public static final String URL_LOGIN = URL_HOME + "Login?";

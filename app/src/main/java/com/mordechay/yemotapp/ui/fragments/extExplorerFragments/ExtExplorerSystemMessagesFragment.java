@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -37,7 +38,8 @@ import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.data.filter;
-import com.mordechay.yemotapp.network.sendApiRequest;
+import com.mordechay.yemotapp.network.OnRespondsYmtListener;
+import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 import com.mordechay.yemotapp.ui.activitys.EditExtFileActivity;
 import com.mordechay.yemotapp.ui.programmatically.list.CustomAdapter;
 
@@ -47,7 +49,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class ExtExplorerSystemMessagesFragment extends Fragment implements AbsListView.MultiChoiceModeListener, sendApiRequest.RespondsListener, SwipeRefreshLayout.OnRefreshListener, CustomAdapter.ViewHolder.ClickListener {
+public class ExtExplorerSystemMessagesFragment extends Fragment implements AbsListView.MultiChoiceModeListener, OnRespondsYmtListener, SwipeRefreshLayout.OnRefreshListener, CustomAdapter.ViewHolder.ClickListener {
+    private filter flt;
     private String token;
     private String thisWhat;
     private SwipeRefreshLayout swprl;
@@ -81,6 +84,8 @@ public class ExtExplorerSystemMessagesFragment extends Fragment implements AbsLi
 
         toolbar = requireActivity().findViewById(R.id.topAppBar);
 
+        flt = new filter(getActivity());
+
         swprl = v.findViewById(R.id.ExtExplorerSystemMessages_SwipeRefresh);
         swprl.setOnRefreshListener(this);
         swprl.setRefreshing(true);
@@ -98,7 +103,7 @@ public class ExtExplorerSystemMessagesFragment extends Fragment implements AbsLi
 
         spPref = PreferenceManager.getDefaultSharedPreferences(requireContext());
 
-        new sendApiRequest(getActivity(), this, "url", url);
+        new SendRequestForYemotServer(getActivity(), this, "url", url);
         return v;
     }
 
@@ -111,7 +116,7 @@ public class ExtExplorerSystemMessagesFragment extends Fragment implements AbsLi
     public void refresh() {
         swprl.setRefreshing(true);
         if(getActivity() != null)
-            new sendApiRequest(getActivity(), this, "url", url);
+            new SendRequestForYemotServer(getActivity(), this, "url", url);
     }
 
     @Override
@@ -132,7 +137,7 @@ public class ExtExplorerSystemMessagesFragment extends Fragment implements AbsLi
 
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject jsonObject1 = jsonArray.getJSONObject(i);
-                            String image = String.valueOf(R.drawable.ic_baseline_audio_file_24);
+                            Drawable image = flt.getTypeImage("wav");
                             String exists = "false";
                             if (!jsonObject1.isNull("exists")) {
                                 exists = jsonObject1.getString("exists");
@@ -163,7 +168,7 @@ public class ExtExplorerSystemMessagesFragment extends Fragment implements AbsLi
                             if (!jsonObject1.isNull("what")) {
                                 what = jsonObject1.getString("what");
                             }
-                            adapter.addItem(Integer.parseInt(image), new String[]{name, size, mtime, durationStr, what}, new String[]{fileType, exists});
+                            adapter.addItem(image, new String[]{name, size, mtime, durationStr, what}, new String[]{fileType, exists});
                         }
                     }
                     if (getActivity() != null)
@@ -225,7 +230,7 @@ public class ExtExplorerSystemMessagesFragment extends Fragment implements AbsLi
                 Log.e("urlAction", _urlAction);
                 swprl.setRefreshing(true);
                 if(getActivity() != null)
-                    new sendApiRequest(getActivity(), this, "action", _urlAction);
+                    new SendRequestForYemotServer(getActivity(), this, "action", _urlAction);
             });
             builder.setNegativeButton("ביטול", null);
             // Create and show the AlertDialog
@@ -236,7 +241,7 @@ public class ExtExplorerSystemMessagesFragment extends Fragment implements AbsLi
             Log.e("urlAction", _urlAction);
             swprl.setRefreshing(true);
             if(getActivity() != null)
-                new sendApiRequest(getActivity(), this, "action", _urlAction);
+                new SendRequestForYemotServer(getActivity(), this, "action", _urlAction);
         }
     }
 
@@ -344,8 +349,8 @@ public class ExtExplorerSystemMessagesFragment extends Fragment implements AbsLi
                     DataTransfer.setFileUrl(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken() + "&path=" + adapter.getItem(position).getTxt()[WHAT_POSITION]);
                 DataTransfer.setFileName(adapter.getItem(position).getTxt()[NAME_POSITION]);
                 DataTransfer.setFilePath(thisWhat + "/" + adapter.getItem(position).getTxt()[NAME_POSITION]);
-                DataTransfer.setFileType(filter.getTypes(adapter.getItem(position).getTxtInfo()[TYPE_FILE_POSITION_INFO]));
-                downloadFile(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken() + "&path=" + adapter.getItem(position).getTxt()[WHAT_POSITION], filter.getTypes(adapter.getItem(position).getTxtInfo()[TYPE_FILE_POSITION_INFO]));
+                DataTransfer.setFileType(flt.getTypeMIME(adapter.getItem(position).getTxtInfo()[TYPE_FILE_POSITION_INFO]));
+                downloadFile(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken() + "&path=" + adapter.getItem(position).getTxt()[WHAT_POSITION], flt.getTypeMIME(adapter.getItem(position).getTxtInfo()[TYPE_FILE_POSITION_INFO]));
             }else {
                     Toast.makeText(getActivity(), "לא נין להוריד קובץ שאינו קיים", Toast.LENGTH_SHORT).show();
                 }

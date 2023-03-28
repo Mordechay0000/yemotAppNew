@@ -10,19 +10,38 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.mordechay.yemotapp.data.Constants;
+import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.ui.layoutViews.UpdateAppView;
 
 import org.json.JSONObject;
 
-public class testIsExitsUser {
+public class testIsExitsUser implements SendRequestForMyServer.RespondsListener {
     private final Activity act;
     private final RespondsListener respondsListener;
 
-    private final String mail;
-    private final String password;
-    private final UpdateAppView updateAppView;
+    @Override
+    public void onSuccess(String result, String type) {
+        switch (result) {
+            case "ok":
+                respondsListener.onSuccess();
+                break;
+            case "Error: Invalid username or password":
+                respondsListener.onFailure(1, "Error: Invalid username or password");
+                break;
+            case "Error: Account blocked":
+                respondsListener.onFailure(2, "Error: Account blocked");
+                break;
+            default:
+                respondsListener.onFailure(3, result);
+                break;
+        }
+    }
 
-    private JSONObject jsonObject = null;
+    @Override
+    public void onFailure(String url, int responseCode, String responseMessage) {
+
+    }
+
 
     public interface RespondsListener {
         void onSuccess();
@@ -34,53 +53,11 @@ public class testIsExitsUser {
     public testIsExitsUser(Activity act, RespondsListener respondsListener, String mail, String password) {
         this.act = act;
         this.respondsListener = respondsListener;
-        this.mail = mail;
-        this.password = password;
-        this.updateAppView = new UpdateAppView(act);
-        sendRequest();
     }
 
-
-
-    private void sendRequest() {
-        String url = Constants.URL_IS_USER_EXIT + "email=" + mail +"&pass="+password;
-
-        Log.d("url", "url" + url);
-        StringRequest jsObjRequest = new StringRequest(Request.Method.GET,url,
-                result -> {
-                    switch (result) {
-                        case "ok":
-                            respondsListener.onSuccess();
-                            break;
-                        case "Error: Invalid username or password":
-                            respondsListener.onFailure(1, "Error: Invalid username or password");
-                            break;
-                        case "Error: Account blocked":
-                            respondsListener.onFailure(2, "Error: Account blocked");
-                            break;
-                        default:
-                            updateAppView.show();
-                            break;
-                    }
-                },
-                error -> {
-                    NetworkResponse response = error.networkResponse;
-                    if (response != null) {
-                        updateAppView.show();
-                    } else {
-                        String errorMsg = error.getMessage();
-                        respondsListener.onFailure(0, errorMsg);
-                    }
-                });
-        try{
-        jsObjRequest.setRetryPolicy(new DefaultRetryPolicy(
-                1000,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        RequestQueue requestqueue = Volley.newRequestQueue(act);
-        requestqueue.add(jsObjRequest);
-        }catch (NullPointerException e){
-            e.printStackTrace();
-        }
-    }
+public void sendTest(){
+    String url = Constants.URL_IS_USER_EXIT + "email=" + DataTransfer.getUsername() +"&pass="+ DataTransfer.getUid();
+    Log.d("url", "url : " + url);
+    new SendRequestForMyServer(act, this, "testUser", url);
+}
 }
