@@ -9,16 +9,17 @@ import android.view.Window;
 
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.DataTransfer;
-import com.mordechay.yemotapp.network.sendApiRequest;
+import com.mordechay.yemotapp.network.OnRespondsYmtListener;
+import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 
 import java.util.ArrayList;
 
 public class ErrorNoInternetView implements View.OnClickListener {
     private final Dialog dialog;
     private final Activity act;
-    sendApiRequest.RespondsListener rsp;
+    OnRespondsYmtListener rsp;
 
-    public ErrorNoInternetView(Activity act, sendApiRequest.RespondsListener rsp){
+    public ErrorNoInternetView(Activity act, OnRespondsYmtListener rsp){
         this.act = act;
         this.rsp = rsp;
         dialog = new Dialog(act);
@@ -30,6 +31,7 @@ public class ErrorNoInternetView implements View.OnClickListener {
         dialog.findViewById(R.id.no_internet_exit).setOnClickListener(this);
         dialog.findViewById(R.id.no_internet_try_again).setOnClickListener(this);
     }
+
 
     public void show(){
         dialog.show();
@@ -53,7 +55,7 @@ public class ErrorNoInternetView implements View.OnClickListener {
             ArrayList<String> listUrl = DataTransfer.getListUrl();
             dismiss();
             for (int i = 0; i < DataTransfer.getListType().size(); i++) {
-                new sendApiRequest(act, rsp, listType.get(i), listUrl.get(i));
+                new SendRequestForYemotServer(act, rsp, listType.get(i), listUrl.get(i));
             }
             DataTransfer.setListType(new ArrayList<String>());
             DataTransfer.setListUrl(new ArrayList<String>());

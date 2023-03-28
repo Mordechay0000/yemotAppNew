@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textview.MaterialTextView;
 import com.mordechay.yemotapp.R;
+import com.mordechay.yemotapp.network.OnRespondsYmtListener;
 import com.mordechay.yemotapp.interfaces.securingListOnItemActionClickListener;
 
 import java.util.List;
@@ -87,12 +88,9 @@ public class SessionListCustomAdapter extends RecyclerView.Adapter<SessionListCu
             txtDoubleAuthStatus = itemView.findViewById(R.id.txtDoubleAuthStatus);
             btnDelete = itemView.findViewById(R.id.btnDelete);
 
-            btnDelete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (listener != null) {
-                        listener.onItemActionClick(getAdapterPosition());
-                    }
+            btnDelete.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onItemActionClick(getAdapterPosition());
                 }
             });
         }

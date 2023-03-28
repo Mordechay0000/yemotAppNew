@@ -2,7 +2,6 @@ package com.mordechay.yemotapp.ui.fragments;
 
 import static com.mordechay.yemotapp.data.Constants.URL_HOME;
 
-import android.app.AlertDialog;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -14,15 +13,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.DataTransfer;
-import com.mordechay.yemotapp.network.sendApiRequest;
+import com.mordechay.yemotapp.network.OnRespondsYmtListener;
+import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 import com.mordechay.yemotapp.ui.programmatically.errors.errorHandler;
 
 import org.json.JSONException;
@@ -32,7 +30,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 
-public class InformationFragment extends Fragment implements View.OnClickListener, sendApiRequest.RespondsListener, SwipeRefreshLayout.OnRefreshListener {
+public class InformationFragment extends Fragment implements View.OnClickListener, OnRespondsYmtListener, SwipeRefreshLayout.OnRefreshListener {
 
     String url;
 
@@ -88,7 +86,7 @@ public class InformationFragment extends Fragment implements View.OnClickListene
 
         swipeRefreshLayout.setOnRefreshListener(this);
         String urlInfo = URL_HOME + "GetSession" + "?token=" + DataTransfer.getToken();
-        new sendApiRequest(getActivity(), this, "info", urlInfo);
+        new SendRequestForYemotServer(getActivity(), this, "info", urlInfo);
 
         return v;
     }
@@ -113,7 +111,7 @@ public class InformationFragment extends Fragment implements View.OnClickListene
             }
 
             Log.e("url", url);
-            new sendApiRequest(getActivity(), this, "url", url);
+            new SendRequestForYemotServer(getActivity(), this, "url", url);
         }
     }
 
@@ -144,7 +142,7 @@ public class InformationFragment extends Fragment implements View.OnClickListene
 
 
     @Override
-    public void onFailure(int responseCode, String responseMessage) {
+    public void onFailure(String url, int responseCode, String responseMessage) {
         swipeRefreshLayout.setRefreshing(false);
         Log.e(String.valueOf(responseCode), responseMessage);
     }
@@ -199,6 +197,6 @@ public class InformationFragment extends Fragment implements View.OnClickListene
     private void refresh() {
         swipeRefreshLayout.setOnRefreshListener(this);
         String urlInfo = URL_HOME + "GetSession" + "?token=" + DataTransfer.getToken();
-        new sendApiRequest(getActivity(), this, "info", urlInfo);
+        new SendRequestForYemotServer(getActivity(), this, "info", urlInfo);
     }
 }

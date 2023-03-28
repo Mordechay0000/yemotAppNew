@@ -12,14 +12,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.interfaces.securingListOnItemActionClickListener;
-import com.mordechay.yemotapp.network.sendApiRequest;
+import com.mordechay.yemotapp.network.OnRespondsYmtListener;
+import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 import com.mordechay.yemotapp.ui.programmatically.list_for_securing_login_log.SecuringSessionItem;
 import com.mordechay.yemotapp.ui.programmatically.list_for_securing_login_log.SessionListCustomAdapter;
 
@@ -30,10 +30,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 
-public class securingFragment extends Fragment implements sendApiRequest.RespondsListener, View.OnClickListener, securingListOnItemActionClickListener {
+public class securingFragment extends Fragment implements OnRespondsYmtListener, View.OnClickListener, securingListOnItemActionClickListener {
 
-    private String token;
-    private boolean isDoubleAuthStatus;
+    private int validationCalls;
     private LinearLayout lnrVerify;
     private LinearLayout lnrBody;
     private Button btnVerify;
@@ -44,6 +43,7 @@ public class securingFragment extends Fragment implements sendApiRequest.Respond
     private EditText digEdtVerify;
     private Button digBtnVerify;
     private AlertDialog dialogDoubleAuth;
+    private final String[] tabsText = {"one", "two", "three"};
 
     public securingFragment() {
         // Required empty public constructor
@@ -66,31 +66,20 @@ public class securingFragment extends Fragment implements sendApiRequest.Respond
         btnVerify = v.findViewById(R.id.btnVerify);
         btnVerify.setOnClickListener(this);
 
-        recyclerView = v.findViewById(R.id.recyclerViewSession);
 
-        if(DataTransfer.getTokenSecurity() == null) {
-            new sendApiRequest(requireActivity(), this, "securing_login", Constants.URL_LOGIN + "username=" + DataTransfer.getInfoNumber() + "&password=" + DataTransfer.getInfoPassword());
-        }else{
-           token =  DataTransfer.getTokenSecurity();
-            lnrVerify.setVisibility(View.GONE);
-            lnrBody.setVisibility(View.VISIBLE);
-        }
+        new SendRequestForYemotServer(requireActivity(), this, "token_information" , Constants.URL_SECURING_GET_TOKEN_INFORMATION + DataTransfer.getToken());
         return v;
     }
 
     @Override
     public void onSuccess(String result, String type) {
         JSONObject jsonObject = null;
-        if (type.equals("securing_login")) {
-            jsonObject = null;
-            try {
-                jsonObject = new JSONObject(result);
-                token = jsonObject.getString("token");
-                DataTransfer.setTokenSecurity(token);
-                lnrVerify.setVisibility(View.VISIBLE);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+        try {
+        if(type.equals("token_information")){
+            JSONObject jsonObjectResult = new JSONObject(result);
+            jsonObject = jsonObjectResult.getJSONObject("tokenData");
+            validationCalls = jsonObject.getInt("validationCalls");
+            setDoubleAuth(jsonObject.getBoolean("doubleAuthStatus"));
         } else if (type.equals("double_auth_one_step")) {
             View v = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_securing_double_auth, null);
             MaterialAlertDialogBuilder digSendSMSBuilder = new MaterialAlertDialogBuilder(requireActivity())
@@ -105,61 +94,53 @@ public class securingFragment extends Fragment implements sendApiRequest.Respond
             dialogDoubleAuth = digSendSMSBuilder.create();
             dialogDoubleAuth.show();
         } else if (type.equals("double_auth_two_step")) {
-            try {
                 jsonObject = new JSONObject(result);
                 if(jsonObject.getString("responseStatus").equalsIgnoreCase("OK") && jsonObject.getString("message").equalsIgnoreCase("VerifiedOK")){
                     digLnrProgress.setVisibility(View.GONE);
                     dialogDoubleAuth.setMessage("האימות בוצע בהצלחה");
-                    lnrVerify.setVisibility(View.GONE);
-                    lnrBody.setVisibility(View.VISIBLE);
+                    setDoubleAuth(true);
                 }else {
                     digLnrProgress.setVisibility(View.GONE);
                     dialogDoubleAuth.setMessage("האימות נכשל");
                 }
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
-
+        }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void onFailure(int responseCode, String responseMessage) {
+    public void onFailure(String url, int responseCode, String responseMessage) {
 
     }
 
     @Override
     public void onClick(View view) {
         if(view == btnVerify){
-            new sendApiRequest(requireActivity(), this, "double_auth_one_step", Constants.URL_DOUBLE_AUTH + token + "&action=SendCode");
+                new SendRequestForYemotServer(requireActivity(), this, "double_auth_one_step", Constants.URL_SECURING_DOUBLE_AUTH + DataTransfer.getToken() + "&action=SendCode");
         } else if (view == digBtnVerify) {
             digLnrVerify.setVisibility(View.GONE);
             dialogDoubleAuth.setMessage("");
             digLnrProgress.setVisibility(View.VISIBLE);
             String code = digEdtVerify.getText().toString();
-            new sendApiRequest(requireActivity(), this, "double_auth_two_step", Constants.URL_DOUBLE_AUTH + token + "&action=VerifyCode&code=" + code);
+            new SendRequestForYemotServer(requireActivity(), this, "double_auth_two_step", Constants.URL_SECURING_DOUBLE_AUTH + DataTransfer.getToken() + "&action=VerifyCode&code=" + code);
         }
     }
 
     private void startGetSessionList(){
-        if (isDoubleAuth()){
-            new sendApiRequest(requireActivity(), this, "get_sessions", Constants.URL_SECURING_GET_SESSION + DataTransfer.getTokenSecurity());
-        }else {
-            Toast.makeText(requireActivity(), "יש לבצע אימות דו שלבי", Toast.LENGTH_SHORT).show();
-        }
+
+        new SendRequestForYemotServer(requireActivity(), this, "get_sessions", Constants.URL_SECURING_GET_SESSION + DataTransfer.getToken());
     }
 
 
 
-    private boolean isDoubleAuth(){
+    private void setDoubleAuth(boolean isDoubleAuthStatus){
         if (isDoubleAuthStatus) {
             lnrVerify.setVisibility(View.GONE);
             lnrBody.setVisibility(View.VISIBLE);
-            return true;
         } else {
             lnrBody.setVisibility(View.GONE);
             lnrVerify.setVisibility(View.VISIBLE);
-            return false;
         }
     }
     private void getResponseListSession(String result) {
@@ -167,13 +148,10 @@ public class securingFragment extends Fragment implements sendApiRequest.Respond
             JSONObject jsonObject = new JSONObject(result);
             String status = jsonObject.getString("responseStatus");
             if (status.equals("OK")) {
-                isDoubleAuthStatus = true;
                 createdSessionList(result);
             } else if (status.equals("EXCEPTION")) {
-                isDoubleAuthStatus = false;
                 verify();
             } else {
-                isDoubleAuthStatus = false;
             }
         } catch (JSONException e) {
             e.printStackTrace();

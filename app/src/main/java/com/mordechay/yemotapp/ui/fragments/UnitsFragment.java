@@ -1,9 +1,13 @@
 package com.mordechay.yemotapp.ui.fragments;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
@@ -13,43 +17,33 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
-import com.mordechay.yemotapp.network.sendApiRequest;
+import com.mordechay.yemotapp.data.filter;
+import com.mordechay.yemotapp.network.OnRespondsYmtListener;
+import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 import com.mordechay.yemotapp.ui.programmatically.list.CustomAdapter;
-import com.mordechay.yemotapp.ui.programmatically.list.newList;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Objects;
 
 
-public class UnitsFragment extends Fragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener, sendApiRequest.RespondsListener {
+public class UnitsFragment extends Fragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener, OnRespondsYmtListener {
 
+    private filter flt;
     private Button btnTrans;
     private Button btnFilter;
     private SwipeRefreshLayout spr;
 
     private String url;
-    private ArrayList adapter;
-    private ArrayList aryId;
-    private ArrayList aryTransactionTime;
-    private ArrayList aryAmount;
-    private ArrayList aryDescription;
-    private ArrayList aryWho;
-    private ArrayList aryNewBalance;
-    private ArrayList aryExpireDate;
-    private ArrayList aryCampaignId;
-    private ListView list;
+    private RecyclerView recyclerView;
     private EditText edtDialogToSystem;
     private EditText edtDialogAmount;
     private Button btnDialogTrans;
@@ -62,7 +56,7 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
     private LinearLayout lnrDialogTrans = null;
     private LinearLayout lnrDialogProgress = null;
     private AlertDialog dialogBuilder;
-
+    private CustomAdapter adapter;
 
 
     public UnitsFragment() {
@@ -78,6 +72,9 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_units, container, false);
+
+        flt = new filter(getActivity());
+
         btnTrans = v.findViewById(R.id.button_units_transfer);
         btnFilter = v.findViewById(R.id.button_units_filter);
         btnTrans.setOnClickListener(this);
@@ -87,13 +84,15 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
         spr.setOnRefreshListener(this);
         spr.setRefreshing(true);
 
-        list = v.findViewById(R.id.list_units);
+        recyclerView = v.findViewById(R.id.units_recycler_view);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         txtFilter = v.findViewById(R.id.txt_filter);
 
         url = Constants.URL_GET_UNITS_HISTORY + DataTransfer.getToken();
 
-        new sendApiRequest(getActivity(), this, "getUnitsHistory", url);
+        new SendRequestForYemotServer(getActivity(), this, "getUnitsHistory", url);
         
         return v;
     }
@@ -125,7 +124,7 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
             String amount = edtDialogAmount.getText().toString();
 
             String urlTransferUnits = Constants.URL_TRANSFER_UNITS + DataTransfer.getToken() + "&destination=" + URLEncoder.encode(to) + "&amount=" + URLEncoder.encode(amount);
-            new sendApiRequest(getActivity(), this, "transfer_units", urlTransferUnits);
+            new SendRequestForYemotServer(getActivity(), this, "transfer_units", urlTransferUnits);
 
     }else if (view == btnFilter){
             View v = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_filter_units,null);
@@ -163,7 +162,7 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
 
     private void refresh(){
         spr.setRefreshing(true);
-        new sendApiRequest(getActivity(), this, "getUnitsHistory", url);
+        new SendRequestForYemotServer(getActivity(), this, "getUnitsHistory", url);
     }
 
     @Override
@@ -176,45 +175,31 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
 
         if (type.equals("getUnitsHistory")) {
 
-            adapter = new ArrayList();
+            adapter = new CustomAdapter(null, R.layout.item_units, new int[]{R.id.textView1, R.id.textView2, R.id.textView3, R.id.textView4, R.id.textView5, R.id.textView6, R.id.textView7});
             try {
-                // TODO - remove this aryImage later change list to custom recyclerView
-                ArrayList aryImage = new ArrayList();
-                aryId = new ArrayList<String>();
-                aryTransactionTime = new ArrayList<String>();
-                aryAmount = new ArrayList<String>();
-                aryDescription = new ArrayList<String>();
-                aryWho = new ArrayList<String>();
-                aryNewBalance = new ArrayList<String>();
-                aryExpireDate = new ArrayList<String>();
-                aryCampaignId = new ArrayList<String>();
-
                 JSONObject jsonObject = new JSONObject(result);
 
                     if (!jsonObject.isNull("transactions")) {
                             JSONArray jsonArray = jsonObject.getJSONArray("transactions");
                             for (int i = 1; i <= jsonArray.length(); i++) {
-                                aryImage.add(String.valueOf(R.drawable.ic_baseline_audio_file_24));
+                                Drawable image = flt.getTypeImage("wav");
                                 JSONObject jsonObject1 = jsonArray.getJSONObject(i - 1);
 
-                                Log.e("tag", String.valueOf(jsonObject1.getInt("id")));
+                                String id = "";
                                 if (!jsonObject1.isNull("id")) {
-                                    aryId.add(jsonObject1.getInt("id"));
-                                } else {
-                                    aryId.add("");
+                                    id = String.valueOf(jsonObject1.getInt("id"));
                                 }
+                                String transactionTime = "";
                                 if (!jsonObject1.isNull("transactionTime")) {
-                                    aryTransactionTime.add(jsonObject1.getString("transactionTime"));
-                                } else {
-                                    aryTransactionTime.add("");
+                                    transactionTime = jsonObject1.getString("transactionTime");
                                 }
+                                String amount = "";
                                 if (!jsonObject1.isNull("amount")) {
-                                    aryAmount.add(jsonObject1.getDouble("amount"));
-                                } else {
-                                    aryAmount.add("");
+                                    amount = String.valueOf(jsonObject1.getDouble("amount"));
                                 }
+                                String description = "";
                                 if (!jsonObject1.isNull("description")) {
-                                    String description = jsonObject1.getString("description");
+                                    description = jsonObject1.getString("description");
                                     if(description.equals("Start"))
                                         description = "חיוב עבור הפעלת קמפיין";
                                     else if(description.equals("transfer to"))
@@ -223,48 +208,28 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
                                         description = "זיכוי עבור העברת יחידות ממערכת אחרת";
                                     else if(description.equals("Units expired"))
                                         description = "פג תוקף היחידות";
-
-
-                                    aryDescription.add(description);
-                                } else {
-                                    aryDescription.add("");
                                 }
+                                String who = "";
                                 if (!jsonObject1.isNull("who")) {
-                                    aryWho.add(jsonObject1.getString("who"));
-                                } else {
-                                    aryWho.add("");
+                                    who = jsonObject1.getString("who");
                                 }
+                                String newBalance = "";
                                 if (!jsonObject1.isNull("newBalance")) {
-                                    aryNewBalance.add(String.valueOf(jsonObject1.getDouble("newBalance")));
-                                } else {
-                                    aryNewBalance.add("");
+                                    newBalance = String.valueOf(jsonObject1.getDouble("newBalance"));
                                 }
+                                String expireDate = "";
                                 if (!jsonObject1.isNull("expireDate")) {
-                                    aryExpireDate.add(jsonObject1.getString("expireDate"));
-                                } else {
-                                    aryExpireDate.add("");
+                                    expireDate = jsonObject1.getString("expireDate");
                                 }
+                                String campaignId = "";
                                 if (!jsonObject1.isNull("campaignId")) {
-                                    aryCampaignId.add(String.valueOf(jsonObject1.getInt("campaignId")));
-                                } else {
-                                    aryCampaignId.add("");
+                                    campaignId = String.valueOf(jsonObject1.getInt("campaignId"));
                                 }
-
+                                adapter.addItem(image, new String[]{transactionTime, amount, description, who, newBalance, expireDate, campaignId}, new String[]{id});
                             }
 
-                        ArrayList<ArrayList<String>> aryyyyyyy = new ArrayList<ArrayList<String>>();
-                        aryyyyyyy.add(aryImage);
-                        aryyyyyyy.add(aryTransactionTime);
-                        aryyyyyyy.add(aryAmount);
-                        aryyyyyyy.add(aryDescription);
-                        aryyyyyyy.add(aryWho);
-                        aryyyyyyy.add(aryNewBalance);
-                        aryyyyyyy.add(aryExpireDate);
-                        aryyyyyyy.add(aryCampaignId);
 
-
-                        CustomAdapter csta = new CustomAdapter(this.getContext(), new newList().getAdapter(getActivity(), aryyyyyyy));
-                        list.setAdapter(csta);
+                        recyclerView.setAdapter(adapter);
                     }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -301,7 +266,7 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
     }
 
     @Override
-    public void onFailure(int responseCode, String responseMessage) {
+    public void onFailure(String url, int responseCode, String responseMessage) {
         spr.setRefreshing(false);
 Log.e("error", String.valueOf(responseCode) + responseMessage);
     }

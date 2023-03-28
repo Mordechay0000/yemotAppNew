@@ -12,12 +12,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.DataTransfer;
-import com.mordechay.yemotapp.network.sendApiRequest;
+import com.mordechay.yemotapp.data.filter;
+import com.mordechay.yemotapp.network.OnRespondsYmtListener;
+import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 import com.mordechay.yemotapp.ui.layoutViews.ProgressView;
 import com.mordechay.yemotapp.ui.programmatically.errors.errorHandler;
 
@@ -28,10 +31,10 @@ import org.json.JSONObject;
 import java.util.List;
 
 
-public class HomeFragment extends Fragment implements View.OnClickListener, sendApiRequest.RespondsListener, SwipeRefreshLayout.OnRefreshListener {
+public class HomeFragment extends Fragment implements View.OnClickListener, OnRespondsYmtListener, SwipeRefreshLayout.OnRefreshListener {
 
 
-
+private filter flt;
     private final String TAG = "HomeFragment";
     String token;
     String number;
@@ -57,7 +60,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, send
     boolean isLoading3;
     boolean isLoading4;
     boolean isLoading5;
-
+    private ImageView imgHeader;
 
 
     public HomeFragment() {
@@ -78,7 +81,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, send
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_home, container, false);
 
-        swprl = v.findViewById(R.id.swipeRefresh);
+        flt = new filter(getActivity());
+
+        swprl = v.findViewById(R.id.ExtExplorerMangerFiles_SwipeRefresh);
         swprl.setOnRefreshListener(this);
         swprl.setRefreshing(true);
 
@@ -86,6 +91,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, send
         crdH = v.findViewById(R.id.cardView);
         crdH.setOnClickListener(this);
 
+        imgHeader = v.findViewById(R.id.imageView);
         txtvNumber =  v.findViewById(R.id.textView5);
         txtvOrg =  v.findViewById(R.id.textView7);
         txtvCall=  v.findViewById(R.id.textView30);
@@ -179,7 +185,7 @@ prgvStart.show();
 
 
     @Override
-    public void onFailure(int responseCode, String responseMessage) {
+    public void onFailure(String url, int responseCode, String responseMessage) {
         if(responseCode == 0) {
             Log.e(TAG, "no internet...");
         } else if (responseMessage != null) {
@@ -213,6 +219,7 @@ prgvStart.show();
                 DataTransfer.setInfoUnits(String.valueOf(jsonObject.getDouble("units")));
                 DataTransfer.setInfoUnitsExpireDate(jsonObject.getString("unitsExpireDate"));
 
+                imgHeader.setImageDrawable(flt.getResellerImage(DataTransfer.getInfoCreditFile()));
                 txtvNumber.setText(DataTransfer.getInfoNumber());
                 txtvOrg.setText(DataTransfer.getInfoOrganization());
                 txtvUnits.setText(DataTransfer.getInfoUnits());
@@ -315,11 +322,11 @@ prgvStart.show();
         txtvMinu.setText(getText(R.string.loading));
         txtvUnits.setText(getText(R.string.loading));
 
-        new sendApiRequest(getActivity(), this, "info", urlInfo);
-        new sendApiRequest(getActivity(), this, "call", urlCall);
-        new sendApiRequest(getActivity(), this, "camp", urlCamp);
-        new sendApiRequest(getActivity(), this, "campsh", urlCampSh);
-        new sendApiRequest(getActivity(), this, "minu", urlMinu);
+        new SendRequestForYemotServer(getActivity(), this, "info", urlInfo);
+        new SendRequestForYemotServer(getActivity(), this, "call", urlCall);
+        new SendRequestForYemotServer(getActivity(), this, "camp", urlCamp);
+        new SendRequestForYemotServer(getActivity(), this, "campsh", urlCampSh);
+        new SendRequestForYemotServer(getActivity(), this, "minu", urlMinu);
     }
 
     @Override

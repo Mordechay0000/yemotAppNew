@@ -17,6 +17,7 @@ import com.google.android.gms.common.util.SharedPreferencesUtils;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.mordechay.yemotapp.R;
+import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.ui.activitys.LoginActivity;
 import com.mordechay.yemotapp.ui.activitys.StartActivity;
 import com.mordechay.yemotapp.ui.activitys.loginToServerActivity;
@@ -59,7 +60,7 @@ public class fiveFragment extends Fragment implements CompoundButton.OnCheckedCh
     @Override
     public void onClick(View view) {
         if(chbAgreeTerms.isChecked() && chbAgreeNotYemot.isChecked()){
-            requireActivity().getSharedPreferences("agrrement", 0).edit().putBoolean("agrrement", true).apply();
+            requireActivity().getSharedPreferences(Constants.DEFAULT_SHARED_PREFERENCES_DATA, 0).edit().putBoolean("agree", true).apply();
             Intent intent = new Intent(getActivity(), LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);

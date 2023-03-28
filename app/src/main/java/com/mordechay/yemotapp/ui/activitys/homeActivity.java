@@ -6,11 +6,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -43,11 +40,7 @@ import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.interfaces.onBackPressedFilesExplorer;
-import com.mordechay.yemotapp.network.sendApiRequest;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.List;
 import java.util.Locale;
 
@@ -137,10 +130,16 @@ public class homeActivity extends AppCompatActivity implements MenuProvider, Vie
 
 
     private Fragment findFragmentInstance() {
-        Fragment fragmentHost = getSupportFragmentManager().findFragmentById(R.id.nvgv_fragment);
-        List<Fragment> fragmentList = fragmentHost.getChildFragmentManager().getFragments();
-        fr = fragmentList.get(fragmentList.size() - 1);
-        return fr;
+        try {
+            Fragment fragmentHost = getSupportFragmentManager().findFragmentById(R.id.nvgv_fragment);
+            List<Fragment> fragmentList1 = fragmentHost.getChildFragmentManager().getFragments();
+            List<Fragment> fragmentList2 = fragmentList1.get(fragmentList1.size() - 1).getChildFragmentManager().getFragments();
+
+            fr = fragmentList2.get(fragmentList2.size() - 1);
+            return fr;
+        }catch (Exception e){
+            return new Fragment();
+        }
     }
 
 

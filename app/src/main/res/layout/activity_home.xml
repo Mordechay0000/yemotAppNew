@@ -57,7 +57,7 @@
         app:itemShapeInsetEnd="0dp"
         app:itemShapeInsetStart="0dp"
         app:itemShapeInsetTop="0dp"
-        app:menu="@menu/activity_main_drawer">
+        app:menu="@menu/menu_navigation_drawer">
 
     </com.google.android.material.navigation.NavigationView>
 </androidx.drawerlayout.widget.DrawerLayout>

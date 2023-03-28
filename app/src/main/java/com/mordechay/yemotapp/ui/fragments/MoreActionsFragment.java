@@ -25,7 +25,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
-import com.mordechay.yemotapp.network.sendApiRequest;
+import com.mordechay.yemotapp.network.OnRespondsYmtListener;
+import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,7 +36,7 @@ import java.util.Date;
 import java.util.Locale;
 
 
-public class MoreActionsFragment extends Fragment implements View.OnClickListener, sendApiRequest.RespondsListener, MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>> {
+public class MoreActionsFragment extends Fragment implements View.OnClickListener, OnRespondsYmtListener, MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>> {
 
 
     private Button btnSpecialId;
@@ -114,14 +115,14 @@ public class MoreActionsFragment extends Fragment implements View.OnClickListene
                 lnrProgress.setVisibility(View.VISIBLE);
                 String specialIdNumber = edtSpecialIdNumber.getText().toString();
                 String specialIdType = rdbSpecialIdCALL.isChecked() ? "CALL" : "SMS";
-                new sendApiRequest(requireActivity(), this, "SpecialIdOne", Constants.URL_VALIDATION_CALLER_ID + DataTransfer.getToken() + "&action=send&callerId=" + specialIdNumber + "&validType=" + specialIdType);
+                new SendRequestForYemotServer(requireActivity(), this, "SpecialIdOne", Constants.URL_SPECIAL_ID_VALIDATION_CALLER_ID + DataTransfer.getToken() + "&action=send&callerId=" + specialIdNumber + "&validType=" + specialIdType);
             }
             }else if (view == btnSpecialIdConfirm) {
             dialogSpecialIdOne.setMessage("");
             lnrSpecialIdConfirm.setVisibility(View.GONE);
             lnrProgress.setVisibility(View.VISIBLE);
             String specialIdNumber = edtSpecialIdNumberConfirm.getText().toString();
-            new sendApiRequest(requireActivity(), this, "SpecialIdTwo", Constants.URL_VALIDATION_CALLER_ID + DataTransfer.getToken() + "&action=valid&reId=" + reqId + "&code=" + specialIdNumber);
+            new SendRequestForYemotServer(requireActivity(), this, "SpecialIdTwo", Constants.URL_SPECIAL_ID_VALIDATION_CALLER_ID + DataTransfer.getToken() + "&action=valid&reId=" + reqId + "&code=" + specialIdNumber);
 
         }else if (view == btnIncomingMinutes) {
 
@@ -154,7 +155,7 @@ public class MoreActionsFragment extends Fragment implements View.OnClickListene
             newPassword = edittext.getText().toString();
             urlCustom = URL_HOME + "SetPassword" +"?token="+DataTransfer.getToken() + "&password=" + DataTransfer.getInfoPassword() + "&newPassword=" + newPassword;
             Log.e("url set pass", urlCustom);
-            new sendApiRequest(getActivity(), this, "pass", urlCustom);
+            new SendRequestForYemotServer(getActivity(), this, "pass", urlCustom);
         });
 
         alert.setNegativeButton("ביטול", null);
@@ -271,7 +272,7 @@ public class MoreActionsFragment extends Fragment implements View.OnClickListene
     }
 
     @Override
-    public void onFailure(int responseCode, String responseMessage) {
+    public void onFailure(String url, int responseCode, String responseMessage) {
 
     }
 
@@ -283,7 +284,7 @@ public class MoreActionsFragment extends Fragment implements View.OnClickListene
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
             String startDate = sdf.format(new Date(start));
             String endDate = sdf.format(new Date(end));
-            new sendApiRequest(requireActivity(), this, "IncomingMinutes", Constants.URL_INCOMING_MINUTES + DataTransfer.getToken() + "&from=" + startDate + "&to=" + endDate);
+            new SendRequestForYemotServer(requireActivity(), this, "IncomingMinutes", Constants.URL_INCOMING_MINUTES + DataTransfer.getToken() + "&from=" + startDate + "&to=" + endDate);
             Log.d("tagg", Constants.URL_INCOMING_MINUTES + DataTransfer.getToken() + "&from=" + startDate + "&to=" + endDate);
         }
     }

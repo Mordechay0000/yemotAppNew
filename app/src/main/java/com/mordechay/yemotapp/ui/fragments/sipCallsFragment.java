@@ -1,6 +1,5 @@
 package com.mordechay.yemotapp.ui.fragments;
 
-import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
@@ -24,7 +23,8 @@ import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.interfaces.sipListOnItemActionClickListener;
-import com.mordechay.yemotapp.network.sendApiRequest;
+import com.mordechay.yemotapp.network.OnRespondsYmtListener;
+import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 import com.mordechay.yemotapp.ui.programmatically.list_for_sip_accounts.sipCustomAdapter;
 import com.mordechay.yemotapp.ui.programmatically.list_for_sip_accounts.sipItem;
 
@@ -35,7 +35,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 
-public class sipCallsFragment extends Fragment implements sendApiRequest.RespondsListener, SwipeRefreshLayout.OnRefreshListener, View.OnClickListener, sipListOnItemActionClickListener {
+public class sipCallsFragment extends Fragment implements OnRespondsYmtListener, SwipeRefreshLayout.OnRefreshListener, View.OnClickListener, sipListOnItemActionClickListener {
 
 
     private final String url = Constants.URL_SIP_GET_ACCOUNTS + DataTransfer.getToken();
@@ -86,7 +86,7 @@ public class sipCallsFragment extends Fragment implements sendApiRequest.Respond
 
         Log.e("testing", DataTransfer.getToken() + " and " +Constants.URL_SIP_GET_ACCOUNTS+ DataTransfer.getToken());
 
-        new sendApiRequest(getActivity(), this, "url", url);
+        new SendRequestForYemotServer(getActivity(), this, "url", url);
 
         return v;
     }
@@ -148,7 +148,7 @@ public class sipCallsFragment extends Fragment implements sendApiRequest.Respond
         }
     }
             @Override
-    public void onFailure(int responseCode, String responseMessage) {
+    public void onFailure(String url, int responseCode, String responseMessage) {
 swprl.setRefreshing(false);
     }
 
@@ -159,7 +159,7 @@ swprl.setRefreshing(false);
 
     private void refresh() {
         swprl.setRefreshing(true);
-        new sendApiRequest(getActivity(), this, "url", url);
+        new SendRequestForYemotServer(getActivity(), this, "url", url);
     }
 
     @Override
@@ -173,14 +173,14 @@ swprl.setRefreshing(false);
             if(callerId.isEmpty()){
                 Toast.makeText(getActivity(), "יש להזין זיהוי יוצא", Toast.LENGTH_SHORT).show();
             }else{
-                new sendApiRequest(getActivity(), this, "change_caller_id", Constants.URL_SIP_CHANGE_CALLER_ID + DataTransfer.getToken() + "&accountNumber=" + accountsNumber + "&callerId=" + callerId);
+                new SendRequestForYemotServer(getActivity(), this, "change_caller_id", Constants.URL_SIP_CHANGE_CALLER_ID + DataTransfer.getToken() + "&accountNumber=" + accountsNumber + "&callerId=" + callerId);
             }
         }
     }
 
     private void newAccount() {
         btnNewAccount.setEnabled(false);
-        new sendApiRequest(getActivity(), this, "new_account", Constants.URL_SIP_NEW_ACCOUNT + DataTransfer.getToken());
+        new SendRequestForYemotServer(getActivity(), this, "new_account", Constants.URL_SIP_NEW_ACCOUNT + DataTransfer.getToken());
     }
 
     @Override
@@ -189,9 +189,9 @@ swprl.setRefreshing(false);
         switch (actionType){
             case 0:
                 if(sipItems.get(position).getProtocol().equalsIgnoreCase("udp")){
-                    new sendApiRequest(getActivity(), this, "udp_to_wss", Constants.URL_SIP_PROTOCOL_TO_WSS + DataTransfer.getToken() + "&accountNumber=" + accountsNumber);
+                    new SendRequestForYemotServer(getActivity(), this, "udp_to_wss", Constants.URL_SIP_PROTOCOL_TO_WSS + DataTransfer.getToken() + "&accountNumber=" + accountsNumber);
                 }else{ //== wss
-                    new sendApiRequest(getActivity(), this, "wss_to_udp", Constants.URL_SIP_PROTOCOL_TO_UDP + DataTransfer.getToken() + "&accountNumber=" + accountsNumber);
+                    new SendRequestForYemotServer(getActivity(), this, "wss_to_udp", Constants.URL_SIP_PROTOCOL_TO_UDP + DataTransfer.getToken() + "&accountNumber=" + accountsNumber);
                 }
                 break;
             case 1:
@@ -208,7 +208,7 @@ swprl.setRefreshing(false);
                 digChangeCallerId.show();
                 break;
             case 2:
-                new sendApiRequest(getActivity(), this, "remove_accounts", Constants.URL_SIP_REMOVE_ACCOUNTS + DataTransfer.getToken() + "&accountNumber=" + accountsNumber);
+                new SendRequestForYemotServer(getActivity(), this, "remove_accounts", Constants.URL_SIP_REMOVE_ACCOUNTS + DataTransfer.getToken() + "&accountNumber=" + accountsNumber);
                 break;
         }
     }

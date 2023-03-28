@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -35,9 +37,29 @@
         android:orientation="vertical"
         android:visibility="gone">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewSession"
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/securing_fragment_tab_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content"
+            app:tabGravity="fill"
+            app:tabMode="fixed" >
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/securing_fragment_tab_session"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="סשנים פעילים"/>
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/securing_fragment_tab_two"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="two"/>
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/securing_fragment_tab_three"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="three"/>
+        </com.google.android.material.tabs.TabLayout>
+
     </LinearLayout>
 </LinearLayout>

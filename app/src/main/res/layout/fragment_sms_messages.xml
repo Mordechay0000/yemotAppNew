@@ -30,21 +30,34 @@
         tools:layout_editor_absoluteY="1dp">
 
 
+        <TextView
+            android:id="@+id/textView48"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="היסטוריה" />
+
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipeRefresh_sms"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
 
-            <ListView
-                android:id="@+id/list1111"
-                style="@android:style/Widget.Material.Light.ListView"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/sms_messages_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layoutDirection="rtl"
-                android:textDirection="rtl">
+                android:textDirection="rtl"></androidx.recyclerview.widget.RecyclerView>
 
-            </ListView>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <TextView
+            android:id="@+id/textView49"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="לחץ על העיפרון לשליחת סמס >" />
     </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
