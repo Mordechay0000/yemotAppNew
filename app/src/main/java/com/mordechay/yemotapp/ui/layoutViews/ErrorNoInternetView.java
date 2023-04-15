@@ -9,7 +9,7 @@ import android.view.Window;
 
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.DataTransfer;
-import com.mordechay.yemotapp.network.OnRespondsYmtListener;
+import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
 import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 
 import java.util.ArrayList;

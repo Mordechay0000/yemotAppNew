@@ -2,11 +2,6 @@ package com.mordechay.yemotapp.data;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
-import android.content.res.XmlResourceParser;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.util.Xml;
@@ -15,26 +10,21 @@ import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
-import com.google.android.gms.common.util.IOUtils;
 import com.mordechay.yemotapp.R;
-import com.mordechay.yemotapp.network.OnRespondsYmtListener;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 
 public class filter {
 
-    private Activity act;
-    private SharedPreferences sp;
+    private final Activity act;
+    private final SharedPreferences sp;
     private final String TYPE_IMAGE = "type_image_";
     private final String DEFAULT_IMAGE_TYPE = String.valueOf(R.drawable.ic_baseline_question_mark_24);
     private final String TYPE_MIME = "type_mime_";
@@ -82,7 +72,7 @@ public class filter {
                 InputStream is = new FileInputStream(file);
                 XmlPullParser parser = Xml.newPullParser ();
                 parser.setInput (is, null);
-                 drawable = VectorDrawableCompat.createFromXml(act.getResources(), parser);
+                drawable = VectorDrawableCompat.createFromXml(act.getResources(), parser);
 
             } catch (FileNotFoundException e) {
                 Log.e("Error", "File not found: " + e.toString());

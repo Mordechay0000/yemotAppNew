@@ -60,7 +60,7 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
 import com.mordechay.yemotapp.BuildConfig;
-import com.mordechay.yemotapp.R;import com.mordechay.yemotapp.network.OnRespondsYmtListener;
+import com.mordechay.yemotapp.R;import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.network.SendRequestForYemotServer;

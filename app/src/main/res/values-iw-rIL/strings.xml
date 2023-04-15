@@ -48,4 +48,6 @@
     <string name="securing">אבטחה</string>
     <string name="sip">sip</string>
     <string name="more_option">אפשרויות נוספות</string>
+    <string name="error_invalid_username">שגיאה: לא נמצא שם משתמש או סיסמה</string>
+    <string name="error_account_blocked">שגיאה: החשבון נחסם</string>
 </resources>

@@ -12,7 +12,7 @@ import android.widget.Button;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
-import com.mordechay.yemotapp.network.OnRespondsYmtListener;
+import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
 import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 
 public class LoginLogFragment extends Fragment implements View.OnClickListener, OnRespondsYmtListener {

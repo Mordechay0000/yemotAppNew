@@ -10,6 +10,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.mordechay.yemotapp.data.DataTransfer;
+import com.mordechay.yemotapp.interfaces.OnRespondsMyServListener;
 import com.mordechay.yemotapp.ui.layoutViews.ErrorNoInternetView;
 import com.mordechay.yemotapp.ui.layoutViews.UpdateAppView;
 
@@ -21,23 +22,13 @@ import java.util.ArrayList;
 public class SendRequestForMyServer {
     private final String  type;
     private final Activity act;
-    private final RespondsListener respondsListener;
+    private final OnRespondsMyServListener respondsListener;
 
     private final String networkurl;
     private JSONObject jsonObject = null;
     private final UpdateAppView updateAppView;
 
-
-
-    public interface RespondsListener {
-
-        void onSuccess(String result, String type);
-        void onFailure(String url, int responseCode, String responseMessage);
-    }
-
-
-
-    public SendRequestForMyServer(Activity act, RespondsListener respondsListener, String type, String netnetworkUrl) {
+    public SendRequestForMyServer(Activity act, OnRespondsMyServListener respondsListener, String type, String netnetworkUrl) {
         this.act = act;
         this.respondsListener = respondsListener;
         this.type = type;

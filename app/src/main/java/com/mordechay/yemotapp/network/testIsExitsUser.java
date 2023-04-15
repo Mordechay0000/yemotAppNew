@@ -9,13 +9,15 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
+import com.mordechay.yemotapp.interfaces.OnRespondsMyServListener;
 import com.mordechay.yemotapp.ui.layoutViews.UpdateAppView;
 
 import org.json.JSONObject;
 
-public class testIsExitsUser implements SendRequestForMyServer.RespondsListener {
+public class testIsExitsUser implements OnRespondsMyServListener {
     private final Activity act;
     private final RespondsListener respondsListener;
 
@@ -26,7 +28,7 @@ public class testIsExitsUser implements SendRequestForMyServer.RespondsListener 
                 respondsListener.onSuccess();
                 break;
             case "Error: Invalid username or password":
-                respondsListener.onFailure(1, "Error: Invalid username or password");
+                respondsListener.onFailure(1, act.getString(R.string.error_invalid_username));
                 break;
             case "Error: Account blocked":
                 respondsListener.onFailure(2, "Error: Account blocked");
@@ -50,7 +52,7 @@ public class testIsExitsUser implements SendRequestForMyServer.RespondsListener 
 
 
 
-    public testIsExitsUser(Activity act, RespondsListener respondsListener, String mail, String password) {
+    public testIsExitsUser(Activity act, RespondsListener respondsListener) {
         this.act = act;
         this.respondsListener = respondsListener;
     }

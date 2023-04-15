@@ -1,4 +1,4 @@
-package com.mordechay.yemotapp.network;
+package com.mordechay.yemotapp.interfaces;
 
 public interface OnRespondsYmtListener {
     void onSuccess(String result, String type);

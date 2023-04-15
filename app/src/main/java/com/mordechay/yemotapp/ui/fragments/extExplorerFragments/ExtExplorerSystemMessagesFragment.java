@@ -38,7 +38,7 @@ import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.data.filter;
-import com.mordechay.yemotapp.network.OnRespondsYmtListener;
+import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
 import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 import com.mordechay.yemotapp.ui.activitys.EditExtFileActivity;
 import com.mordechay.yemotapp.ui.programmatically.list.CustomAdapter;

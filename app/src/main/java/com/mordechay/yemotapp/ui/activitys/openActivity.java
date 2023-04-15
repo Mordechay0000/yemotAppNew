@@ -12,7 +12,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
-import com.mordechay.yemotapp.network.OnRespondsYmtListener;
+import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
 import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 
 import org.json.JSONException;

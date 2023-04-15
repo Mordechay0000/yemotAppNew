@@ -18,9 +18,11 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.mordechay.yemotapp.R;import com.mordechay.yemotapp.network.OnRespondsYmtListener;
+import com.mordechay.yemotapp.R;
+import com.mordechay.yemotapp.interfaces.OnRespondsMyServListener;
+import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
 import com.mordechay.yemotapp.data.Constants;
-import com.mordechay.yemotapp.network.SendRequestForYemotServer;
+import com.mordechay.yemotapp.network.SendRequestForMyServer;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,7 +42,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public class DownloadResourcesActivity extends AppCompatActivity implements View.OnClickListener, OnRespondsYmtListener {
+public class DownloadResourcesActivity extends AppCompatActivity implements View.OnClickListener, OnRespondsMyServListener {
 
     private ProgressBar prg;
     private Button btnDownload;
@@ -48,7 +50,7 @@ public class DownloadResourcesActivity extends AppCompatActivity implements View
     private TextView txtVersionCode;
     private TextView txtWhatsNew;
     private String urlPackage;
-    int btnMode;
+    private int btnMode;
     private long downloadID;
     private Uri fileUri;
 
@@ -57,15 +59,14 @@ public class DownloadResourcesActivity extends AppCompatActivity implements View
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_download_resouces);
 
+        txtVersionName = findViewById(R.id.textView51);
+        txtVersionCode = findViewById(R.id.textView53);
+        txtWhatsNew = findViewById(R.id.textView55);
+        prg = findViewById(R.id.progressBar2);
+        btnDownload = findViewById(R.id.button2);
+        btnDownload.setOnClickListener(DownloadResourcesActivity.this);
 
-                txtVersionName = findViewById(R.id.textView51);
-                txtVersionCode = findViewById(R.id.textView53);
-                txtWhatsNew = findViewById(R.id.textView55);
-                prg = findViewById(R.id.progressBar2);
-                btnDownload = findViewById(R.id.button2);
-                btnDownload.setOnClickListener(DownloadResourcesActivity.this);
-
-        new SendRequestForYemotServer(this, this, "getVersionInfo", Constants.URL_DOWNLOAD_RESOURCES);
+        new SendRequestForMyServer(this, this, "getVersionInfo", Constants.URL_DOWNLOAD_RESOURCES);
     }
 
 
@@ -99,7 +100,7 @@ public class DownloadResourcesActivity extends AppCompatActivity implements View
     public void onClick(View v) {
         if (v == btnDownload){
             if(btnMode == 0){
-                btnMode =1;
+                btnMode = 1;
                 btnDownload.setVisibility(View.GONE);
                 prg.setVisibility(View.VISIBLE);
                 prg.setIndeterminate(false);
@@ -110,18 +111,12 @@ public class DownloadResourcesActivity extends AppCompatActivity implements View
                     throw new RuntimeException(e);
                 }
             }else if (btnMode == 1){
-                btnMode =2;
+                btnMode = 2;
                 btnDownload.setVisibility(View.GONE);
                 prg.setIndeterminate(true);
                 prg.setVisibility(View.VISIBLE);
 
-
-
-
-                new Thread(new Runnable() {
-                    public void run() {
-                        installPackage(fileUri);
-                }}).start();
+                new Thread(() -> installPackage(fileUri)).start();
             } else if (btnMode == 2) {
                 btnMode = 3;
                 Intent intent = new Intent(this, openActivity.class);
@@ -203,14 +198,11 @@ public class DownloadResourcesActivity extends AppCompatActivity implements View
 
             importSharedPreferencesFromFile(new File(targetDirectory + File.separator + Constants.DEFAULT_SHARED_PREFERENCES_FILTER + ".xml"));
 
-            runOnUiThread(new Runnable() {
-                              @Override
-                              public void run() {
-                                  prg.setVisibility(View.GONE);
-                                  btnDownload.setText("המשך");
-                                  btnDownload.setVisibility(View.VISIBLE);
-                              }
-                          });
+            runOnUiThread(() -> {
+                prg.setVisibility(View.GONE);
+                btnDownload.setText("המשך");
+                btnDownload.setVisibility(View.VISIBLE);
+            });
             getSharedPreferences(Constants.DEFAULT_SHARED_PREFERENCES_DATA, 0)
                     .edit().putBoolean("rspDownload", true).apply();
         } catch (Exception e) {

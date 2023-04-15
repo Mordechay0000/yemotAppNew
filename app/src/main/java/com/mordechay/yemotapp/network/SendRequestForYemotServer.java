@@ -10,6 +10,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.mordechay.yemotapp.data.DataTransfer;
+import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
 import com.mordechay.yemotapp.ui.layoutViews.ErrorNoInternetView;
 
 import org.json.JSONException;
@@ -25,12 +26,6 @@ public class SendRequestForYemotServer {
     private final String networkurl;
     private final ErrorNoInternetView errorNoInternetView;
     private JSONObject jsonObject = null;
-
-
-
-
-
-
 
     public SendRequestForYemotServer(Activity act, OnRespondsYmtListener onRespondsYmtListener, String type, String netnetworkUrl) {
         this.act = act;
