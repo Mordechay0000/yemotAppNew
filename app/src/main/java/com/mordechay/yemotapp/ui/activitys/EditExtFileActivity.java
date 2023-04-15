@@ -146,7 +146,8 @@ public class EditExtFileActivity extends AppCompatActivity implements OnResponds
 
         if (DataTransfer.getFileUrl() == null || DataTransfer.getFileUrl().isEmpty() || DataTransfer.getFileType() == null || DataTransfer.getFileType().isEmpty()) {
             Toast.makeText(this, "שגיאה לא התקבל נתיב לקובץ או סוג קובץ לא מזוהה.", Toast.LENGTH_LONG).show();
-            Log.e("error", DataTransfer.getFileUrl() + "        " +  DataTransfer.getFileType());
+            if (BuildConfig.DEBUG)
+                Log.e("error", DataTransfer.getFileUrl() + "        " +  DataTransfer.getFileType());
             finish();
         }
 
@@ -458,7 +459,8 @@ public class EditExtFileActivity extends AppCompatActivity implements OnResponds
     private void readFile(Uri uri)
     {
         if (uri == null) {
-            Log.e("error", "error uri == null...");
+            if (BuildConfig.DEBUG)
+                Log.e("error", "error uri == null...");
             Toast.makeText(this, "שגיאה! לא התקבל נתיב לקובץ", Toast.LENGTH_LONG).show();
             finish();
         }
@@ -559,7 +561,8 @@ public class EditExtFileActivity extends AppCompatActivity implements OnResponds
             String url = Constants.URL_UPLOAD_TEXT_FILE + token + "&what=" + DataTransfer.getFilePath() + "&contents=" + URLEncoder.encode(textView.getText().toString(), UTF_8);
             new SendRequestForYemotServer(this, this, "uploadFile", url);
         } catch (UnsupportedEncodingException e) {
-            Log.e(TAG, "error encode text");
+            if (BuildConfig.DEBUG)
+                Log.e(TAG, "error encode text");
             Toast.makeText(this, "שגיאה בשמירת קובץ", Toast.LENGTH_LONG).show();
             finish();
         }
