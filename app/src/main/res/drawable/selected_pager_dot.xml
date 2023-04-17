@@ -5,7 +5,7 @@
         <shape
             android:innerRadius="0dp"
             android:shape="ring"
-            android:thickness="@dimen/indicator_size"
+            android:thickness="6dp"
             android:useLevel="false">
             <solid android:color="@android:color/darker_gray"/>
         </shape>
