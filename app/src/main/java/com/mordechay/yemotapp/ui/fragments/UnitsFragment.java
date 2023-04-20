@@ -23,7 +23,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
-import com.mordechay.yemotapp.data.filter;
+import com.mordechay.yemotapp.data.Filter;
 import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
 import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 import com.mordechay.yemotapp.ui.programmatically.list.CustomAdapter;
@@ -33,11 +33,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URLEncoder;
+import java.util.Objects;
 
 
 public class UnitsFragment extends Fragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener, OnRespondsYmtListener {
 
-    private filter flt;
+    private Filter flt;
     private Button btnTrans;
     private Button btnFilter;
     private SwipeRefreshLayout spr;
@@ -73,7 +74,7 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_units, container, false);
 
-        flt = new filter(getActivity());
+        flt = Filter.getInstance(requireContext().getApplicationContext());
 
         btnTrans = v.findViewById(R.id.button_units_transfer);
         btnFilter = v.findViewById(R.id.button_units_filter);

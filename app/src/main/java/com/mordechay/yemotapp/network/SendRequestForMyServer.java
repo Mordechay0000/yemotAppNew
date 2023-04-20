@@ -9,6 +9,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.mordechay.yemotapp.BuildConfig;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.interfaces.OnRespondsMyServListener;
 import com.mordechay.yemotapp.ui.layoutViews.ErrorNoInternetView;
@@ -39,7 +40,7 @@ public class SendRequestForMyServer {
 
     private void sendRequest() {
             Log.d("url", "url" + networkurl);
-            StringRequest jsObjRequest = new StringRequest(Request.Method.GET, networkurl,
+            StringRequest jsObjRequest = new StringRequest(Request.Method.GET, networkurl + "&version=" + BuildConfig.VERSION_CODE,
                     response ->
                     {
                         if(response.equals("update")){

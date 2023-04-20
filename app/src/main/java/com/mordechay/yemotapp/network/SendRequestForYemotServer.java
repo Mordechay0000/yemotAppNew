@@ -40,7 +40,13 @@ public class SendRequestForYemotServer {
         if (!errorNoInternetView.isShowing()) {
             Log.d("url", "url : " + networkurl);
             StringRequest jsObjRequest = new StringRequest(Request.Method.GET, networkurl,
-                    response -> onRespondsYmtListener.onSuccess(response, this.type),
+                    response -> {
+                        try {
+                            onRespondsYmtListener.onSuccess(response, this.type);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    },
                     error -> {
                         Log.d("Error.Response", error.toString());
                         // dismiss the progress dialog after receiving Constants from API

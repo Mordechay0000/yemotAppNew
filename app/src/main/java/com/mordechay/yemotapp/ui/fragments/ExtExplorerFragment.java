@@ -13,6 +13,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.ui.fragments.extExplorerFragments.ExtExplorerMangerFilesFragment;
+import com.mordechay.yemotapp.ui.fragments.extExplorerFragments.ExtExplorerSettingsFragment;
 import com.mordechay.yemotapp.ui.fragments.extExplorerFragments.ExtExplorerSystemMessagesFragment;
 import com.mordechay.yemotapp.ui.fragments.start.fiveFragment;
 import com.mordechay.yemotapp.ui.fragments.start.oneFragment;
@@ -21,7 +22,7 @@ import java.util.Objects;
 
 public class ExtExplorerFragment extends Fragment {
 
-    private final Fragment[] tabsFragments = {new ExtExplorerMangerFilesFragment(), new ExtExplorerSystemMessagesFragment(), new fiveFragment()};
+    private final Fragment[] tabsFragments = {new ExtExplorerMangerFilesFragment(), new ExtExplorerSystemMessagesFragment(), new ExtExplorerSettingsFragment()};
 
 
 

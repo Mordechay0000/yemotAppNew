@@ -18,7 +18,7 @@ import android.widget.Toast;
 
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.DataTransfer;
-import com.mordechay.yemotapp.data.filter;
+import com.mordechay.yemotapp.data.Filter;
 import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
 import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 import com.mordechay.yemotapp.ui.layoutViews.ProgressView;
@@ -29,12 +29,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.Objects;
 
 
 public class HomeFragment extends Fragment implements View.OnClickListener, OnRespondsYmtListener, SwipeRefreshLayout.OnRefreshListener {
 
 
-private filter flt;
+private Filter flt;
     private final String TAG = "HomeFragment";
     String token;
     String number;
@@ -81,7 +82,7 @@ private filter flt;
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_home, container, false);
 
-        flt = new filter(getActivity());
+        flt = Filter.getInstance(requireContext().getApplicationContext());
 
         swprl = v.findViewById(R.id.ExtExplorerMangerFiles_SwipeRefresh);
         swprl.setOnRefreshListener(this);
@@ -130,14 +131,6 @@ prgvStart.show();
          */
     }
 
-
-
-    private Fragment findFragment() {
-        Fragment fragmentHost = getActivity().getSupportFragmentManager().findFragmentById(R.id.nvgv_fragment);
-        List<Fragment> fragmentList = fragmentHost.getChildFragmentManager().getFragments();
-        Fragment fr = fragmentList.get(fragmentList.size() - 1);
-        return fr;
-    }
     @Override
     public void onSuccess(String result, String type) {
         switch (type) {
@@ -168,7 +161,7 @@ prgvStart.show();
                 break;
 
             case "minu":
-                if(isLoading5 == true) {
+                if(isLoading5) {
                     minuActiv(result);
                     isLoading5 = false;
                 }
@@ -254,10 +247,10 @@ prgvStart.show();
             if(jsonObject.getString("responseStatus").equals("OK")) {
 
             JSONArray jsonArray = jsonObject.getJSONArray("campaigns");
-            if (txtvCamp.getText().toString().equals(getText(R.string.loading))) {
+            if (txtvCamp.getText().toString().contentEquals(getText(R.string.loading))) {
                 txtvCamp.setText(String.valueOf(jsonArray.length()));
             }else{
-                txtvCamp.setText(txtvCamp.getText() + "   |   " + String.valueOf(jsonArray.length()));
+                txtvCamp.setText(new StringBuilder(txtvCamp.getText()).append("   |   ").append(String.valueOf(jsonArray.length())));
             }
             }else{
                 Toast.makeText(getActivity(), "שגיאה: " + jsonObject.getString("responseStatus"), Toast.LENGTH_SHORT).show();
@@ -274,10 +267,10 @@ prgvStart.show();
         try {
             JSONObject jsonObject = new JSONObject(result);
             if(jsonObject.getString("responseStatus").equals("OK")) {
-            if(txtvCamp.getText().toString().equals(getText(R.string.loading))){
+            if(txtvCamp.getText().toString().contentEquals(getText(R.string.loading))){
                 txtvCamp.setText(String.valueOf(jsonObject.getInt("totalCount")));
             }else {
-                txtvCamp.setText(txtvCamp.getText() + "   |   " + String.valueOf(jsonObject.getInt("totalCount")));
+                txtvCamp.setText(new StringBuilder(txtvCamp.getText()).append("   |   ").append(jsonObject.getInt("totalCount")));
             }
             }else{
                 Toast.makeText(getActivity(), "שגיאה: " + jsonObject.getString("responseStatus"), Toast.LENGTH_SHORT).show();

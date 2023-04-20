@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="50dp"
-            android:text="העברת יחידות למערכת אחרת." />
+            android:text="@string/transfer_units" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -29,7 +29,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="5dp"
-                android:text="סינון" />
+                android:text="@string/filter" />
 
             <TextView
                 android:id="@+id/txt_filter"
@@ -38,7 +38,7 @@
                 android:layout_marginHorizontal="15dp"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:text="הכל"
+                android:text="@string/all"
                 android:textSize="20sp"
                 android:textStyle="bold" />
         </LinearLayout>

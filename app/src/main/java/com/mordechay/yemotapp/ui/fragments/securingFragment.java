@@ -14,12 +14,16 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.tabs.TabLayout;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.interfaces.securingListOnItemActionClickListener;
 import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
 import com.mordechay.yemotapp.network.SendRequestForYemotServer;
+import com.mordechay.yemotapp.ui.fragments.extExplorerFragments.ExtExplorerSystemMessagesFragment;
+import com.mordechay.yemotapp.ui.fragments.securingFragments.AllSessionsFragment;
+import com.mordechay.yemotapp.ui.fragments.start.fiveFragment;
 import com.mordechay.yemotapp.ui.programmatically.list_for_securing_login_log.SecuringSessionItem;
 import com.mordechay.yemotapp.ui.programmatically.list_for_securing_login_log.SessionListCustomAdapter;
 
@@ -28,10 +32,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class securingFragment extends Fragment implements OnRespondsYmtListener, View.OnClickListener, securingListOnItemActionClickListener {
 
+    private final Fragment[] tabsFragments = {new AllSessionsFragment(), new ExtExplorerSystemMessagesFragment(), new fiveFragment()};
+    private TabLayout tabLayout;
     private int validationCalls;
     private LinearLayout lnrVerify;
     private LinearLayout lnrBody;
@@ -43,7 +50,6 @@ public class securingFragment extends Fragment implements OnRespondsYmtListener,
     private EditText digEdtVerify;
     private Button digBtnVerify;
     private AlertDialog dialogDoubleAuth;
-    private final String[] tabsText = {"one", "two", "three"};
 
     public securingFragment() {
         // Required empty public constructor
@@ -65,6 +71,8 @@ public class securingFragment extends Fragment implements OnRespondsYmtListener,
 
         btnVerify = v.findViewById(R.id.btnVerify);
         btnVerify.setOnClickListener(this);
+
+        tabLayout = v.findViewById(R.id.securing_fragment_tab_layout);
 
 
         new SendRequestForYemotServer(requireActivity(), this, "token_information" , Constants.URL_SECURING_GET_TOKEN_INFORMATION + DataTransfer.getToken());
@@ -127,17 +135,36 @@ public class securingFragment extends Fragment implements OnRespondsYmtListener,
         }
     }
 
-    private void startGetSessionList(){
-
-        new SendRequestForYemotServer(requireActivity(), this, "get_sessions", Constants.URL_SECURING_GET_SESSION + DataTransfer.getToken());
-    }
-
 
 
     private void setDoubleAuth(boolean isDoubleAuthStatus){
         if (isDoubleAuthStatus) {
             lnrVerify.setVisibility(View.GONE);
             lnrBody.setVisibility(View.VISIBLE);
+
+            getChildFragmentManager().beginTransaction().replace(R.id.fragmentContainerViewSecuring, tabsFragments[0]).commit();
+
+            // החלפת הפרגמנטים עם הטאבים
+            tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                @Override
+                public void onTabSelected(TabLayout.Tab tab) {
+                    Fragment selectedFragment = null;
+                    selectedFragment = tabsFragments[tab.getPosition()];
+                    if (selectedFragment != null) {
+                        getChildFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, selectedFragment).commit();
+                    }
+                }
+
+                @Override
+                public void onTabUnselected(TabLayout.Tab tab) {}
+
+                @Override
+                public void onTabReselected(TabLayout.Tab tab) {}
+            });
+
+            // כדי להציג את הפרגמנט הראשון לפני לחיצה על טאבים
+            Objects.requireNonNull(tabLayout.getTabAt(0)).select();
+            new SendRequestForYemotServer(requireActivity(), this, "get_sessions", Constants.URL_SECURING_GET_SESSION + DataTransfer.getToken());
         } else {
             lnrBody.setVisibility(View.GONE);
             lnrVerify.setVisibility(View.VISIBLE);

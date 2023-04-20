@@ -92,7 +92,5 @@ public class SecuringSessionItem {
         return doubleAuthStatus;
     }
 
-    public void setDoubleAuthStatus(String doubleAuthStatus) {
-        this.doubleAuthStatus = doubleAuthStatus;
-    }
+    public void setDoubleAuthStatus(String doubleAuthStatus) {this.doubleAuthStatus = doubleAuthStatus;}
 }

@@ -40,6 +40,7 @@ import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.interfaces.onBackPressedFilesExplorer;
+import com.mordechay.yemotapp.ui.fragments.extExplorerFragments.ExtExplorerMangerFilesFragment;
 
 import java.util.List;
 import java.util.Locale;
@@ -121,24 +122,8 @@ public class homeActivity extends AppCompatActivity implements MenuProvider, Vie
     public void onBackPressed() {
         if(drw.isDrawerOpen(nvgv)){
             drw.closeDrawer(nvgv);
-        } else if (!(findFragmentInstance() instanceof onBackPressedFilesExplorer) || !((onBackPressedFilesExplorer) findFragmentInstance()).onBackPressedFilesExplorer()) {
+        } else if (ExtExplorerMangerFilesFragment.thisFragment == null || !((onBackPressedFilesExplorer) ExtExplorerMangerFilesFragment.thisFragment).onBackPressedFilesExplorer()) {
             super.onBackPressed();
-        }
-
-    }
-
-
-
-    private Fragment findFragmentInstance() {
-        try {
-            Fragment fragmentHost = getSupportFragmentManager().findFragmentById(R.id.nvgv_fragment);
-            List<Fragment> fragmentList1 = fragmentHost.getChildFragmentManager().getFragments();
-            List<Fragment> fragmentList2 = fragmentList1.get(fragmentList1.size() - 1).getChildFragmentManager().getFragments();
-
-            fr = fragmentList2.get(fragmentList2.size() - 1);
-            return fr;
-        }catch (Exception e){
-            return new Fragment();
         }
     }
 

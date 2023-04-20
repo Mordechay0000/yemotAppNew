@@ -37,7 +37,7 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
-import com.mordechay.yemotapp.data.filter;
+import com.mordechay.yemotapp.data.Filter;
 import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
 import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 import com.mordechay.yemotapp.ui.activitys.EditExtFileActivity;
@@ -48,9 +48,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class ExtExplorerSystemMessagesFragment extends Fragment implements AbsListView.MultiChoiceModeListener, OnRespondsYmtListener, SwipeRefreshLayout.OnRefreshListener, CustomAdapter.ViewHolder.ClickListener {
-    private filter flt;
+    private Filter flt;
     private String token;
     private String thisWhat;
     private SwipeRefreshLayout swprl;
@@ -84,7 +85,7 @@ public class ExtExplorerSystemMessagesFragment extends Fragment implements AbsLi
 
         toolbar = requireActivity().findViewById(R.id.topAppBar);
 
-        flt = new filter(getActivity());
+        flt = Filter.getInstance(requireContext().getApplicationContext());
 
         swprl = v.findViewById(R.id.ExtExplorerSystemMessages_SwipeRefresh);
         swprl.setOnRefreshListener(this);

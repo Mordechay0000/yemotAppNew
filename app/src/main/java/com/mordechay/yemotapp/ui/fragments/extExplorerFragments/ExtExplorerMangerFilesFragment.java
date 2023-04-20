@@ -44,7 +44,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
-import com.mordechay.yemotapp.data.filter;
+import com.mordechay.yemotapp.data.Filter;
 import com.mordechay.yemotapp.interfaces.onBackPressedFilesExplorer;
 import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
 import com.mordechay.yemotapp.network.SendRequestForYemotServer;
@@ -57,21 +57,21 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 @SuppressLint("NonConstantResourceId")
 public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProvider, AbsListView.MultiChoiceModeListener, OnRespondsYmtListener, SwipeRefreshLayout.OnRefreshListener, DialogInterface.OnClickListener, onBackPressedFilesExplorer, CustomAdapter.ViewHolder.ClickListener {
 
-private filter flt;
+    public static ExtExplorerMangerFilesFragment thisFragment;
+    private Filter flt;
     String urlHome;
     String token;
     String url;
-    String thisWhat;
-    String whatList;
 
     boolean isCopy = false;
 
     RecyclerView recyclerView;
-    
+
     SwipeRefreshLayout swprl;
 
     MaterialAlertDialogBuilder dialog;
@@ -94,6 +94,7 @@ private filter flt;
     private final int FILE_TYPE_POSITION = 3;
     private final int WHAT_POSITION = 4;
     private final int TYPE_FILE_POSITION_INFO = 0;
+    private String whatList;
 
     public ExtExplorerMangerFilesFragment() {
         // Required empty public constructor
@@ -109,24 +110,24 @@ private filter flt;
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_ext_explorer_manger_files, container, false);
 
+        thisFragment = this;
         token = DataTransfer.getToken();
 
         toolbar = requireActivity().findViewById(R.id.topAppBar);
         requireActivity().addMenuProvider(this);
 
-        flt = new filter(getActivity());
+        flt = Filter.getInstance(requireContext().getApplicationContext());
 
         swprl = v.findViewById(R.id.ExtExplorerMangerFiles_SwipeRefresh);
         swprl.setOnRefreshListener(this);
         swprl.setRefreshing(true);
 
-        thisWhat = DataTransfer.getThisWhat();
-        if(thisWhat == null){
-            thisWhat = "ivr2:/";
+        if (DataTransfer.getThisWhat() == null) {
+            DataTransfer.setThisWhat("ivr2:/");
         }
 
-        urlHome =  Constants.URL_GET_EXTENSION_CONTENT+ token + "&orderBy=name&orderDir=asc&path=";
-        url = urlHome + thisWhat;
+        urlHome = Constants.URL_GET_EXTENSION_CONTENT + token + "&orderBy=name&orderDir=asc&path=";
+        url = urlHome + DataTransfer.getThisWhat();
 
         recyclerView = v.findViewById(R.id.ExtExplorerMangerFiles_ext_recycler_view);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -146,9 +147,10 @@ private filter flt;
     public void onRefresh() {
         refresh();
     }
+
     public void refresh() {
         swprl.setRefreshing(true);
-        if(getActivity() != null)
+        if (getActivity() != null)
             new SendRequestForYemotServer(getActivity(), this, "url", url);
     }
 
@@ -172,7 +174,10 @@ private filter flt;
 
                             for (int i = 1; i <= jsonArray.length(); i++) {
                                 JSONObject jsonObject1 = jsonArray.getJSONObject(i - 1);
-                                Drawable image = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.ic_baseline_folder_open_24, getActivity().getTheme());
+                                Drawable image = null;
+                                if (getActivity() != null) {
+                                    image = ResourcesCompat.getDrawable(getActivity().getResources(), R.drawable.ic_baseline_folder_open_24, getActivity().getTheme());
+                                }
                                 String name = "";
                                 if (!jsonObject1.isNull("name")) {
                                     name = jsonObject1.getString("name");
@@ -263,7 +268,7 @@ private filter flt;
                                 adapter.addItem(image, new String[]{name, extType, extTitle, fileType, what}, new String[]{typeFile});
                             }
                         }
-                        if(getActivity() != null) {
+                        if (getActivity() != null) {
                             recyclerView.setAdapter(adapter);
                         }
                     }
@@ -275,17 +280,17 @@ private filter flt;
                 try {
                     JSONObject jsonObject = new JSONObject(result);
                     if (!jsonObject.isNull("success") && jsonObject.getBoolean("success")) {
-                        if(getActivity() != null)
+                        if (getActivity() != null)
                             Toast.makeText(getActivity(), "הפעולה בוצעה בהצלחה", Toast.LENGTH_LONG).show();
                         refresh();
-                    }else if (!jsonObject.isNull("message") && jsonObject.getString("meddsge").equals("simultaneous file operation rejected")){
-                        if(getActivity() != null)
+                    } else if (!jsonObject.isNull("message") && jsonObject.getString("meddsge").equals("simultaneous file operation rejected")) {
+                        if (getActivity() != null)
                             Toast.makeText(getActivity(), "פעולת קובץ בו-זמנית נדחתה", Toast.LENGTH_LONG).show();
-                    }else if(!jsonObject.isNull("message")){
-                        if(getActivity() != null)
+                    } else if (!jsonObject.isNull("message")) {
+                        if (getActivity() != null)
                             Toast.makeText(getActivity(), "שגיאה: \n \n " + jsonObject.getString("message"), Toast.LENGTH_LONG).show();
-                    }else{
-                        if(getActivity() != null)
+                    } else {
+                        if (getActivity() != null)
                             Toast.makeText(getActivity(), "שגיאה לא ידועה: \n \n " + jsonObject.getString("responseStatus"), Toast.LENGTH_LONG).show();
                     }
                 } catch (JSONException e) {
@@ -314,7 +319,7 @@ private filter flt;
         if (!whatString.isEmpty()) {
             switch (action) {
                 case "delete":
-                    if (spPref.getBoolean("delete", true)){
+                    if (spPref.getBoolean("delete", true)) {
                         // Create the AlertDialog.Builder
                         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                         builder.setTitle("פעולה");
@@ -326,23 +331,23 @@ private filter flt;
                             String _urlAction = Constants.URL_FILE_ACTION + token + "&action=delete" + whatString;
                             Log.e("urlAction", _urlAction);
                             swprl.setRefreshing(true);
-                            if(getActivity() != null)
+                            if (getActivity() != null)
                                 new SendRequestForYemotServer(getActivity(), this, "action", _urlAction);
                         });
                         builder.setNegativeButton("ביטול", null);
                         // Create and show the AlertDialog
                         AlertDialog dialog = builder.create();
                         dialog.show();
-                    }else {
+                    } else {
                         String _urlAction = Constants.URL_FILE_ACTION + token + "&action=delete" + whatString;
                         Log.e("urlAction", _urlAction);
                         swprl.setRefreshing(true);
-                        if(getActivity() != null)
+                        if (getActivity() != null)
                             new SendRequestForYemotServer(getActivity(), this, "action", _urlAction);
                     }
                     break;
                 case "move":
-                        whatList = whatString;
+                    whatList = whatString;
                     isCopy = false;
                     menu.getItem(2).setVisible(true);
                     break;
@@ -357,7 +362,7 @@ private filter flt;
             }
         }
         if (action.equals("paste")) {
-            if (spPref.getBoolean("paste", false)){
+            if (spPref.getBoolean("paste", false)) {
                 // Create the AlertDialog.Builder
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle("פעולה");
@@ -365,7 +370,6 @@ private filter flt;
 
                 // Add the buttons
                 builder.setPositiveButton("אישור", (dialog, id) -> {
-                    Log.e("testtttttt", whatList);
                     String act;
                     if (isCopy) {
                         act = "copy";
@@ -373,9 +377,9 @@ private filter flt;
                         act = "move";
                     }
                     swprl.setRefreshing(true);
-                    String _urlAction = Constants.URL_FILE_ACTION + token + "&action=" + act + whatList + "&target=" + thisWhat;
+                    String _urlAction = Constants.URL_FILE_ACTION + token + "&action=" + act + whatList + "&target=" + DataTransfer.getThisWhat();
                     Log.e("urlAction", _urlAction);
-                    if(getActivity() != null)
+                    if (getActivity() != null)
                         new SendRequestForYemotServer(getActivity(), this, "action", _urlAction);
                     isCopy = false;
                     menu.getItem(2).setVisible(false);
@@ -384,25 +388,25 @@ private filter flt;
                 // Create and show the AlertDialog
                 AlertDialog dialog = builder.create();
                 dialog.show();
-            }else{
-            Log.e("testtttttt", whatList);
-            String act;
-            if (isCopy) {
-                act = "copy";
             } else {
-                act = "move";
-            }
-            swprl.setRefreshing(true);
-            String _urlAction = Constants.URL_FILE_ACTION + token + "&action=" + act + whatList + "&target=" + thisWhat;
-            Log.e("urlAction", _urlAction);
-                if(getActivity() != null)
+                String act;
+                if (isCopy) {
+                    act = "copy";
+                } else {
+                    act = "move";
+                }
+                swprl.setRefreshing(true);
+                String _urlAction = Constants.URL_FILE_ACTION + token + "&action=" + act + whatList + "&target=" + DataTransfer.getThisWhat();
+                Log.e("urlAction", _urlAction);
+                if (getActivity() != null)
                     new SendRequestForYemotServer(getActivity(), this, "action", _urlAction);
-            isCopy = false;
-            menu.getItem(2).setVisible(false);}
+                isCopy = false;
+                menu.getItem(2).setVisible(false);
+            }
         } else if (action.equals("createFolder")) {
             swprl.setRefreshing(true);
-            String _urlCreatedFolder = Constants.URL_UPDATE_EXTENSION + token + "&path=" + thisWhat + "/" + edtDialog.getText();
-            if(getActivity() != null)
+            String _urlCreatedFolder = Constants.URL_UPDATE_EXTENSION + token + "&path=" + DataTransfer.getThisWhat() + "/" + edtDialog.getText();
+            if (getActivity() != null)
                 new SendRequestForYemotServer(getActivity(), this, "action", _urlCreatedFolder);
         }
     }
@@ -421,7 +425,7 @@ private filter flt;
         if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null) {
             Uri selectedFileUri = data.getData();
             String selectedFilePath = selectedFileUri.getPath();
-            String urlUpload = Constants.URL_UPLOAD_FILE + token + "&path=" + "ivr2:"+thisWhat + "abc.txt";
+            String urlUpload = Constants.URL_UPLOAD_FILE + token + "&path=" + "ivr2:" + DataTransfer.getThisWhat()  + "abc.txt";
             Log.e("urlUpload", urlUpload);
             /*
             File fl = new File(selectedFilePath);
@@ -497,18 +501,18 @@ private filter flt;
     }
 
     private void applyRename() {
-        if(renameWhatList.size() == 1){
+        if (renameWhatList.size() == 1) {
             String edtRenameWhatText = edtRenameDialog.getText().toString();
-            String _urlAction = Constants.URL_FILE_ACTION + token + "&action=" + "move" + renameWhatString + "&target=" + thisWhat + edtRenameWhatText;
+            String _urlAction = Constants.URL_FILE_ACTION + token + "&action=" + "move" + renameWhatString + "&target=" + DataTransfer.getThisWhat()  + edtRenameWhatText;
             Log.e("urlAction", _urlAction);
-            if(getActivity() != null)
+            if (getActivity() != null)
                 new SendRequestForYemotServer(getActivity(), this, "action", _urlAction);
-        }else{
-            for(int i = 0; i < renameWhatList.size(); i++){
-                String edtRenameWhatText = edtRenameDialog.getText().toString() + " (" + (i+1) + ")";
-                String _urlAction = Constants.URL_FILE_ACTION + token + "&action=" + "move" + renameWhatString + "&target=" + thisWhat + edtRenameWhatText;
+        } else {
+            for (int i = 0; i < renameWhatList.size(); i++) {
+                String edtRenameWhatText = edtRenameDialog.getText().toString() + " (" + (i + 1) + ")";
+                String _urlAction = Constants.URL_FILE_ACTION + token + "&action=" + "move" + renameWhatString + "&target=" + DataTransfer.getThisWhat()  + edtRenameWhatText;
                 Log.e("urlAction", _urlAction);
-                if(getActivity() != null)
+                if (getActivity() != null)
                     new SendRequestForYemotServer(getActivity(), this, "action", _urlAction);
             }
         }
@@ -524,25 +528,22 @@ private filter flt;
     }
 
 
-
-
     public boolean onBackPressedFilesExplorer() {
-        String[] parts = thisWhat.split("/"); // פיצול המחרוזת למערך תתי מחרוזות על פי התו /
+        String[] parts = DataTransfer.getThisWhat().split("/");
         String prefix = "ivr2:/";
         for (int i = 1; i < parts.length; i++) {
-            parts[i] = prefix + String.join("/", Arrays.copyOfRange(parts, 1, i+1)) + "/";
+            parts[i] = prefix + String.join("/", Arrays.copyOfRange(parts, 1, i + 1)) + "/";
         }
         if (parts.length <= 1) {
-return false;
+            return false;
         } else {
-            thisWhat = parts[parts.length - 2];
-            url = urlHome + thisWhat;
+            DataTransfer.setThisWhat(parts[parts.length - 2]);
+            url = urlHome + DataTransfer.getThisWhat();
             Log.e("test", url);
             refresh();
-return true;
+            return true;
         }
     }
-
 
 
     public void downloadFile(String url, String MIME) {
@@ -551,19 +552,19 @@ return true;
         Uri Download_Uri = Uri.parse(url);
         DownloadManager.Request request = new DownloadManager.Request(Download_Uri);
 
-        if(MIME.equals("text/*")) {
+        if (MIME.equals("text/*")) {
             IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
             DownloadCompleteReceiver receiver = new DownloadCompleteReceiver();
             requireContext().registerReceiver(receiver, filter);
-            request.setDestinationInExternalFilesDir(requireContext(), Environment.DIRECTORY_DOWNLOADS,url.substring(url.lastIndexOf("/")+1));
-        }else {
-            if(getActivity() != null)
+            request.setDestinationInExternalFilesDir(requireContext(), Environment.DIRECTORY_DOWNLOADS, url.substring(url.lastIndexOf("/") + 1));
+        } else {
+            if (getActivity() != null)
                 Toast.makeText(getActivity(), "ההורדה מתבצעת.", Toast.LENGTH_SHORT).show();
 
             //Set the title of this download, to be displayed in notifications (if enabled).
             request.setTitle(url.substring(url.lastIndexOf("/") + 1));
             //Set the local destination for the downloaded file to a path within the application's external files directory
-            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,url.substring(url.lastIndexOf("/")+1));
+            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, url.substring(url.lastIndexOf("/") + 1));
             //set then click on notification to open the download file
             request.allowScanningByMediaScanner();
             //set the notification visibility to VISIBILITY_VISIBLE_NOTIFY_COMPLETED. This will ensure that the download shows in the notifications while it's in progress, and that it is automatically removed from the notification drawer once it has been completed.
@@ -572,7 +573,7 @@ return true;
             request.setMimeType(MIME);
         }
 
-        downloadID =manager.enqueue(request);
+        downloadID = manager.enqueue(request);
     }
 
     @Override
@@ -602,22 +603,11 @@ return true;
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if(actionMode != null){
+        if (actionMode != null) {
             actionMode.finish();
         }
-        DataTransfer.setThisWhat(thisWhat);
         requireActivity().removeMenuProvider(this);
     }
-
-
-
-
-
-
-
-
-
-
 
 
     @Override
@@ -625,16 +615,16 @@ return true;
         if (actionMode != null) {
             toggleSelection(position);
         } else {
-            if(adapter.getItem(position).getTxtInfo()[TYPE_FILE_POSITION_INFO].equalsIgnoreCase("DIR")) {
-                thisWhat = adapter.getItem(position).getTxt()[WHAT_POSITION];
-                url = urlHome + thisWhat;
+            if (adapter.getItem(position).getTxtInfo()[TYPE_FILE_POSITION_INFO].equalsIgnoreCase("DIR")) {
+                DataTransfer.setThisWhat(adapter.getItem(position).getTxt()[WHAT_POSITION]);
+                url = urlHome + DataTransfer.getThisWhat();
                 refresh();
             } else {
-                DataTransfer.setFileUrl(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken()  +"&path="+ adapter.getItem(position).getTxt()[WHAT_POSITION]);
+                DataTransfer.setFileUrl(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken() + "&path=" + adapter.getItem(position).getTxt()[WHAT_POSITION]);
                 DataTransfer.setFileName(adapter.getItem(position).getTxt()[NAME_POSITION]);
-                DataTransfer.setFilePath(thisWhat + "/"+ adapter.getItem(position).getTxt()[NAME_POSITION]);
+                DataTransfer.setFilePath(DataTransfer.getThisWhat() + "/" + adapter.getItem(position).getTxt()[NAME_POSITION]);
                 DataTransfer.setFileType(flt.getTypeMIME(adapter.getItem(position).getTxtInfo()[TYPE_FILE_POSITION_INFO]));
-                downloadFile(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken() +"&path=" + adapter.getItem(position).getTxt()[WHAT_POSITION], flt.getTypeMIME(adapter.getItem(position).getTxtInfo()[TYPE_FILE_POSITION_INFO]));
+                downloadFile(Constants.URL_DOWNLOAD_FILE + DataTransfer.getToken() + "&path=" + adapter.getItem(position).getTxt()[WHAT_POSITION], flt.getTypeMIME(adapter.getItem(position).getTxtInfo()[TYPE_FILE_POSITION_INFO]));
             }
         }
     }
@@ -652,7 +642,7 @@ return true;
 
     /**
      * Toggle the selection state of an item.
-     *
+     * <p>
      * If the item was the last one in the selection and is unselected, the selection is stopped.
      * Note that the selection must already be started (actionMode must not be null).
      *
@@ -670,56 +660,53 @@ return true;
         }
     }
 
-        @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            // Inflate the menu for the CAB
-            MenuInflater inflater = mode.getMenuInflater();
-            inflater.inflate(R.menu.menu_manger_file_action_bar_cab, menu);
-            actionMode = mode;
-            toolbar.setVisibility(View.GONE);
-            return true;
+    @Override
+    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        // Inflate the menu for the CAB
+        MenuInflater inflater = mode.getMenuInflater();
+        inflater.inflate(R.menu.menu_manger_file_action_bar_cab, menu);
+        actionMode = mode;
+        toolbar.setVisibility(View.GONE);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+        return false;
+    }
+
+
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        // Respond to clicks on the actions in the CAB
+        switch (item.getItemId()) {
+            case R.id.delete:
+                action("delete");
+                mode.finish();
+                return true;
+            case R.id.move:
+                action("move");
+                mode.finish();
+                return true;
+            case R.id.copy:
+                action("copy");
+                mode.finish();
+                return true;
+            case R.id.rename:
+                action("rename");
+                mode.finish();
+                return true;
+            default:
+                return false;
         }
+    }
 
-        @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false;
-        }
-
-
-        @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            // Respond to clicks on the actions in the CAB
-            switch (item.getItemId()) {
-                case R.id.delete:
-                    action("delete");
-                    mode.finish();
-                    return true;
-                case R.id.move:
-                    action("move");
-                    mode.finish();
-                    return true;
-                case R.id.copy:
-                    action("copy");
-                    mode.finish();
-                    return true;
-                case R.id.rename:
-                    action("rename");
-                    mode.finish();
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            adapter.clearSelection();
-            actionMode = null;
-            toolbar.setVisibility(View.VISIBLE);
-        }
-
-
-
+    @Override
+    public void onDestroyActionMode(ActionMode mode) {
+        adapter.clearSelection();
+        actionMode = null;
+        toolbar.setVisibility(View.VISIBLE);
+    }
 
 
     public class DownloadCompleteReceiver extends BroadcastReceiver {
@@ -727,13 +714,12 @@ return true;
         @Override
         public void onReceive(Context context, Intent intent) {
             long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
-            if(downloadId == downloadID)
-            {
+            if (downloadId == downloadID) {
                 DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
                 DownloadManager.Query query = new DownloadManager.Query();
                 query.setFilterById(downloadId);
                 Cursor cursor = manager.query(query);
-                if(cursor.moveToFirst()) {
+                if (cursor.moveToFirst()) {
                     int columnIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
                     if (DownloadManager.STATUS_SUCCESSFUL == cursor.getInt(columnIndex)) {
                         @SuppressLint("Range") String uriString = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
@@ -746,6 +732,6 @@ return true;
         }
 
     }
-    
+
 }
 

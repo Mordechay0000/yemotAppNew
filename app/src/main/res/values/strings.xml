@@ -58,5 +58,10 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="error_invalid_username">Error: Invalid username or password</string>
     <string name="error_account_blocked">Error: Account blocked</string>
+    <string name="transfer_units">העברת יחידות למערכת אחרת.</string>
+    <string name="filter">filter</string>
+    <string name="all">הכל</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
