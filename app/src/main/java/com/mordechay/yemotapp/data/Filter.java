@@ -38,7 +38,7 @@ public class Filter {
     private final String RESELLER_IMAGE = "reseller_image_";
     private final String DEFAULT_RESELLER_IMAGE = String.valueOf(R.drawable.yemot_header);
 
-    private Filter(Context ctx) {
+    private Filter(@NonNull Context ctx) {
         this.ctx = ctx;
         this.sp = ctx.getSharedPreferences(Constants.DEFAULT_SHARED_PREFERENCES_FILTER, 0);
     }
