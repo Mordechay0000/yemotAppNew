@@ -9,6 +9,7 @@ public class Constants {
     public static final String URL_DOWNLOAD_RESOURCES = "http://app.y-fox.com/api/download/getInfo.php";
     public static final String RESOURCES_PATH = "resources";
     public static final String URL_IS_USER_EXIT = "https://mordechay-database.000webhostapp.com/IsUser.php?";
+    public static final String URL_DOWNLOAD_UPDATE_APP = "http://app.y-fox.com/api/download/app/apk";
     public static final String URL_HOME = "https://www.call2all.co.il/ym/api/";
     public static final String URL_LOGIN = URL_HOME + "Login?";
     public static final String URL_GET_UNITS_HISTORY = URL_HOME + "GetTransactions?token=";
@@ -20,11 +21,12 @@ public class Constants {
     public static final String URL_UPLOAD_TEXT_FILE = URL_HOME + "UploadTextFile?token=";
     public static final String URL_SEND_SMS = URL_HOME + "SendSms?token=";
     public static final String URL_TRANSFER_UNITS = URL_HOME + "TransferUnits?token=";
+    public static final String URL_GET_CALLS = "https://www.call2all.co.il/ym/api/GetIncomingCalls?token=";
     public static final String URL_SIP_NEW_ACCOUNT = "https://private.call2all.co.il/ym/api/CreateSipAccount?token=";
     public static final String URL_SIP_GET_ACCOUNTS = "https://private.call2all.co.il/ym/api/GetSipAccountsInCustomer?token=" ;
     public static final String URL_SIP_PROTOCOL_TO_UDP = "https://private.call2all.co.il/ym/api/SipToUdp?token=";
     public static final String URL_SIP_PROTOCOL_TO_WSS = "https://private.call2all.co.il/ym/api/SipToWss?token=";
-    public static final String URL_SIP_CHANGE_CALLER_ID = "https://private.call2all.co.il/ym/api/EditCallerIdInSipAccount?token=";
+    public static final String URL_SIP_SETTING_CALLER_ID = "https://private.call2all.co.il/ym/api/EditCallerIdInSipAccount?token=";
     public static final String URL_SIP_REMOVE_ACCOUNTS = "https://private.call2all.co.il/ym/api/DeleteSipAccount?token=";
     public static final String URL_SECURING_GET_TOKEN_INFORMATION = URL_HOME + "ValidationToken?token=";
     public static final String URL_SECURING_DOUBLE_AUTH = URL_HOME + "DoubleAuth?token=";

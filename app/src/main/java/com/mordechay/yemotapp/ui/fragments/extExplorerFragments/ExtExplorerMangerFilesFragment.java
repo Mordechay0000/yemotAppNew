@@ -47,6 +47,7 @@ import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.data.Filter;
 import com.mordechay.yemotapp.interfaces.onBackPressedFilesExplorer;
 import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
+import com.mordechay.yemotapp.network.Network;
 import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 import com.mordechay.yemotapp.ui.activitys.EditExtFileActivity;
 import com.mordechay.yemotapp.ui.programmatically.list.CustomAdapter;
@@ -57,11 +58,11 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Objects;
 
 @SuppressLint("NonConstantResourceId")
 public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProvider, AbsListView.MultiChoiceModeListener, OnRespondsYmtListener, SwipeRefreshLayout.OnRefreshListener, DialogInterface.OnClickListener, onBackPressedFilesExplorer, CustomAdapter.ViewHolder.ClickListener {
 
+    private SendRequestForYemotServer snd;
     public static ExtExplorerMangerFilesFragment thisFragment;
     private Filter flt;
     String urlHome;
@@ -136,7 +137,8 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
 
         spPref = PreferenceManager.getDefaultSharedPreferences(requireContext());
 
-        new SendRequestForYemotServer(getActivity(), this, "url", url);
+        snd = SendRequestForYemotServer.getInstance(getActivity(), this);
+        snd.addRequestAndSend(Network.GET_EXTENSIONS, url);
 
 
         return v;
@@ -151,14 +153,14 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
     public void refresh() {
         swprl.setRefreshing(true);
         if (getActivity() != null)
-            new SendRequestForYemotServer(getActivity(), this, "url", url);
+            snd.addRequestAndSend(Network.GET_EXTENSIONS, url);
     }
 
 
     @Override
-    public void onSuccess(String result, String type) {
+    public void onSuccess(String result, int type) {
         switch (type) {
-            case "url":
+            case Network.GET_EXTENSIONS:
                 if (actionMode != null) {
                     actionMode.finish();
                 }
@@ -276,33 +278,33 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                     e.printStackTrace();
                 }
                 break;
-            case "action":
-                try {
-                    JSONObject jsonObject = new JSONObject(result);
-                    if (!jsonObject.isNull("success") && jsonObject.getBoolean("success")) {
-                        if (getActivity() != null)
-                            Toast.makeText(getActivity(), "הפעולה בוצעה בהצלחה", Toast.LENGTH_LONG).show();
-                        refresh();
-                    } else if (!jsonObject.isNull("message") && jsonObject.getString("meddsge").equals("simultaneous file operation rejected")) {
-                        if (getActivity() != null)
-                            Toast.makeText(getActivity(), "פעולת קובץ בו-זמנית נדחתה", Toast.LENGTH_LONG).show();
-                    } else if (!jsonObject.isNull("message")) {
-                        if (getActivity() != null)
-                            Toast.makeText(getActivity(), "שגיאה: \n \n " + jsonObject.getString("message"), Toast.LENGTH_LONG).show();
-                    } else {
-                        if (getActivity() != null)
-                            Toast.makeText(getActivity(), "שגיאה לא ידועה: \n \n " + jsonObject.getString("responseStatus"), Toast.LENGTH_LONG).show();
+            case Network.DOWNLOAD_FILE:
+                break;
+            default:
+                if (type >= Network.FILE_ACTIONS_MIN && type <= Network.FILE_ACTIONS_MAX){
+                    try {
+                        JSONObject jsonObject = new JSONObject(result);
+                        if (!jsonObject.isNull("success") && jsonObject.getBoolean("success")) {
+                            if (getActivity() != null)
+                                Toast.makeText(getActivity(), "הפעולה בוצעה בהצלחה", Toast.LENGTH_LONG).show();
+                            refresh();
+                        } else if (!jsonObject.isNull("message") && jsonObject.getString("meddsge").equals("simultaneous file operation rejected")) {
+                            if (getActivity() != null)
+                                Toast.makeText(getActivity(), "פעולת קובץ בו-זמנית נדחתה", Toast.LENGTH_LONG).show();
+                        } else if (!jsonObject.isNull("message")) {
+                            if (getActivity() != null)
+                                Toast.makeText(getActivity(), "שגיאה: \n \n " + jsonObject.getString("message"), Toast.LENGTH_LONG).show();
+                        } else {
+                            if (getActivity() != null)
+                                Toast.makeText(getActivity(), "שגיאה לא ידועה: \n \n " + jsonObject.getString("responseStatus"), Toast.LENGTH_LONG).show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                    refresh();
                 }
-                refresh();
                 break;
 
-
-            case "urlDownloadFile":
-
-                break;
         }
         swprl.setRefreshing(false);
     }
@@ -332,7 +334,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                             Log.e("urlAction", _urlAction);
                             swprl.setRefreshing(true);
                             if (getActivity() != null)
-                                new SendRequestForYemotServer(getActivity(), this, "action", _urlAction);
+                                snd.addRequestAndSend(Network.FILE_ACTIONS_MIN, _urlAction);
                         });
                         builder.setNegativeButton("ביטול", null);
                         // Create and show the AlertDialog
@@ -343,7 +345,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                         Log.e("urlAction", _urlAction);
                         swprl.setRefreshing(true);
                         if (getActivity() != null)
-                            new SendRequestForYemotServer(getActivity(), this, "action", _urlAction);
+                            snd.addRequestAndSend(Network.FILE_ACTIONS_MIN, _urlAction);
                     }
                     break;
                 case "move":
@@ -380,7 +382,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                     String _urlAction = Constants.URL_FILE_ACTION + token + "&action=" + act + whatList + "&target=" + DataTransfer.getThisWhat();
                     Log.e("urlAction", _urlAction);
                     if (getActivity() != null)
-                        new SendRequestForYemotServer(getActivity(), this, "action", _urlAction);
+                        snd.addRequestAndSend(Network.FILE_ACTIONS_MIN, _urlAction);
                     isCopy = false;
                     menu.getItem(2).setVisible(false);
                 });
@@ -399,7 +401,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                 String _urlAction = Constants.URL_FILE_ACTION + token + "&action=" + act + whatList + "&target=" + DataTransfer.getThisWhat();
                 Log.e("urlAction", _urlAction);
                 if (getActivity() != null)
-                    new SendRequestForYemotServer(getActivity(), this, "action", _urlAction);
+                    snd.addRequestAndSend(Network.FILE_ACTIONS_MIN, _urlAction);
                 isCopy = false;
                 menu.getItem(2).setVisible(false);
             }
@@ -407,7 +409,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
             swprl.setRefreshing(true);
             String _urlCreatedFolder = Constants.URL_UPDATE_EXTENSION + token + "&path=" + DataTransfer.getThisWhat() + "/" + edtDialog.getText();
             if (getActivity() != null)
-                new SendRequestForYemotServer(getActivity(), this, "action", _urlCreatedFolder);
+                snd.addRequestAndSend(Network.FILE_ACTIONS_MIN, _urlCreatedFolder);
         }
     }
 
@@ -425,7 +427,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
         if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null) {
             Uri selectedFileUri = data.getData();
             String selectedFilePath = selectedFileUri.getPath();
-            String urlUpload = Constants.URL_UPLOAD_FILE + token + "&path=" + "ivr2:" + DataTransfer.getThisWhat()  + "abc.txt";
+            String urlUpload = Constants.URL_UPLOAD_FILE + token + "&path=" + "ivr2:" + DataTransfer.getThisWhat() + "abc.txt";
             Log.e("urlUpload", urlUpload);
             /*
             File fl = new File(selectedFilePath);
@@ -503,17 +505,17 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
     private void applyRename() {
         if (renameWhatList.size() == 1) {
             String edtRenameWhatText = edtRenameDialog.getText().toString();
-            String _urlAction = Constants.URL_FILE_ACTION + token + "&action=" + "move" + renameWhatString + "&target=" + DataTransfer.getThisWhat()  + edtRenameWhatText;
+            String _urlAction = Constants.URL_FILE_ACTION + token + "&action=" + "move" + renameWhatString + "&target=" + DataTransfer.getThisWhat() + edtRenameWhatText;
             Log.e("urlAction", _urlAction);
             if (getActivity() != null)
-                new SendRequestForYemotServer(getActivity(), this, "action", _urlAction);
+                snd.addRequestAndSend(Network.FILE_ACTIONS_MIN, _urlAction);
         } else {
             for (int i = 0; i < renameWhatList.size(); i++) {
                 String edtRenameWhatText = edtRenameDialog.getText().toString() + " (" + (i + 1) + ")";
-                String _urlAction = Constants.URL_FILE_ACTION + token + "&action=" + "move" + renameWhatString + "&target=" + DataTransfer.getThisWhat()  + edtRenameWhatText;
+                String _urlAction = Constants.URL_FILE_ACTION + token + "&action=" + "move" + renameWhatString + "&target=" + DataTransfer.getThisWhat() + edtRenameWhatText;
                 Log.e("urlAction", _urlAction);
                 if (getActivity() != null)
-                    new SendRequestForYemotServer(getActivity(), this, "action", _urlAction);
+                    snd.addRequestAndSend(Network.FILE_ACTIONS_MIN + i, _urlAction);
             }
         }
     }

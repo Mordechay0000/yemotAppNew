@@ -1,7 +1,7 @@
 package com.mordechay.yemotapp.ui.layoutViews;
 
-import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -10,15 +10,16 @@ import android.view.View;
 import android.view.Window;
 
 import com.mordechay.yemotapp.R;
+import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 
 public class UpdateAppView implements View.OnClickListener {
     private final Dialog dialog;
-    private final Activity act;
+    private final Context context;
 
-    public UpdateAppView(Activity act){
-        this.act = act;
-        dialog = new Dialog(act);
+    public UpdateAppView(Context context){
+        this.context = context;
+        dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
         dialog.setContentView(R.layout.layout_update_app);
@@ -46,8 +47,8 @@ public class UpdateAppView implements View.OnClickListener {
         if (v.getId() == R.id.update_app_download){
             Intent view = new Intent();
             view.setAction(Intent.ACTION_VIEW);
-            view.setData(Uri.parse("https://mitmachim.top/"));
-            act.startActivity(view);
+            view.setData(Uri.parse(Constants.URL_DOWNLOAD_UPDATE_APP));
+            context.startActivity(view);
         }
     }
 }

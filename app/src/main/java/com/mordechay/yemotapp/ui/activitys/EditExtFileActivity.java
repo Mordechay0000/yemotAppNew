@@ -63,6 +63,7 @@ import com.mordechay.yemotapp.BuildConfig;
 import com.mordechay.yemotapp.R;import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
+import com.mordechay.yemotapp.network.Network;
 import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 import com.mordechay.yemotapp.ui.programmatically.file.FileUtils;
 
@@ -94,9 +95,7 @@ import java.util.regex.Pattern;
 
 public class EditExtFileActivity extends AppCompatActivity implements OnRespondsYmtListener {
 
-
-
-
+    private SendRequestForYemotServer snd;
     public final static String TAG = "EditExtFileActivity";
 
     public final static String PATH = "path";
@@ -158,7 +157,7 @@ public class EditExtFileActivity extends AppCompatActivity implements OnResponds
         pathMap = new HashMap<>();
 
 
-
+        snd = SendRequestForYemotServer.getInstance(this, this);
         textView = findViewById(R.id.open_file_text);
         scrollView = findViewById(R.id.open_file_vscroll);
 
@@ -559,7 +558,7 @@ public class EditExtFileActivity extends AppCompatActivity implements OnResponds
         token = DataTransfer.getToken();
         try {
             String url = Constants.URL_UPLOAD_TEXT_FILE + token + "&what=" + DataTransfer.getFilePath() + "&contents=" + URLEncoder.encode(textView.getText().toString(), UTF_8);
-            new SendRequestForYemotServer(this, this, "uploadFile", url);
+            snd.addRequestAndSend(Network.UPLOAD_TEXT_FILE, url);
         } catch (UnsupportedEncodingException e) {
             if (BuildConfig.DEBUG)
                 Log.e(TAG, "error encode text");
@@ -636,7 +635,7 @@ public class EditExtFileActivity extends AppCompatActivity implements OnResponds
     }
 
     @Override
-    public void onSuccess(String result, String type) {
+    public void onSuccess(String result, int type) {
         onBackPressed();
     }
 

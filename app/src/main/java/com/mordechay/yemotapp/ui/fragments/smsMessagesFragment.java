@@ -26,6 +26,7 @@ import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
+import com.mordechay.yemotapp.network.Network;
 import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 import com.mordechay.yemotapp.ui.programmatically.list.CustomAdapter;
 
@@ -39,19 +40,20 @@ import java.net.URLEncoder;
 
 public class smsMessagesFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, OnRespondsYmtListener, View.OnClickListener {
 
-    String urlHome;
-    String token;
-    String url;
+    private SendRequestForYemotServer snd;
+    private String urlHome;
+    private String token;
+    private String url;
 
 
-    RecyclerView recyclerView;
-    CustomAdapter adapter;
+    private RecyclerView recyclerView;
+    private CustomAdapter adapter;
 
-    FloatingActionButton btn;
+    private FloatingActionButton btn;
 
-    SwipeRefreshLayout swprl;
+    private SwipeRefreshLayout swprl;
 
-    AlertDialog digSendSMS;
+    private AlertDialog digSendSMS;
 
 private EditText edtFrom;
     private EditText edtMessage;
@@ -99,7 +101,8 @@ private EditText edtFrom;
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        new SendRequestForYemotServer(getActivity(), this, "url", url);
+        snd = SendRequestForYemotServer.getInstance(getActivity(), this);
+        snd.addRequestAndSend(Network.GET_SMS_HISTORY, url);
 
         return v;
     }
@@ -107,7 +110,7 @@ private EditText edtFrom;
 
     public void refresh() {
         swprl.setRefreshing(true);
-        new SendRequestForYemotServer(getActivity(), this, "url", url);
+        snd.addRequestAndSend(Network.GET_SMS_HISTORY, url);
     }
 
 
@@ -127,8 +130,8 @@ refresh();
 
 
     @Override
-    public void onSuccess(String result, String type) {
-        if (type.equals("url")) {
+    public void onSuccess(String result, int type) {
+        if (type == Network.GET_SMS_HISTORY) {
             adapter = new CustomAdapter(null, R.layout.item_sms_messages, new int[]{R.id.textView1, R.id.textView2, R.id.textView3, R.id.textView4, R.id.textView5, R.id.textView6, R.id.textView7});
             try {
                 JSONObject jsb = new JSONObject(result);
@@ -199,7 +202,7 @@ refresh();
                 Log.e("error parse json", e.getMessage());
             }
             swprl.setRefreshing(false);
-        }else if(type.equals("send_sms")){
+        }else if(type == Network.SEND_SMS){
             lnrProgress.setVisibility(View.GONE);
             digSendSMS.setTitle("סיכום");
 
@@ -288,7 +291,7 @@ refresh();
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException(e);
             }
-            new SendRequestForYemotServer(getActivity(), this, "send_sms", urlSendSMS);
+            snd.addRequestAndSend(Network.SEND_SMS, urlSendSMS);
         }
     }
 }

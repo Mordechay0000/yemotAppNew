@@ -7,9 +7,6 @@ public class DataTransfer {
     private static boolean errorNoInternetShowing;
 
     private static boolean progressViewShowing;
-    private static ArrayList<String> listUrl = new ArrayList<>();
-
-    private static ArrayList<String> listType = new ArrayList<>();
 
     /*
     server login
@@ -76,22 +73,6 @@ public class DataTransfer {
 
     public static void setProgressViewShowing(boolean progressViewShowing) {
         DataTransfer.progressViewShowing = progressViewShowing;
-    }
-
-    public static ArrayList<String> getListUrl() {
-        return listUrl;
-    }
-
-    public static void setListUrl(ArrayList<String> listUrl) {
-        DataTransfer.listUrl = listUrl;
-    }
-
-    public static ArrayList<String> getListType() {
-        return listType;
-    }
-
-    public static void setListType(ArrayList<String> listType) {
-        DataTransfer.listType = listType;
     }
 
     public static String getUsername() {
@@ -281,8 +262,6 @@ public static void setFileUrl(String fileUrl) {
     public static void reset(){
         setErrorNoInternetShowing(false);
         setProgressViewShowing(false);
-        setListUrl(new ArrayList<>());
-        setListType(new ArrayList<>());
         setUsername(null);
         setUid(null);
         setToken(null);

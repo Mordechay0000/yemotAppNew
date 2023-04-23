@@ -26,6 +26,7 @@ import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
+import com.mordechay.yemotapp.network.Network;
 import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 
 import org.json.JSONException;
@@ -38,7 +39,7 @@ import java.util.Locale;
 
 public class MoreActionsFragment extends Fragment implements View.OnClickListener, OnRespondsYmtListener, MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>> {
 
-
+    private SendRequestForYemotServer snd;
     private Button btnSpecialId;
     private androidx.appcompat.app.AlertDialog dialogSpecialIdOne;
 
@@ -71,6 +72,7 @@ public class MoreActionsFragment extends Fragment implements View.OnClickListene
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_more_actions, container, false);
 
+        snd = SendRequestForYemotServer.getInstance(getContext(), this);
         btnSpecialId = v.findViewById(R.id.btnSpecialId);
         btnSpecialId.setOnClickListener(this);
 
@@ -115,14 +117,14 @@ public class MoreActionsFragment extends Fragment implements View.OnClickListene
                 lnrProgress.setVisibility(View.VISIBLE);
                 String specialIdNumber = edtSpecialIdNumber.getText().toString();
                 String specialIdType = rdbSpecialIdCALL.isChecked() ? "CALL" : "SMS";
-                new SendRequestForYemotServer(requireActivity(), this, "SpecialIdOne", Constants.URL_SPECIAL_ID_VALIDATION_CALLER_ID + DataTransfer.getToken() + "&action=send&callerId=" + specialIdNumber + "&validType=" + specialIdType);
+                snd.addRequestAndSend(Network.SPECIAL_ID_ONE, Constants.URL_SPECIAL_ID_VALIDATION_CALLER_ID + DataTransfer.getToken() + "&action=send&callerId=" + specialIdNumber + "&validType=" + specialIdType);
             }
-            }else if (view == btnSpecialIdConfirm) {
+            } else if (view == btnSpecialIdConfirm) {
             dialogSpecialIdOne.setMessage("");
             lnrSpecialIdConfirm.setVisibility(View.GONE);
             lnrProgress.setVisibility(View.VISIBLE);
             String specialIdNumber = edtSpecialIdNumberConfirm.getText().toString();
-            new SendRequestForYemotServer(requireActivity(), this, "SpecialIdTwo", Constants.URL_SPECIAL_ID_VALIDATION_CALLER_ID + DataTransfer.getToken() + "&action=valid&reId=" + reqId + "&code=" + specialIdNumber);
+            snd.addRequestAndSend(Network.SPECIAL_ID_TWO,  Constants.URL_SPECIAL_ID_VALIDATION_CALLER_ID + DataTransfer.getToken() + "&action=valid&reId=" + reqId + "&code=" + specialIdNumber);
 
         }else if (view == btnIncomingMinutes) {
 
@@ -155,7 +157,7 @@ public class MoreActionsFragment extends Fragment implements View.OnClickListene
             newPassword = edittext.getText().toString();
             urlCustom = URL_HOME + "SetPassword" +"?token="+DataTransfer.getToken() + "&password=" + DataTransfer.getInfoPassword() + "&newPassword=" + newPassword;
             Log.e("url set pass", urlCustom);
-            new SendRequestForYemotServer(getActivity(), this, "pass", urlCustom);
+            snd.addRequestAndSend(Network.CHANGE_PASSWORD, urlCustom);
         });
 
         alert.setNegativeButton("ביטול", null);
@@ -164,9 +166,9 @@ public class MoreActionsFragment extends Fragment implements View.OnClickListene
     }
 
     @Override
-    public void onSuccess(String result, String type) {
+    public void onSuccess(String result, int type) {
         switch (type) {
-            case "SpecialIdOne": {
+            case Network.SPECIAL_ID_ONE: {
                 JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(result);
@@ -186,7 +188,7 @@ public class MoreActionsFragment extends Fragment implements View.OnClickListene
                 }
                 break;
             }
-            case "SpecialIdTwo": {
+            case Network.SPECIAL_ID_TWO: {
                 JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(result);
@@ -208,7 +210,7 @@ public class MoreActionsFragment extends Fragment implements View.OnClickListene
                 }
                 break;
             }
-            case "IncomingMinutes": {
+            case Network.INCOMING_MINUTES: {
                 JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(result);
@@ -230,7 +232,7 @@ public class MoreActionsFragment extends Fragment implements View.OnClickListene
                 break;
 
             }
-            case "pass":
+            case Network.CHANGE_PASSWORD:
 
 
                 setPassActiv(result);
@@ -284,7 +286,7 @@ public class MoreActionsFragment extends Fragment implements View.OnClickListene
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
             String startDate = sdf.format(new Date(start));
             String endDate = sdf.format(new Date(end));
-            new SendRequestForYemotServer(requireActivity(), this, "IncomingMinutes", Constants.URL_INCOMING_MINUTES + DataTransfer.getToken() + "&from=" + startDate + "&to=" + endDate);
+            snd.addRequestAndSend(Network.INCOMING_MINUTES, Constants.URL_INCOMING_MINUTES + DataTransfer.getToken() + "&from=" + startDate + "&to=" + endDate);
             Log.d("tagg", Constants.URL_INCOMING_MINUTES + DataTransfer.getToken() + "&from=" + startDate + "&to=" + endDate);
         }
     }

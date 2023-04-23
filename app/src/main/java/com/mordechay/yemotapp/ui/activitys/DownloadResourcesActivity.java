@@ -22,6 +22,7 @@ import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.interfaces.OnRespondsMyServListener;
 import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
 import com.mordechay.yemotapp.data.Constants;
+import com.mordechay.yemotapp.network.Network;
 import com.mordechay.yemotapp.network.SendRequestForMyServer;
 
 import org.json.JSONException;
@@ -44,6 +45,7 @@ import java.util.zip.ZipInputStream;
 
 public class DownloadResourcesActivity extends AppCompatActivity implements View.OnClickListener, OnRespondsMyServListener {
 
+    private SendRequestForMyServer sndMyServ;
     private ProgressBar prg;
     private Button btnDownload;
     private TextView txtVersionName;
@@ -66,13 +68,14 @@ public class DownloadResourcesActivity extends AppCompatActivity implements View
         btnDownload = findViewById(R.id.button2);
         btnDownload.setOnClickListener(DownloadResourcesActivity.this);
 
-        new SendRequestForMyServer(this, this, "getVersionInfo", Constants.URL_DOWNLOAD_RESOURCES);
+        sndMyServ = SendRequestForMyServer.getInstance(getApplicationContext(), this);
+        sndMyServ.addRequestAndSend(Network.GET_VERSION_INFO, Constants.URL_DOWNLOAD_RESOURCES);
     }
 
 
     @Override
-    public void onSuccess(String result, String type) {
-        if(type.equals("getVersionInfo")){
+    public void onSuccess(String result, int type) {
+        if(type == Network.GET_VERSION_INFO){
             try {
                 JSONObject jsonObject = new JSONObject(result);
                 String versionName = jsonObject.getString("versionName");

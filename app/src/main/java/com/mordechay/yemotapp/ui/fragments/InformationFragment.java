@@ -20,6 +20,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
+import com.mordechay.yemotapp.network.Network;
 import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 import com.mordechay.yemotapp.ui.programmatically.errors.errorHandler;
 
@@ -32,20 +33,21 @@ import java.net.URLEncoder;
 
 public class InformationFragment extends Fragment implements View.OnClickListener, OnRespondsYmtListener, SwipeRefreshLayout.OnRefreshListener {
 
-    String url;
+    private SendRequestForYemotServer snd;
+    private String url;
 
-    SwipeRefreshLayout swipeRefreshLayout;
-    EditText edtSystemNumber;
-    EditText edtClientName;
-    EditText edtMail;
-    EditText edtNameOrg;
-    EditText edtContactName;
-    EditText edtPhone;
-    EditText edtInvName;
-    EditText edtInvAddress;
-    EditText edtFax;
-    EditText edtPassAccess;
-    EditText edtPassRecording;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private EditText edtSystemNumber;
+    private EditText edtClientName;
+    private EditText edtMail;
+    private EditText edtNameOrg;
+    private EditText edtContactName;
+    private EditText edtPhone;
+    private EditText edtInvName;
+    private EditText edtInvAddress;
+    private EditText edtFax;
+    private EditText edtPassAccess;
+    private EditText edtPassRecording;
 
     FloatingActionButton btnSaveInfo;
 
@@ -86,7 +88,8 @@ public class InformationFragment extends Fragment implements View.OnClickListene
 
         swipeRefreshLayout.setOnRefreshListener(this);
         String urlInfo = URL_HOME + "GetSession" + "?token=" + DataTransfer.getToken();
-        new SendRequestForYemotServer(getActivity(), this, "info", urlInfo);
+        snd = SendRequestForYemotServer.getInstance(getActivity(), this);
+        snd.addRequestAndSend(Network.GET_INFORMATION, urlInfo);
 
         return v;
     }
@@ -111,18 +114,18 @@ public class InformationFragment extends Fragment implements View.OnClickListene
             }
 
             Log.e("url", url);
-            new SendRequestForYemotServer(getActivity(), this, "url", url);
+            snd.addRequestAndSend(Network.SAVE_INFORMATION, url);
         }
     }
 
 
     @Override
-    public void onSuccess(String result, String type) {
+    public void onSuccess(String result, int type) {
         switch (type) {
-            case "info":
+            case Network.GET_INFORMATION:
                 infoActiv(result);
                 break;
-            case "url":
+            case Network.SAVE_INFORMATION:
 
                 NavController nvc = Navigation.findNavController(requireActivity(), R.id.nvgv_fragment);
 
@@ -197,6 +200,6 @@ public class InformationFragment extends Fragment implements View.OnClickListene
     private void refresh() {
         swipeRefreshLayout.setOnRefreshListener(this);
         String urlInfo = URL_HOME + "GetSession" + "?token=" + DataTransfer.getToken();
-        new SendRequestForYemotServer(getActivity(), this, "info", urlInfo);
+        snd.addRequestAndSend(Network.GET_INFORMATION, urlInfo);
     }
 }

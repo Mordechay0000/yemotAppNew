@@ -14,8 +14,11 @@ import android.widget.ListView;
 import androidx.fragment.app.Fragment;
 
 import com.mordechay.yemotapp.R;
+import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
+import com.mordechay.yemotapp.network.Network;
+import com.mordechay.yemotapp.network.SendRequestForMyServer;
 import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 import com.mordechay.yemotapp.ui.programmatically.list.ItemData;
 
@@ -29,22 +32,20 @@ import java.util.ArrayList;
 public class CallInSystemFragment extends Fragment implements AbsListView.MultiChoiceModeListener, OnRespondsYmtListener {
 
 
+    private SendRequestForYemotServer snd;
+    private String urlHome;
+    private String token;
+    private String url;
+    private ListView list;
+    private ArrayList<ItemData> adapter;
 
-
-
-    String urlHome;
-    String token;
-    String url;
-    ListView list;
-    ArrayList<ItemData> adapter;
-
-    ArrayList<String> aryNumTo;
-    ArrayList<String> aryNumFrom;
-    ArrayList<String> aryNumTrans;
-    ArrayList<String> aryExt;
-    ArrayList<String> aryCallDur;
-    ArrayList<String> aryCallId;
-    String titleApp;
+    private ArrayList<String> aryNumTo;
+    private ArrayList<String> aryNumFrom;
+    private ArrayList<String> aryNumTrans;
+    private ArrayList<String> aryExt;
+    private ArrayList<String> aryCallDur;
+    private ArrayList<String> aryCallId;
+    private String titleApp;
 
 
     public CallInSystemFragment() {
@@ -69,13 +70,14 @@ public class CallInSystemFragment extends Fragment implements AbsListView.MultiC
         token = DataTransfer.getToken();
 
 
-        urlHome = "https://www.call2all.co.il/ym/api/GetIncomingCalls?token=" + token;
+        urlHome = Constants.URL_GET_CALLS + token;
 
         url = urlHome;
         list = v.findViewById(R.id.list2222);
         list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         list.setMultiChoiceModeListener(this);
-        new SendRequestForYemotServer(getActivity(), this, "url", url);
+        snd = SendRequestForYemotServer.getInstance(getActivity(), this);
+        snd.addRequestAndSend(Network.GET_CALLS, url);
         return v;
     }
 
@@ -85,8 +87,8 @@ public class CallInSystemFragment extends Fragment implements AbsListView.MultiC
 
 
     @Override
-    public void onSuccess(String result, String type) {
-        if(type.equals("url")){
+    public void onSuccess(String result, int type) {
+        if(type == Network.GET_CALLS){
             adapter = new ArrayList<>();
             try {
                 JSONObject jsb = new JSONObject(result);
@@ -144,7 +146,7 @@ try {
 
 
         try {
-            new SendRequestForYemotServer(getActivity(), this, "url", url);
+            snd.addRequestAndSend(Network.GET_CALLS, url);
         }catch (NullPointerException e){
             Log.e("null", e.getMessage());
         }

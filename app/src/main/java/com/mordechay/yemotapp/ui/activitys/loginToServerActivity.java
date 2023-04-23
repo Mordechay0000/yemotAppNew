@@ -19,6 +19,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.DataTransfer;
+import com.mordechay.yemotapp.network.testIsExitsUser;
 
 import java.util.Objects;
 
@@ -47,6 +48,21 @@ public class loginToServerActivity extends AppCompatActivity {
         loginButton = findViewById(R.id.loginButton);
         prgLogin = findViewById(R.id.login_to_server_progress);
 
+        testIsExitsUser tst = testIsExitsUser.getInstance(this, new testIsExitsUser.RespondsListener() {
+            @Override
+            public void onSuccess() {
+                Intent intent = new Intent(loginToServerActivity.this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onFailure(int responseCode, String responseMessage) {
+                if (responseCode != 0){
+                    Toast.makeText(loginToServerActivity.this, "שגיאה: " + responseMessage, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
         loginButton.setOnClickListener(v -> {
             String email = emailEditText.getText().toString();
             String password = passwordEditText.getText().toString();
@@ -56,29 +72,24 @@ public class loginToServerActivity extends AppCompatActivity {
                 loginButton.setVisibility(View.GONE);
                 prgLogin.setVisibility(View.VISIBLE);
                 mAuth.signInWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    // Sign in success, update UI with the signed-in user's information
-                                    FirebaseUser user = mAuth.getCurrentUser();
-                                    if (user != null) {
-                                        DataTransfer.setUsername(user.getEmail());
-                                        DataTransfer.setUid(user.getUid());
-                                    }else{
-                                        Toast.makeText(loginToServerActivity.this, "שגיאה חמורה בהתחברות לאפליקציה.", Toast.LENGTH_LONG).show();
-                                        finish();
-                                    }
-                                    Intent intent = new Intent(loginToServerActivity.this, LoginActivity.class);
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                    startActivity(intent);
-                                } else {
-                                    // If sign in fails, display a message to the user.
-                                    Toast.makeText(loginToServerActivity.this, "האימות נכשל. הסיבה:  " + Objects.requireNonNull(task.getException()).getLocalizedMessage(),
-                                            Toast.LENGTH_SHORT).show();
-                                    loginButton.setVisibility(View.VISIBLE);
-                                    prgLogin.setVisibility(View.GONE);
+                        .addOnCompleteListener(this, task -> {
+                            if (task.isSuccessful()) {
+                                // Sign in success, update UI with the signed-in user's information
+                                FirebaseUser user = mAuth.getCurrentUser();
+                                if (user != null) {
+                                    DataTransfer.setUsername(user.getEmail());
+                                    DataTransfer.setUid(user.getUid());
+                                    tst.sendTest();
+                                }else{
+                                    Toast.makeText(loginToServerActivity.this, "שגיאה חמורה בהתחברות לאפליקציה.", Toast.LENGTH_LONG).show();
+                                    finish();
                                 }
+                            } else {
+                                // If sign in fails, display a message to the user.
+                                Toast.makeText(loginToServerActivity.this, "האימות נכשל. הסיבה:  " + Objects.requireNonNull(task.getException()).getLocalizedMessage(),
+                                        Toast.LENGTH_SHORT).show();
+                                loginButton.setVisibility(View.VISIBLE);
+                                prgLogin.setVisibility(View.GONE);
                             }
                         });
             }

@@ -39,6 +39,7 @@ import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.data.Filter;
 import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
+import com.mordechay.yemotapp.network.Network;
 import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 import com.mordechay.yemotapp.ui.activitys.EditExtFileActivity;
 import com.mordechay.yemotapp.ui.programmatically.list.CustomAdapter;
@@ -48,9 +49,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class ExtExplorerSystemMessagesFragment extends Fragment implements AbsListView.MultiChoiceModeListener, OnRespondsYmtListener, SwipeRefreshLayout.OnRefreshListener, CustomAdapter.ViewHolder.ClickListener {
+    private SendRequestForYemotServer snd;
     private Filter flt;
     private String token;
     private String thisWhat;
@@ -104,7 +105,8 @@ public class ExtExplorerSystemMessagesFragment extends Fragment implements AbsLi
 
         spPref = PreferenceManager.getDefaultSharedPreferences(requireContext());
 
-        new SendRequestForYemotServer(getActivity(), this, "url", url);
+        snd = SendRequestForYemotServer.getInstance(getContext(), this);
+        snd.addRequestAndSend(Network.GET_SYSTEM_MESSAGES, url);
         return v;
     }
 
@@ -117,13 +119,13 @@ public class ExtExplorerSystemMessagesFragment extends Fragment implements AbsLi
     public void refresh() {
         swprl.setRefreshing(true);
         if(getActivity() != null)
-            new SendRequestForYemotServer(getActivity(), this, "url", url);
+            snd.addRequestAndSend(Network.GET_SYSTEM_MESSAGES, url);
     }
 
     @Override
-    public void onSuccess(String result, String type) {
+    public void onSuccess(String result, int type) {
         switch (type) {
-            case "url":
+            case Network.GET_SYSTEM_MESSAGES:
                 if (actionMode != null) {
                     actionMode.finish();
                 }
@@ -179,7 +181,7 @@ public class ExtExplorerSystemMessagesFragment extends Fragment implements AbsLi
                     e.printStackTrace();
                 }
                 break;
-            case "action":
+            case Network.FILE_ACTIONS_MIN:
                 try {
                     JSONObject jsonObject = new JSONObject(result);
                     if (!jsonObject.isNull("success") && jsonObject.getBoolean("success")) {
@@ -203,7 +205,7 @@ public class ExtExplorerSystemMessagesFragment extends Fragment implements AbsLi
                 break;
 
 
-            case "urlDownloadFile":
+            case Network.DOWNLOAD_FILE:
 
                 break;
         }
@@ -231,7 +233,7 @@ public class ExtExplorerSystemMessagesFragment extends Fragment implements AbsLi
                 Log.e("urlAction", _urlAction);
                 swprl.setRefreshing(true);
                 if(getActivity() != null)
-                    new SendRequestForYemotServer(getActivity(), this, "action", _urlAction);
+                    snd.addRequestAndSend(Network.FILE_ACTIONS_MIN, _urlAction);
             });
             builder.setNegativeButton("ביטול", null);
             // Create and show the AlertDialog
@@ -242,7 +244,7 @@ public class ExtExplorerSystemMessagesFragment extends Fragment implements AbsLi
             Log.e("urlAction", _urlAction);
             swprl.setRefreshing(true);
             if(getActivity() != null)
-                new SendRequestForYemotServer(getActivity(), this, "action", _urlAction);
+                snd.addRequestAndSend(Network.FILE_ACTIONS_MIN, _urlAction);
         }
     }
 

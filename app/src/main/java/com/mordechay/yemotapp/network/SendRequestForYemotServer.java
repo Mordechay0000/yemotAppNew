@@ -1,7 +1,10 @@
 package com.mordechay.yemotapp.network;
 
 import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
@@ -10,6 +13,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.mordechay.yemotapp.data.DataTransfer;
+import com.mordechay.yemotapp.interfaces.OnRespondsMyServListener;
 import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
 import com.mordechay.yemotapp.ui.layoutViews.ErrorNoInternetView;
 
@@ -18,90 +22,49 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class SendRequestForYemotServer {
-    private final String  type;
-    private final Activity act;
-    private final OnRespondsYmtListener onRespondsYmtListener;
+public class SendRequestForYemotServer extends Network {
+    private static SendRequestForYemotServer instance;
+    private OnRespondsYmtListener onRespondsYmtListener;
 
-    private final String networkurl;
     private final ErrorNoInternetView errorNoInternetView;
     private JSONObject jsonObject = null;
 
-    public SendRequestForYemotServer(Activity act, OnRespondsYmtListener onRespondsYmtListener, String type, String netnetworkUrl) {
-        this.act = act;
+    private SendRequestForYemotServer(Context context, OnRespondsYmtListener onRespondsYmtListener) {
+        this.context = context;
         this.onRespondsYmtListener = onRespondsYmtListener;
-        this.type = type;
-        this.networkurl = netnetworkUrl;
-        this.errorNoInternetView = new ErrorNoInternetView(act, onRespondsYmtListener);
-        sendRequest();
+        this.errorNoInternetView = new ErrorNoInternetView(context, onRespondsYmtListener);
     }
 
-    private void sendRequest() {
-        if (!errorNoInternetView.isShowing()) {
-            Log.d("url", "url : " + networkurl);
-            StringRequest jsObjRequest = new StringRequest(Request.Method.GET, networkurl,
-                    response -> {
-                        try {
-                            onRespondsYmtListener.onSuccess(response, this.type);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    },
-                    error -> {
-                        Log.d("Error.Response", error.toString());
-                        // dismiss the progress dialog after receiving Constants from API
-                        NetworkResponse response = error.networkResponse;
-                        if (response != null) {
-                            int code = response.statusCode;
-
-                            String errorMsg = new String(response.data);
-                            try {
-                                jsonObject = new JSONObject(errorMsg);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
-
-                            if (jsonObject != null) {
-                                if (!jsonObject.isNull("message")) {
-                                    String msg = jsonObject.optString("message");
-                                    onRespondsYmtListener.onFailure(this.networkurl, code, msg);
-                                }
-                            }
-
-
-                        } else {
-                            String errorMsg = error.getMessage();
-                            onRespondsYmtListener.onFailure(this.networkurl, 0, errorMsg);
-                            saveUrl();
-                            if(!errorNoInternetView.isShowing()) {
-                                errorNoInternetView.show();
-                            }
-                        }
-                    });
-
-            try {
-                jsObjRequest.setRetryPolicy(new DefaultRetryPolicy(
-                        1000,
-                        DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-                RequestQueue requestqueue = Volley.newRequestQueue(act);
-                requestqueue.add(jsObjRequest);
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            }
-        }else{
-            saveUrl();
+    public static synchronized SendRequestForYemotServer getInstance(@Nullable Context ctx, @Nullable OnRespondsYmtListener respondsListener) {
+        if (instance == null) {
+            assert ctx != null;
+            assert respondsListener != null;
+            instance = new SendRequestForYemotServer(ctx, respondsListener);
         }
+        if (ctx != null) {
+            instance.setContext(ctx);
+        }
+        if (respondsListener != null) {
+            instance.setListener(respondsListener);
+        }
+        return instance;
     }
 
-    private void saveUrl(){
-        ArrayList<String> listUrl = DataTransfer.getListUrl();
-        listUrl.add(this.networkurl);
-        DataTransfer.setListUrl(listUrl);
-        ArrayList<String> listType = DataTransfer.getListType();
-        listType.add(this.type);
-        DataTransfer.setListType(listType);
-        Log.e("tag" + listUrl.size(), this.networkurl);
+    private void setListener(OnRespondsYmtListener respondsListener) {
+        this.onRespondsYmtListener = respondsListener;
+    }
+
+    @Override
+    protected void onSuccessful(int type, String result) throws JSONException {
+        onRespondsYmtListener.onSuccess(result, type);
+    }
+
+    @Override
+    protected void onFailure(String url, int errorCode, String errorMessage) {
+        if (errorCode == 0) {
+            if (!errorNoInternetView.isShowing()) {
+                errorNoInternetView.show();
+            }
+        }
     }
 }

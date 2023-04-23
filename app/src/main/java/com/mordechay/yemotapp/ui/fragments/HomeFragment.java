@@ -20,6 +20,7 @@ import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.data.Filter;
 import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
+import com.mordechay.yemotapp.network.Network;
 import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 import com.mordechay.yemotapp.ui.layoutViews.ProgressView;
 import com.mordechay.yemotapp.ui.programmatically.errors.errorHandler;
@@ -34,40 +35,39 @@ import java.util.Objects;
 
 public class HomeFragment extends Fragment implements View.OnClickListener, OnRespondsYmtListener, SwipeRefreshLayout.OnRefreshListener {
 
-
-private Filter flt;
+    private SendRequestForYemotServer snd;
+    private Filter flt;
     private final String TAG = "HomeFragment";
-    String token;
-    String number;
-    String password;
-    String urlInfo;
-    String urlCall;
-    String urlCamp;
-    String urlCampSh;
-    String urlMinu;
+    private String token;
+    private String number;
+    private String password;
+    private String urlInfo;
+    private String urlCall;
+    private String urlCamp;
+    private String urlCampSh;
+    private String urlMinu;
 
-    ProgressView prgvStart;
+    private ProgressView prgvStart;
 
-    TextView txtvNumber;
-    TextView txtvOrg;
-    TextView txtvCall;
-    TextView txtvCamp;
-    TextView txtvMinu;
-    TextView txtvUnits;
-    CardView crdH;
-    SwipeRefreshLayout swprl;
-    boolean isLoading1;
-    boolean isLoading2;
-    boolean isLoading3;
-    boolean isLoading4;
-    boolean isLoading5;
+    private TextView txtvNumber;
+    private TextView txtvOrg;
+    private TextView txtvCall;
+    private TextView txtvCamp;
+    private TextView txtvMinu;
+    private TextView txtvUnits;
+    private CardView crdH;
+    private SwipeRefreshLayout swprl;
+    private boolean isLoading1;
+    private boolean isLoading2;
+    private boolean isLoading3;
+    private boolean isLoading4;
+    private boolean isLoading5;
     private ImageView imgHeader;
 
 
     public HomeFragment() {
 
     }
-
 
 
     @Override
@@ -93,31 +93,30 @@ private Filter flt;
         crdH.setOnClickListener(this);
 
         imgHeader = v.findViewById(R.id.imageView);
-        txtvNumber =  v.findViewById(R.id.textView5);
-        txtvOrg =  v.findViewById(R.id.textView7);
-        txtvCall=  v.findViewById(R.id.textView30);
-        txtvCamp=  v.findViewById(R.id.textView35);
-        txtvMinu=  v.findViewById(R.id.textView31);
-        txtvUnits= v.findViewById(R.id.textView36);
+        txtvNumber = v.findViewById(R.id.textView5);
+        txtvOrg = v.findViewById(R.id.textView7);
+        txtvCall = v.findViewById(R.id.textView30);
+        txtvCamp = v.findViewById(R.id.textView35);
+        txtvMinu = v.findViewById(R.id.textView31);
+        txtvUnits = v.findViewById(R.id.textView36);
 
         number = DataTransfer.getInfoNumber();
         password = DataTransfer.getInfoPassword();
         token = DataTransfer.getToken();
 
-        urlInfo = URL_HOME + "GetSession" +"?token="+token;
-        urlCall = URL_HOME + "GetIncomingCalls" +"?token="+token;
-        urlCamp = URL_HOME + "GetActiveCampaigns" +"?token="+token;
-        urlMinu = URL_HOME + "GetIncomingSum" +"?token="+token;
-        urlCampSh = URL_HOME + "GetScheduledCampaigns" +"?token="+token + "&type=PENDING";
-        prgvStart = new ProgressView(this.getContext());
-prgvStart.show();
+        urlInfo = URL_HOME + "GetSession" + "?token=" + token;
+        urlCall = URL_HOME + "GetIncomingCalls" + "?token=" + token;
+        urlCamp = URL_HOME + "GetActiveCampaigns" + "?token=" + token;
+        urlMinu = URL_HOME + "GetIncomingSum" + "?token=" + token;
+        urlCampSh = URL_HOME + "GetScheduledCampaigns" + "?token=" + token + "&type=PENDING";
+        prgvStart = new ProgressView(getContext());
+        prgvStart.show();
 
+        snd = SendRequestForYemotServer.getInstance(getContext(), this);
         refresh();
 
         return v;
     }
-
-
 
 
     @Override
@@ -132,36 +131,36 @@ prgvStart.show();
     }
 
     @Override
-    public void onSuccess(String result, String type) {
+    public void onSuccess(String result, int type) {
         switch (type) {
-            case "info":
-                if(isLoading1) {
+            case Network.HOME_FRAGMENT_INFO:
+                if (isLoading1) {
                     infoActiv(result);
                     isLoading1 = false;
                 }
                 break;
-            case "call":
-                if(isLoading2) {
+            case Network.HOME_FRAGMENT_CALL:
+                if (isLoading2) {
                     callActiv(result);
                     isLoading2 = false;
                 }
                 break;
-            case "camp":
-                if(isLoading3) {
+            case Network.HOME_FRAGMENT_CAMP:
+                if (isLoading3) {
                     campActiv(result);
                     isLoading3 = false;
                 }
                 break;
 
-            case "campsh":
-                if(isLoading4) {
+            case Network.HOME_FRAGMENT_CAMPSH:
+                if (isLoading4) {
                     campShActiv(result);
                     isLoading4 = false;
                 }
                 break;
 
-            case "minu":
-                if(isLoading5) {
+            case Network.HOME_FRAGMENT_MINU:
+                if (isLoading5) {
                     minuActiv(result);
                     isLoading5 = false;
                 }
@@ -169,7 +168,7 @@ prgvStart.show();
 
         }
         if (!isLoading1 & !isLoading2 & !isLoading3 & !isLoading4 & !isLoading5) {
-            if (prgvStart.isShowing()){
+            if (prgvStart.isShowing()) {
                 prgvStart.dismiss();
             }
             swprl.setRefreshing(false);
@@ -179,14 +178,14 @@ prgvStart.show();
 
     @Override
     public void onFailure(String url, int responseCode, String responseMessage) {
-        if(responseCode == 0) {
+        if (responseCode == 0) {
             Log.e(TAG, "no internet...");
         } else if (responseMessage != null) {
             Log.e(TAG, "code = " + responseCode + "; message = " + responseMessage);
-        }else{
+        } else {
             Log.e(TAG, "code = " + responseCode + "; null message...");
         }
-        if (prgvStart.isShowing()){
+        if (prgvStart.isShowing()) {
             prgvStart.dismiss();
         }
         swprl.setRefreshing(false);
@@ -197,7 +196,7 @@ prgvStart.show();
         try {
             JSONObject jsonObject = new JSONObject(result);
 
-            if(jsonObject.getString("responseStatus").equals("OK")) {
+            if (jsonObject.getString("responseStatus").equals("OK")) {
                 DataTransfer.setInfoName(jsonObject.getString("name"));
                 DataTransfer.setInfoOrganization(jsonObject.getString("organization"));
                 DataTransfer.setInfoContactName(jsonObject.getString("contactName"));
@@ -216,7 +215,7 @@ prgvStart.show();
                 txtvNumber.setText(DataTransfer.getInfoNumber());
                 txtvOrg.setText(DataTransfer.getInfoOrganization());
                 txtvUnits.setText(DataTransfer.getInfoUnits());
-            }else{
+            } else {
                 Toast.makeText(getActivity(), "שגיאה: " + jsonObject.getString("responseStatus"), Toast.LENGTH_SHORT).show();
             }
 
@@ -228,11 +227,11 @@ prgvStart.show();
     public void callActiv(String result) {
         try {
             JSONObject jsonObject = new JSONObject(result);
-            if(jsonObject.getString("responseStatus").equals("OK")) {
-            txtvCall.setText(jsonObject.getString("callsCount"));
-            }else{
-            Toast.makeText(getActivity(), "שגיאה: " + jsonObject.getString("responseStatus"), Toast.LENGTH_SHORT).show();
-        }
+            if (jsonObject.getString("responseStatus").equals("OK")) {
+                txtvCall.setText(jsonObject.getString("callsCount"));
+            } else {
+                Toast.makeText(getActivity(), "שגיאה: " + jsonObject.getString("responseStatus"), Toast.LENGTH_SHORT).show();
+            }
         } catch (JSONException e) {
             Toast.makeText(getActivity(), "שגיאת ניתוח נתונים!", Toast.LENGTH_SHORT).show();
             Log.e("error json parse Call", result + "|" + urlCall);
@@ -244,15 +243,15 @@ prgvStart.show();
     public void campActiv(String result) {
         try {
             JSONObject jsonObject = new JSONObject(result);
-            if(jsonObject.getString("responseStatus").equals("OK")) {
+            if (jsonObject.getString("responseStatus").equals("OK")) {
 
-            JSONArray jsonArray = jsonObject.getJSONArray("campaigns");
-            if (txtvCamp.getText().toString().contentEquals(getText(R.string.loading))) {
-                txtvCamp.setText(String.valueOf(jsonArray.length()));
-            }else{
-                txtvCamp.setText(new StringBuilder(txtvCamp.getText()).append("   |   ").append(String.valueOf(jsonArray.length())));
-            }
-            }else{
+                JSONArray jsonArray = jsonObject.getJSONArray("campaigns");
+                if (txtvCamp.getText().toString().contentEquals(getText(R.string.loading))) {
+                    txtvCamp.setText(String.valueOf(jsonArray.length()));
+                } else {
+                    txtvCamp.setText(new StringBuilder(txtvCamp.getText()).append("   |   ").append(String.valueOf(jsonArray.length())));
+                }
+            } else {
                 Toast.makeText(getActivity(), "שגיאה: " + jsonObject.getString("responseStatus"), Toast.LENGTH_SHORT).show();
             }
         } catch (JSONException e) {
@@ -266,13 +265,13 @@ prgvStart.show();
     public void campShActiv(String result) {
         try {
             JSONObject jsonObject = new JSONObject(result);
-            if(jsonObject.getString("responseStatus").equals("OK")) {
-            if(txtvCamp.getText().toString().contentEquals(getText(R.string.loading))){
-                txtvCamp.setText(String.valueOf(jsonObject.getInt("totalCount")));
-            }else {
-                txtvCamp.setText(new StringBuilder(txtvCamp.getText()).append("   |   ").append(jsonObject.getInt("totalCount")));
-            }
-            }else{
+            if (jsonObject.getString("responseStatus").equals("OK")) {
+                if (txtvCamp.getText().toString().contentEquals(getText(R.string.loading))) {
+                    txtvCamp.setText(String.valueOf(jsonObject.getInt("totalCount")));
+                } else {
+                    txtvCamp.setText(new StringBuilder(txtvCamp.getText()).append("   |   ").append(jsonObject.getInt("totalCount")));
+                }
+            } else {
                 Toast.makeText(getActivity(), "שגיאה: " + jsonObject.getString("responseStatus"), Toast.LENGTH_SHORT).show();
             }
         } catch (JSONException e) {
@@ -287,9 +286,9 @@ prgvStart.show();
         try {
             JSONObject jsonObject = new JSONObject(result);
 
-            if(jsonObject.getString("responseStatus").equals("OK")) {
+            if (jsonObject.getString("responseStatus").equals("OK")) {
                 txtvMinu.setText(String.valueOf(jsonObject.getInt("direct")));
-            }else{
+            } else {
                 Toast.makeText(getActivity(), "שגיאה: " + jsonObject.getString("responseStatus"), Toast.LENGTH_SHORT).show();
             }
         } catch (JSONException e) {
@@ -298,8 +297,6 @@ prgvStart.show();
             e.printStackTrace();
         }
     }
-
-
 
 
     public void refresh() {
@@ -315,11 +312,11 @@ prgvStart.show();
         txtvMinu.setText(getText(R.string.loading));
         txtvUnits.setText(getText(R.string.loading));
 
-        new SendRequestForYemotServer(getActivity(), this, "info", urlInfo);
-        new SendRequestForYemotServer(getActivity(), this, "call", urlCall);
-        new SendRequestForYemotServer(getActivity(), this, "camp", urlCamp);
-        new SendRequestForYemotServer(getActivity(), this, "campsh", urlCampSh);
-        new SendRequestForYemotServer(getActivity(), this, "minu", urlMinu);
+        snd.addRequestAndSend(Network.HOME_FRAGMENT_INFO, urlInfo);
+        snd.addRequestAndSend(Network.HOME_FRAGMENT_CALL, urlCall);
+        snd.addRequestAndSend(Network.HOME_FRAGMENT_CAMP, urlCamp);
+        snd.addRequestAndSend(Network.HOME_FRAGMENT_CAMPSH, urlCampSh);
+        snd.addRequestAndSend(Network.HOME_FRAGMENT_MINU, urlMinu);
     }
 
     @Override

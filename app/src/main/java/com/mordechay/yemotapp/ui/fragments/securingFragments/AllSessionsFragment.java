@@ -18,6 +18,7 @@ import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
 import com.mordechay.yemotapp.interfaces.securingListOnItemActionClickListener;
+import com.mordechay.yemotapp.network.Network;
 import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 import com.mordechay.yemotapp.ui.programmatically.list.CustomAdapter;
 import com.mordechay.yemotapp.ui.programmatically.list_for_securing_login_log.SecuringSessionItem;
@@ -30,7 +31,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class AllSessionsFragment extends Fragment implements View.OnClickListener, OnRespondsYmtListener, SwipeRefreshLayout.OnRefreshListener, CustomAdapter.ViewHolder.ClickListener, securingListOnItemActionClickListener {
-
+    private SendRequestForYemotServer snd;
     private SwipeRefreshLayout swprl;
     private String token;
     private RecyclerView recyclerView;
@@ -67,7 +68,8 @@ public class AllSessionsFragment extends Fragment implements View.OnClickListene
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        new SendRequestForYemotServer(getActivity(), this, "url", Constants.URL_SECURING_GET_SESSION + DataTransfer.getToken());
+        snd = SendRequestForYemotServer.getInstance(getActivity(), this);
+        snd.addRequestAndSend(Network.GET_ALL_SESSIONS, Constants.URL_SECURING_GET_SESSION + DataTransfer.getToken());
 
         return v;
     }
@@ -75,16 +77,16 @@ public class AllSessionsFragment extends Fragment implements View.OnClickListene
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.kill_all_session) {
-            new SendRequestForYemotServer(getActivity(), this, "kill_all_session", Constants.URL_SECURING_KILL_ALL_SESSIONS + DataTransfer.getToken());
+            snd.addRequestAndSend(Network.KILL_ALL_SESSIONS, Constants.URL_SECURING_KILL_ALL_SESSIONS + DataTransfer.getToken());
         }
     }
 
     @Override
-    public void onSuccess(String result, String type) throws JSONException {
+    public void onSuccess(String result, int type) throws JSONException {
         JSONObject jsb = new JSONObject(result);
 
         if (jsb.getString("responseStatus").equalsIgnoreCase("OK")) {
-            if (type.equals("url")) {
+            if (type == Network.GET_ALL_SESSIONS) {
                 int sessionCount = jsb.getInt("count");
                 if (sessionCount == 0) {
                     btnKillAllSessions.setVisibility(View.GONE);
@@ -114,10 +116,10 @@ public class AllSessionsFragment extends Fragment implements View.OnClickListene
                 myca.setOnItemActionClickListener(this);
                 recyclerView.setAdapter(myca);
                 swprl.setRefreshing(false);
-            } else if (type.equals("kill_all_session")) {
+            } else if (type == Network.KILL_ALL_SESSIONS) {
                 swprl.setRefreshing(true);
                 onRefresh();
-            } else if (type.equals("kill_session")) {
+            } else if (type == Network.KILL_SESSION) {
                 swprl.setRefreshing(true);
                 onRefresh();
             }
@@ -134,7 +136,7 @@ public class AllSessionsFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onRefresh() {
-        new SendRequestForYemotServer(getActivity(), this, "url", Constants.URL_SECURING_GET_SESSION + DataTransfer.getToken());
+        snd.addRequestAndSend(Network.GET_ALL_SESSIONS, Constants.URL_SECURING_GET_SESSION + DataTransfer.getToken());
     }
 
     @Override
@@ -149,6 +151,6 @@ public class AllSessionsFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onItemActionClick(int position) {
-        new SendRequestForYemotServer(getActivity(), this, "kill_session", Constants.URL_SECURING_KILL_SESSION + DataTransfer.getToken() + "&SessionId=" + lst.get(position).getId());
+        snd.addRequestAndSend(Network.KILL_SESSION, Constants.URL_SECURING_KILL_SESSION + DataTransfer.getToken() + "&SessionId=" + lst.get(position).getId());
     }
 }

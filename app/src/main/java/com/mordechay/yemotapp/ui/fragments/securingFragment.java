@@ -20,6 +20,7 @@ import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.interfaces.securingListOnItemActionClickListener;
 import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
+import com.mordechay.yemotapp.network.Network;
 import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 import com.mordechay.yemotapp.ui.fragments.extExplorerFragments.ExtExplorerSystemMessagesFragment;
 import com.mordechay.yemotapp.ui.fragments.securingFragments.AllSessionsFragment;
@@ -37,6 +38,7 @@ import java.util.Objects;
 
 public class securingFragment extends Fragment implements OnRespondsYmtListener, View.OnClickListener, securingListOnItemActionClickListener {
 
+    private SendRequestForYemotServer snd;
     private final Fragment[] tabsFragments = {new AllSessionsFragment(), new ExtExplorerSystemMessagesFragment(), new fiveFragment()};
     private TabLayout tabLayout;
     private int validationCalls;
@@ -75,20 +77,21 @@ public class securingFragment extends Fragment implements OnRespondsYmtListener,
         tabLayout = v.findViewById(R.id.securing_fragment_tab_layout);
 
 
-        new SendRequestForYemotServer(requireActivity(), this, "token_information" , Constants.URL_SECURING_GET_TOKEN_INFORMATION + DataTransfer.getToken());
+        snd =  SendRequestForYemotServer.getInstance(requireActivity(), this);
+        snd.addRequestAndSend(Network.GET_TOKEN_INFORMATION, Constants.URL_SECURING_GET_TOKEN_INFORMATION + DataTransfer.getToken());
         return v;
     }
 
     @Override
-    public void onSuccess(String result, String type) {
+    public void onSuccess(String result, int type) {
         JSONObject jsonObject = null;
         try {
-        if(type.equals("token_information")){
+        if(type == Network.GET_TOKEN_INFORMATION){
             JSONObject jsonObjectResult = new JSONObject(result);
             jsonObject = jsonObjectResult.getJSONObject("tokenData");
             validationCalls = jsonObject.getInt("validationCalls");
             setDoubleAuth(jsonObject.getBoolean("doubleAuthStatus"));
-        } else if (type.equals("double_auth_one_step")) {
+        } else if (type == Network.DOUBLE_AUTH_ONE_STEP) {
             View v = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_securing_double_auth, null);
             MaterialAlertDialogBuilder digSendSMSBuilder = new MaterialAlertDialogBuilder(requireActivity())
                     .setTitle("אימות דו שלבי")
@@ -101,7 +104,7 @@ public class securingFragment extends Fragment implements OnRespondsYmtListener,
             digBtnVerify.setOnClickListener(this);
             dialogDoubleAuth = digSendSMSBuilder.create();
             dialogDoubleAuth.show();
-        } else if (type.equals("double_auth_two_step")) {
+        } else if (type == Network.DOUBLE_AUTH_TWO_STEP) {
                 jsonObject = new JSONObject(result);
                 if(jsonObject.getString("responseStatus").equalsIgnoreCase("OK") && jsonObject.getString("message").equalsIgnoreCase("VerifiedOK")){
                     digLnrProgress.setVisibility(View.GONE);
@@ -125,13 +128,13 @@ public class securingFragment extends Fragment implements OnRespondsYmtListener,
     @Override
     public void onClick(View view) {
         if(view == btnVerify){
-                new SendRequestForYemotServer(requireActivity(), this, "double_auth_one_step", Constants.URL_SECURING_DOUBLE_AUTH + DataTransfer.getToken() + "&action=SendCode");
+            snd.addRequestAndSend(Network.DOUBLE_AUTH_ONE_STEP, Constants.URL_SECURING_DOUBLE_AUTH + DataTransfer.getToken() + "&action=SendCode");
         } else if (view == digBtnVerify) {
             digLnrVerify.setVisibility(View.GONE);
             dialogDoubleAuth.setMessage("");
             digLnrProgress.setVisibility(View.VISIBLE);
             String code = digEdtVerify.getText().toString();
-            new SendRequestForYemotServer(requireActivity(), this, "double_auth_two_step", Constants.URL_SECURING_DOUBLE_AUTH + DataTransfer.getToken() + "&action=VerifyCode&code=" + code);
+            snd.addRequestAndSend(Network.DOUBLE_AUTH_TWO_STEP, Constants.URL_SECURING_DOUBLE_AUTH + DataTransfer.getToken() + "&action=VerifyCode&code=" + code);
         }
     }
 
@@ -164,7 +167,7 @@ public class securingFragment extends Fragment implements OnRespondsYmtListener,
 
             // כדי להציג את הפרגמנט הראשון לפני לחיצה על טאבים
             Objects.requireNonNull(tabLayout.getTabAt(0)).select();
-            new SendRequestForYemotServer(requireActivity(), this, "get_sessions", Constants.URL_SECURING_GET_SESSION + DataTransfer.getToken());
+            snd.addRequestAndSend(Network.GET_ALL_SESSIONS, Constants.URL_SECURING_GET_SESSION + DataTransfer.getToken());
         } else {
             lnrBody.setVisibility(View.GONE);
             lnrVerify.setVisibility(View.VISIBLE);

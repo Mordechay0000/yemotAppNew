@@ -25,6 +25,7 @@ import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.data.Filter;
 import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
+import com.mordechay.yemotapp.network.Network;
 import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 import com.mordechay.yemotapp.ui.programmatically.list.CustomAdapter;
 
@@ -38,6 +39,7 @@ import java.util.Objects;
 
 public class UnitsFragment extends Fragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener, OnRespondsYmtListener {
 
+    private SendRequestForYemotServer snd;
     private Filter flt;
     private Button btnTrans;
     private Button btnFilter;
@@ -93,7 +95,8 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
 
         url = Constants.URL_GET_UNITS_HISTORY + DataTransfer.getToken();
 
-        new SendRequestForYemotServer(getActivity(), this, "getUnitsHistory", url);
+        snd = SendRequestForYemotServer.getInstance(getActivity(), this);
+        snd.addRequestAndSend(Network.GET_UNITS_HISTORY, url);
         
         return v;
     }
@@ -125,7 +128,7 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
             String amount = edtDialogAmount.getText().toString();
 
             String urlTransferUnits = Constants.URL_TRANSFER_UNITS + DataTransfer.getToken() + "&destination=" + URLEncoder.encode(to) + "&amount=" + URLEncoder.encode(amount);
-            new SendRequestForYemotServer(getActivity(), this, "transfer_units", urlTransferUnits);
+            snd.addRequestAndSend(Network.TRANSFER_UNITS, urlTransferUnits);
 
     }else if (view == btnFilter){
             View v = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_filter_units,null);
@@ -163,7 +166,7 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
 
     private void refresh(){
         spr.setRefreshing(true);
-        new SendRequestForYemotServer(getActivity(), this, "getUnitsHistory", url);
+        snd.addRequestAndSend(Network.GET_UNITS_HISTORY, url);
     }
 
     @Override
@@ -172,9 +175,9 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
     }
 
     @Override
-    public void onSuccess(String result, String type) {
+    public void onSuccess(String result, int type) {
 
-        if (type.equals("getUnitsHistory")) {
+        if (type == Network.GET_UNITS_HISTORY) {
 
             adapter = new CustomAdapter(null, R.layout.item_units, new int[]{R.id.textView1, R.id.textView2, R.id.textView3, R.id.textView4, R.id.textView5, R.id.textView6, R.id.textView7});
             try {
@@ -236,7 +239,7 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
                 e.printStackTrace();
             }
             spr.setRefreshing(false);
-        }else if(type.equals("transfer_units")){
+        }else if(type == Network.TRANSFER_UNITS){
             try {
                 JSONObject jsb = new JSONObject(result);
                 lnrDialogProgress.setVisibility(View.GONE);

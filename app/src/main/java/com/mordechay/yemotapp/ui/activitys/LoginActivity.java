@@ -21,6 +21,7 @@ import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
+import com.mordechay.yemotapp.network.Network;
 import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 import com.mordechay.yemotapp.ui.programmatically.errors.errorHandler;
 
@@ -29,7 +30,7 @@ import org.json.JSONObject;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, OnRespondsYmtListener {
 
-
+    private SendRequestForYemotServer snd;
     private final String TAG = "LoginActivity";
     private String Number;
     private String Password;
@@ -54,7 +55,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         MaterialToolbar mtb = findViewById(R.id.login_mtb);
         setSupportActionBar(mtb);
 
-
+        snd = SendRequestForYemotServer.getInstance(this, this);
         chbRememberMe = findViewById(R.id.remember_me);
         btnLogin = findViewById(R.id.login_button);
         btnLogin.setOnClickListener(this);
@@ -80,7 +81,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             btnLogin.setVisibility(View.GONE);
             cpi.setVisibility(View.VISIBLE);
             getData();
-            new SendRequestForYemotServer(this, this, "url", url);
+            snd.addRequestAndSend(Network.YEMOT_LOGIN, url);
         } else if (view == btnLogout) {
             Intent inet = new Intent(this, loginToServerActivity.class)
                     .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -92,7 +93,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     @Override
-    public void onSuccess(String result, String type) {
+    public void onSuccess(String result, int type) {
         try {
             JSONObject jsonObject = new JSONObject(result);
             if (jsonObject.getString("responseStatus").equals("OK")) {

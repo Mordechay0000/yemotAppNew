@@ -1,91 +1,79 @@
 package com.mordechay.yemotapp.network;
 
-import android.app.Activity;
-import android.util.Log;
+import android.content.Context;
 
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.mordechay.yemotapp.BuildConfig;
-import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.interfaces.OnRespondsMyServListener;
-import com.mordechay.yemotapp.ui.layoutViews.ErrorNoInternetView;
 import com.mordechay.yemotapp.ui.layoutViews.UpdateAppView;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
+public class SendRequestForMyServer extends Network {
+    private static SendRequestForMyServer instance;
+    private OnRespondsMyServListener respondsListener;
 
-public class SendRequestForMyServer {
-    private final String  type;
-    private final Activity act;
-    private final OnRespondsMyServListener respondsListener;
+    private final JSONObject jsonObject = null;
+    protected final UpdateAppView updateAppView;
 
-    private final String networkurl;
-    private JSONObject jsonObject = null;
-    private final UpdateAppView updateAppView;
-
-    public SendRequestForMyServer(Activity act, OnRespondsMyServListener respondsListener, String type, String netnetworkUrl) {
-        this.act = act;
-        this.respondsListener = respondsListener;
-        this.type = type;
-        this.networkurl = netnetworkUrl;
-        this.updateAppView = new UpdateAppView(act);
-        sendRequest();
+    protected SendRequestForMyServer(@NonNull Context ctx, @Nullable OnRespondsMyServListener respondsListener) {
+        this.context = ctx;
+        if (respondsListener != null) {
+            this.respondsListener = respondsListener;
+        }
+        this.updateAppView = new UpdateAppView(ctx);
     }
 
-    private void sendRequest() {
-            Log.d("url", "url" + networkurl);
-            StringRequest jsObjRequest = new StringRequest(Request.Method.GET, networkurl + "&version=" + BuildConfig.VERSION_CODE,
-                    response ->
-                    {
-                        if(response.equals("update")){
-                            updateAppView.show();
-                        }else{
-                            respondsListener.onSuccess(response, this.type);
-                        }
-                    },
-                    error -> {
-                        // dismiss the progress dialog after receiving Constants from API
-                        NetworkResponse response = error.networkResponse;
-                        if (response != null) {
-                            int code = response.statusCode;
+    public static synchronized SendRequestForMyServer getInstance(@Nullable Context ctx, @Nullable OnRespondsMyServListener respondsListener) {
+        if (instance == null) {
+            assert ctx != null;
+            assert respondsListener != null;
+            instance = new SendRequestForMyServer(ctx, respondsListener);
+        }
+        if (ctx != null) {
+            instance.setContext(ctx);
+        }
+        if (respondsListener != null) {
+            instance.setListener(respondsListener);
+        }
+        return instance;
+    }
 
-                            String errorMsg = new String(response.data);
-                            try {
-                                jsonObject = new JSONObject(errorMsg);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
-
-                            if (jsonObject != null) {
-                                if (!jsonObject.isNull("message")) {
-                                    String msg = jsonObject.optString("message");
-                                    respondsListener.onFailure(this.networkurl, code, msg);
-                                }
-                            }
-
-
-                        } else {
-                            String errorMsg = error.getMessage();
-                            respondsListener.onFailure(this.networkurl, 0, errorMsg);
-                        }
-                    });
-
-            try {
-                jsObjRequest.setRetryPolicy(new DefaultRetryPolicy(
-                        1000,
-                        DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-                RequestQueue requestqueue = Volley.newRequestQueue(act);
-                requestqueue.add(jsObjRequest);
-            } catch (NullPointerException e) {
-                e.printStackTrace();
+    @Override
+    protected void onSuccessful(int type, String result) {
+        if (result.equals("update")) {
+            updateAppView.show();
+            return;
+        } else {
+            if(respondsListener != null) {
+                respondsListener.onSuccess(result, type);
             }
         }
     }
+
+    @Override
+    protected void onFailure(String url, int errorCode, String errorMessage){
+        if(respondsListener != null) {
+            respondsListener.onFailure(url, errorCode, errorMessage);
+        }
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
+    }
+
+    public Context getContext() {
+        return context;
+    }
+
+    protected void setListener(@NonNull OnRespondsMyServListener respondsListener){
+        this.respondsListener = respondsListener;
+    }
+
+    @Override
+    protected void sendRequest(int type, String url) {
+        super.sendRequest(type, url + "&version=" + BuildConfig.VERSION_CODE);
+    }
+}

@@ -13,6 +13,7 @@ import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
+import com.mordechay.yemotapp.network.Network;
 import com.mordechay.yemotapp.network.SendRequestForYemotServer;
 
 import org.json.JSONException;
@@ -51,7 +52,7 @@ public class openActivity extends AppCompatActivity implements OnRespondsYmtList
                         } else if (spThisSystem.getBoolean("isRememberMe", false)) {
                             DataTransfer.setInfoNumber(spThisSystem.getString("Number", null));
                             DataTransfer.setInfoPassword(spThisSystem.getString("Password", null));
-                            new SendRequestForYemotServer(openActivity.this, openActivity.this, "login", Constants.URL_LOGIN + "username=" + DataTransfer.getInfoNumber() + "&password=" + DataTransfer.getInfoPassword());
+                            SendRequestForYemotServer.getInstance(openActivity.this, openActivity.this).addRequestAndSend(Network.YEMOT_LOGIN, Constants.URL_LOGIN + "username=" + DataTransfer.getInfoNumber() + "&password=" + DataTransfer.getInfoPassword());
                         } else {
                             Intent intent = new Intent(openActivity.this, LoginActivity.class);
                             start(intent);
@@ -81,8 +82,8 @@ synchronized (this) {
 
 
         @Override
-    public void onSuccess(String result, String type) {
-        if(type.equals("login")) {
+    public void onSuccess(String result, int type) {
+        if(type == Network.YEMOT_LOGIN) {
             try {
                 JSONObject jsonObject = new JSONObject(result);
                 if(jsonObject.getString("responseStatus").equals("OK")) {
