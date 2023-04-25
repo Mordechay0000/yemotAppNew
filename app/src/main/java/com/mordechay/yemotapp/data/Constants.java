@@ -8,7 +8,7 @@ public class Constants {
     //TODO: CHANGE URL AND PATH
     public static final String URL_DOWNLOAD_RESOURCES = "http://app.y-fox.com/api/download/getInfo.php";
     public static final String RESOURCES_PATH = "resources";
-    public static final String URL_IS_USER_EXIT = "https://mordechay-database.000webhostapp.com/IsUser.php?";
+    public static final String URL_IS_USER_EXIT = "http://app.y-fox.com/api/IsUser.php?";
     public static final String URL_DOWNLOAD_UPDATE_APP = "http://app.y-fox.com/api/download/app/apk";
     public static final String URL_HOME = "https://www.call2all.co.il/ym/api/";
     public static final String URL_LOGIN = URL_HOME + "Login?";

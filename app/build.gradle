@@ -6,6 +6,9 @@ plugins {
 
 
 android {
+    lint {
+        baseline = file("lint-baseline.xml")
+    }
     signingConfigs {
         debug {
             storeFile file('/Users/mor/Documents/programming/certificate\'s/מפתח חתימה.jks')
