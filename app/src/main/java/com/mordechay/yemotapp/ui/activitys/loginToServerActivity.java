@@ -58,9 +58,10 @@ public class loginToServerActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int responseCode, String responseMessage) {
-                if (responseCode != 0){
-                    Toast.makeText(loginToServerActivity.this, "שגיאה: " + responseMessage, Toast.LENGTH_LONG).show();
-                }
+                Toast.makeText(loginToServerActivity.this, "שגיאה: " + responseMessage, Toast.LENGTH_LONG).show();
+                DataTransfer.setUsername(null);
+                DataTransfer.setUid(null);
+                mAuth.signOut();
             }
         });
         loginButton.setOnClickListener(v -> {

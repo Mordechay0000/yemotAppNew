@@ -94,8 +94,8 @@ public class securingFragment extends Fragment implements OnRespondsYmtListener,
         } else if (type == Network.DOUBLE_AUTH_ONE_STEP) {
             View v = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_securing_double_auth, null);
             MaterialAlertDialogBuilder digSendSMSBuilder = new MaterialAlertDialogBuilder(requireActivity())
-                    .setTitle("אימות דו שלבי")
-                    .setMessage("אנא הקישו בשדה קוד את 4 הספרות האחרונות של מספר הטלפון ממנו קיבלתם שיחה כעת:")
+                    .setTitle(R.string.two_step_verification)
+                    .setMessage(R.string.please_enter_the_last_4_digits_of_the_phone_number_from_which_you_just_received_a_call_in_the_code_field)
                     .setView(v);
             digLnrVerify = v.findViewById(R.id.lnr_securing_double_auth_verify);
             digLnrProgress = v.findViewById(R.id.lnr_securing_double_auth_progress);
@@ -108,11 +108,11 @@ public class securingFragment extends Fragment implements OnRespondsYmtListener,
                 jsonObject = new JSONObject(result);
                 if(jsonObject.getString("responseStatus").equalsIgnoreCase("OK") && jsonObject.getString("message").equalsIgnoreCase("VerifiedOK")){
                     digLnrProgress.setVisibility(View.GONE);
-                    dialogDoubleAuth.setMessage("האימות בוצע בהצלחה");
+                    dialogDoubleAuth.setMessage(getString(R.string.the_authentication_was_successfully_completed));
                     setDoubleAuth(true);
                 }else {
                     digLnrProgress.setVisibility(View.GONE);
-                    dialogDoubleAuth.setMessage("האימות נכשל");
+                    dialogDoubleAuth.setMessage(getString(R.string.authentication_failed));
                 }
         }
         } catch (JSONException e) {
@@ -201,9 +201,9 @@ public class securingFragment extends Fragment implements OnRespondsYmtListener,
                 String active;
 
                 if (objSession.getBoolean("active")){
-                    active = "כן";
+                    active = getString(R.string.yes);
                 } else {
-                    active = "לא";
+                    active = getString(R.string.no);
                 }
                 String selectedDID = objSession.getString("selectedDID");
                 String remoteIP = objSession.getString("remoteIP");
@@ -212,9 +212,9 @@ public class securingFragment extends Fragment implements OnRespondsYmtListener,
                 String lastRequest = objSession.getString("lastRequest");
                 String doubleAuthStatus;
                 if (objSession.getBoolean("doubleAuthStatus")){
-                    doubleAuthStatus = "כן";
+                    doubleAuthStatus = getString(R.string.yes);
                 } else {
-                    doubleAuthStatus = "לא";
+                    doubleAuthStatus = getString(R.string.no);
                 }
                 arySecuringSessionItems.add(new SecuringSessionItem(id, token, active, selectedDID, remoteIP, sessionType, createTime, lastRequest, doubleAuthStatus));
             }

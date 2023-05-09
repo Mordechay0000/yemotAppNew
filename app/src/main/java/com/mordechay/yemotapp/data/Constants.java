@@ -1,6 +1,9 @@
 package com.mordechay.yemotapp.data;
 
+import com.mordechay.yemotapp.R;
+
 public class Constants {
+    public static final int DEFAULT_VIEW_CHECKING_ACCOUNT_DETAILS = R.layout.view_for_activity_checking_account_details;
     public static final String DEFAULT_SHARED_PREFERENCES = "User";
     public static final String DEFAULT_SHARED_PREFERENCES_DATA = "data";
     public static final String DEFAULT_SHARED_PREFERENCES_THIS_SYSTEM = "ThisSystem";
@@ -8,8 +11,9 @@ public class Constants {
     //TODO: CHANGE URL AND PATH
     public static final String URL_DOWNLOAD_RESOURCES = "http://app.y-fox.com/api/download/getInfo.php";
     public static final String RESOURCES_PATH = "resources";
-    public static final String URL_IS_USER_EXIT = "http://app.y-fox.com/api/IsUser.php?";
+    public static final String URL_IS_USER_EXIT = "https://run.mocky.io/v3/1cee674f-94fe-4a2a-8cc4-868cc2eadf1f?";
     public static final String URL_DOWNLOAD_UPDATE_APP = "http://app.y-fox.com/api/download/app/apk";
+    
     public static final String URL_HOME = "https://www.call2all.co.il/ym/api/";
     public static final String URL_LOGIN = URL_HOME + "Login?";
     public static final String URL_GET_UNITS_HISTORY = URL_HOME + "GetTransactions?token=";

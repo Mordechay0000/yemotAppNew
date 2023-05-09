@@ -24,21 +24,12 @@
                 tools:layout_editor_absoluteX="1dp"
                 tools:layout_editor_absoluteY="1dp">
 
-
-                <TextView
-                    android:id="@+id/textView9"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="דוגמא, אין להעבירת, להעתיק , להסריט, פותח על ידי office@y-fox.com"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
                 <TextView
                     android:id="@+id/textView38"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
-                    android:text="אימות תקף לחודש ימים. לאחר חודש מהאימות המספר יוסר ויהיה צורך לאמת אותו בשנית. אימות של מספר קיים יאריך את תוקף האימות של המספר בחודש מזמן האימות."
+                    android:text="@string/verification_is_valid_for_one_month_after_one_month_of_verification_the_number_will_be_removed_and_it_will_be_necessary_to_verify_it_again_verification_of_an_existing_number_will_extend_the_validity_of_the_number_s_verification_by_one_month_from_the_time_of_verification"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
@@ -47,7 +38,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="15dp"
-                    android:hint="מספר"
+                    android:hint="@string/number"
                     app:helperTextEnabled="false">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -66,7 +57,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:layout_weight="1"
-                    android:text="סוג האימות"
+                    android:text="@string/the_authentication_type"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
@@ -80,14 +71,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="שיחה" />
+                        android:text="@string/call" />
 
                     <RadioButton
                         android:id="@+id/dialog_special_id_sms"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="סמס" />
+                        android:text="@string/sms" />
                 </RadioGroup>
 
                 <TextView
@@ -96,7 +87,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:layout_weight="1"
-                    android:text="הארה: שליחת סמס/שיחת אימות הינה בעלות יחידות לפי התעריף הרגיל.  "
+                    android:text="@string/note_sending_a_verification_sms_call_has_a_unit_cost_according_to_the_normal_rate"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
@@ -105,7 +96,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="30dp"
-                    android:text="המשך" />
+                    android:text="@string/next" />
 
 
             </LinearLayout>
@@ -138,7 +129,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="15dp"
-                    android:hint="הקוד שהתקבל"
+                    android:hint="@string/the_received_code"
                     android:maxEms="4"
                     android:minEms="4"
                     app:helperTextEnabled="false">
@@ -159,7 +150,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="30dp"
-                    android:text="אימות" />
+                    android:text="@string/verification" />
 
             </LinearLayout>
         </LinearLayout>

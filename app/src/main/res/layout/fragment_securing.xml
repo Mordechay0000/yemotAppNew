@@ -18,7 +18,7 @@
             android:id="@+id/textView41"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="על מנת לגשת לאיזור האבטחה עליכם לעבור אימות דו שלבי בחיבור זה.  \n השיחה תגיע לטלפון המעודכן כיוצר המערכת. \n בלחיצה על הלחצן תקבלו שיחה, יש לזכור את 4 הספרות האחרונות של המספר שחייג אילכם ולהקיש אותם במסך הבא." />
+            android:text="@string/in_order_to_access_the_security_area_you_must_go_through_two_step_verification_on_this_connection_n_the_call_will_reach_the_updated_phone_as_the_system_creator_n_by_pressing_the_button_you_will_receive_a_call_you_must_remember_the_last_4_digits_of_the_number_that_called_you_and_tap_them_on_the_next_screen" />
 
         <Button
             android:id="@+id/btnVerify"
@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_margin="5dp"
-            android:text="אימות" />
+            android:text="@string/verification" />
     </LinearLayout>
 
     <LinearLayout
@@ -47,17 +47,12 @@
                 android:id="@+id/securing_fragment_tab_session"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="סשנים פעילים"/>
+                android:text="@string/active_sessions"/>
             <com.google.android.material.tabs.TabItem
-                android:id="@+id/securing_fragment_tab_two"
+                android:id="@+id/securing_fragment_tab_login_log"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="two"/>
-            <com.google.android.material.tabs.TabItem
-                android:id="@+id/securing_fragment_tab_three"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="three"/>
+                android:text="@string/login_log"/>
         </com.google.android.material.tabs.TabLayout>
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragmentContainerViewSecuring"

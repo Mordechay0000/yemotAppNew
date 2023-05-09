@@ -23,6 +23,7 @@ import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
 import com.mordechay.yemotapp.network.Network;
 import com.mordechay.yemotapp.network.SendRequestForYemotServer;
+import com.mordechay.yemotapp.network.testIsExitsUser;
 import com.mordechay.yemotapp.ui.programmatically.errors.errorHandler;
 
 import org.json.JSONException;
@@ -30,6 +31,7 @@ import org.json.JSONObject;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, OnRespondsYmtListener {
 
+    private final int xmlView = R.layout.activity_login;
     private SendRequestForYemotServer snd;
     private final String TAG = "LoginActivity";
     private String Number;
@@ -47,22 +49,34 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
 
         // Set the view
-        setContentView(R.layout.activity_login);
+        setContentView(Constants.DEFAULT_VIEW_CHECKING_ACCOUNT_DETAILS);
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
 
-        MaterialToolbar mtb = findViewById(R.id.login_mtb);
-        setSupportActionBar(mtb);
+        testIsExitsUser.getInstance(this, new testIsExitsUser.RespondsListener() {
+            @Override
+            public void onSuccess() {
+                setContentView(xmlView);
+                MaterialToolbar mtb = findViewById(R.id.login_mtb);
+                setSupportActionBar(mtb);
 
-        snd = SendRequestForYemotServer.getInstance(this, this);
-        chbRememberMe = findViewById(R.id.remember_me);
-        btnLogin = findViewById(R.id.login_button);
-        btnLogin.setOnClickListener(this);
-        btnLogout = findViewById(R.id.logout_button);
-        btnLogout.setOnClickListener(this);
+                snd = SendRequestForYemotServer.getInstance(LoginActivity.this, LoginActivity.this);
+                chbRememberMe = findViewById(R.id.remember_me);
+                btnLogin = findViewById(R.id.login_button);
+                btnLogin.setOnClickListener(LoginActivity.this);
+                btnLogout = findViewById(R.id.logout_button);
+                btnLogout.setOnClickListener(LoginActivity.this);
 
-        cpi = findViewById(R.id.login_progress);
+                cpi = findViewById(R.id.login_progress);
+            }
+
+            @Override
+            public void onFailure(int responseCode, String responseMessage) {
+                Toast.makeText(LoginActivity.this, responseMessage, Toast.LENGTH_LONG).show();
+                finish();
+            }
+        }).sendTest();
     }
 
 

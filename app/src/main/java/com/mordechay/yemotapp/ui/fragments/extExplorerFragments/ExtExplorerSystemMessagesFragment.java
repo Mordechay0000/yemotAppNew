@@ -283,7 +283,7 @@ public class ExtExplorerSystemMessagesFragment extends Fragment implements AbsLi
         // Here you can do something when items are selected/de-selected,
         // such as update the title in the CAB
         ArrayList<Integer> cob = getArrayListSelected();
-        mode.setTitle(cob.size() + getString(R.string.selected));
+        mode.setTitle(cob.size() + getString(R.string.selected) + " ");
     }
 
 
@@ -391,7 +391,7 @@ public class ExtExplorerSystemMessagesFragment extends Fragment implements AbsLi
         if (count == 0) {
             actionMode.finish();
         } else {
-            actionMode.setTitle(count + getString(R.string.selected));
+            actionMode.setTitle(count + getString(R.string.selected) + " ");
             actionMode.invalidate();
         }
     }

@@ -14,11 +14,11 @@
     <item
         android:id="@+id/copy"
         android:icon="@drawable/ic_baseline_content_copy_24"
-        android:title="העתק"
+        android:title="@string/copy"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/rename"
         android:icon="@drawable/ic_baseline_drive_file_rename_outline_24"
-        android:title="שנה שם"
+        android:title="@string/change_name"
         app:showAsAction="ifRoom" />
 </menu>

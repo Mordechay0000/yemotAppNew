@@ -22,7 +22,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginHorizontal="50dp"
-                android:hint="מאיזה תנועה להציג?">
+                android:hint="@string/from_which_traffic_to_display">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edt_dialog_from"
@@ -38,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="50dp"
                 android:layout_gravity="center"
-                android:hint="מספר מרבי של תנועות שיש לכלול.">
+                android:hint="@string/maximum_number_of_movements_to_include">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edt_dialog_limit"
@@ -56,7 +56,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="15dp"
-                android:text="סנן"/>
+                android:text="@string/filter"/>
 
         </LinearLayout>
     </ScrollView>

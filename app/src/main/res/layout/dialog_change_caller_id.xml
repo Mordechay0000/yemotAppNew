@@ -28,7 +28,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginHorizontal="50dp"
-                    android:hint="מספר זיהוי יוצא">
+                    android:hint="@string/outgoing_identification_number">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edt_dialog_caller_id"
@@ -45,7 +45,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="15dp"
-                    android:text="שמור" />
+                    android:text="@string/save" />
 
 
             </LinearLayout>

@@ -18,8 +18,8 @@
             android:layout_height="wrap_content"
             app:defaultValue="true"
             app:key="report"
-            app:summary="האם להציג דוח לאחר פעולה מחיקה/העברה/העתקה."
-            app:title="הצגת דוח פעולה" />
+            app:summary="@string/whether_to_display_a_report_after_a_delete_move_copy_operation"
+            app:title="@string/displaying_an_action_report" />
 
     </PreferenceCategory>
 
@@ -29,29 +29,29 @@
         <SwitchPreferenceCompat
             app:defaultValue="true"
             app:key="delete"
-            app:summary="במחיקת קובץ"
+            app:summary="@string/when_deleting_a_file"
             app:title="@string/delete" />
         <SwitchPreferenceCompat
 
             app:key="logout"
-            app:summary="בלחיצה על ניתוק מהמערכת"
+            app:summary="@string/by_clicking_logout_from_the_system"
             app:title="@string/system_logout" />
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="בטא"
+    <PreferenceCategory app:title="@string/beta"
         app:isPreferenceVisible="false">
 
 
         <SwitchPreferenceCompat
             app:key="beta"
-            app:title="הפעלת אפשרויות הבטא"
-            app:summary="הצגת תכונות נסיוניות" />
+            app:title="@string/activating_the_beta_options"
+            app:summary="@string/introducing_experimental_features" />
 
 
         <SwitchPreferenceCompat
             app:key="customize_app"
-            app:title="התאמה אישית בעזרת בינה מלאכותית"
-            app:summary="תכונת התאמה אישית באמצעות בינה מלאכותית מאפשרת לאפליקציה להתאים את את עצמה על־פי זיהוי ההדפותך. זו פונקציות בטא שמסייעת לאפליקציה לעבוד בצורה יותר מתאימה ונוחה."
+            app:title="@string/personalization_with_the_help_of_artificial_intelligence"
+            app:summary="@string/a_personalization_feature_using_artificial_intelligence_allows_the_application_to_adapt_itself_based_on_the_recognition_of_your_pages_this_is_a_beta_function_that_helps_the_application_work_in_a_more_appropriate_and_convenient_way"
             app:dependency="beta"/>
 
     </PreferenceCategory>

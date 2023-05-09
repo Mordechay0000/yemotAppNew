@@ -25,21 +25,13 @@
                 tools:layout_editor_absoluteY="1dp">
 
 
-                <TextView
-                    android:id="@+id/textView9"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="דוגמא, אין להעבירת, להעתיק , להסריט, פותח על ידי office@y-fox.com"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textField1000"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="15dp"
-                    android:hint="זיהוי שולח"
-                    app:helperText="ברירת מחדל זיהוי המערכת הראשי."
+                    android:hint="@string/sender_id"
+                    app:helperText="@string/default_primary_system_id"
                     app:helperTextEnabled="true">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -58,10 +50,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="15dp"
-                    android:hint="תוכן ההודעה"
+                    android:hint="@string/content_of_the_message"
                     app:counterEnabled="true"
                     app:counterMaxLength="70"
-                    app:helperText="החיוב 0.1 יחידה לכל 70 תווים (החיוב לכל מספר טלפון)"
+                    app:helperText="@string/the_charge_is_0_1_unit_per_70_characters_the_charge_is_per_phone_number"
                     app:helperTextEnabled="true">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -80,8 +72,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="15dp"
-                    android:text="הודעת פלאש?"
-                    android:tooltipText="מסרון פלאש (הודעת הבזק) ישלח ללקוח ויקפוץ בטלפון במסך מלא. האפשרות יכולה לא לעבוד בטלפונים מסויימים/במפעילים מסויימים ויתכן שנמענים מסויימים יזהו את המסרון כמסרון רגיל." />
+                    android:text="@string/flash_message"
+                    android:tooltipText="@string/a_flash_message_will_be_sent_to_the_customer_and_pop_up_on_the_phone_in_full_screen_the_option_may_not_work_on_certain_phones_certain_operators_and_it_is_possible_that_certain_recipients_will_recognize_the_message_as_a_normal_message" />
 
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -89,8 +81,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="15dp"
-                    android:hint="נמענים"
-                    app:helperText="הפרדה של : בין כל מספר, או tpl:מזהה-הקמפיין על מנת לשלוח לרשימת תפוצה במערכת."
+                    android:hint="@string/recipients"
+                    app:helperText="@string/separation_of_between_each_number_or_tpl_the_campaign_id_in_order_to_send_to_a_distribution_list_in_the_system"
                     app:helperTextEnabled="true">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -108,7 +100,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="15dp"
-                    android:text="שלח" />
+                    android:text="@string/send" />
 
             </LinearLayout>
             <LinearLayout

@@ -94,7 +94,7 @@ public class CallInSystemFragment extends Fragment implements AbsListView.MultiC
                 JSONObject jsb = new JSONObject(result);
                 try {
                     if(getActivity() != null)
-                    getActivity().setTitle("שיחות פעילות במערכת: " + jsb.getString("callsCount"));
+                    getActivity().setTitle(getString(R.string.active_calls_in_the_system) + "" + jsb.getString("callsCount"));
                 }catch (NullPointerException e){
                     Log.e("null", e.getMessage());
                 }

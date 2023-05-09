@@ -25,7 +25,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="15dp"
-                android:hint="לאן להעביר?"
+                android:hint="@string/where_to_transfer"
                 app:helperTextEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -42,7 +42,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:hint="כמות היחידות להעברה."
+                android:hint="@string/the_amount_of_units_to_transfer"
                 android:maxEms="10"
                 android:minEms="5">
 
@@ -61,7 +61,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="15dp"
-                android:text="העבר" />
+                android:text="@string/transfer" />
 
         </LinearLayout>
     </ScrollView>

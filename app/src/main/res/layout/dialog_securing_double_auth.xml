@@ -28,7 +28,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="15dp"
-                    android:hint="קוד אימות"
+                    android:hint="@string/verification_code"
                     android:maxEms="4"
                     android:minEms="4"
                     app:helperTextEnabled="false">
@@ -49,7 +49,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="30dp"
-                    android:text="אימות" />
+                    android:text="@string/verification" />
 
             </LinearLayout>
 

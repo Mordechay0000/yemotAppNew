@@ -15,7 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:text="סגירת כל הסשנים הפעילים"
+        android:text="@string/closing_all_active_sessions"
         app:backgroundTint="#ef6874 "
         app:cornerRadius="5dp" />
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout

@@ -14,7 +14,7 @@
     <string name="login">התחברות</string>
     <string name="system_number">מספר מערכת</string>
     <string name="password">סיסמה</string>
-    <string name="loading">טוען...</string>
+    <string name="loading">טוען…</string>
     <string name="orgination">שם הארגון</string>
     <string name="calls">שיחות</string>
     <string name="camp">קמפיינים</string>
@@ -51,4 +51,18 @@
     <string name="error_invalid_username">שגיאה: לא נמצא שם משתמש או סיסמה</string>
     <string name="error_account_blocked">שגיאה: החשבון נחסם</string>
     <string name="transfer_units">העברת יחידות למערכת אחרת.</string>
+    <string name="flash_message">הודעת פלאש?</string>
+    <string name="in_order_to_access_the_security_area_you_must_go_through_two_step_verification_on_this_connection_n_the_call_will_reach_the_updated_phone_as_the_system_creator_n_by_pressing_the_button_you_will_receive_a_call_you_must_remember_the_last_4_digits_of_the_number_that_called_you_and_tap_them_on_the_next_screen">על מנת לגשת לאיזור האבטחה עליכם לעבור אימות דו שלבי בחיבור זה.  \\n השיחה תגיע לטלפון המעודכן כיוצר המערכת. \\n בלחיצה על הלחצן תקבלו שיחה, יש לזכור את 4 הספרות האחרונות של המספר שחייג אילכם ולהקיש אותם במסך הבא.</string>
+    <string name="filter">פילטר</string>
+    <string name="all">הכל</string>
+    <string name="outgoing_identification_number">מספר זיהוי יוצא</string>
+    <string name="from_which_traffic_to_display">מאיזה תעבורה להציג?</string>
+    <string name="maximum_number_of_movements_to_include">מספר תנועות מקסימלי לכלול</string>
+    <string name="verification_code">קוד אימות</string>
+    <string name="verification">אימות</string>
+    <string name="sender_id">זיהוי השולח</string>
+    <string name="default_primary_system_id">מזהה מערכת ראשי כברירת מחדל.</string>
+    <string name="content_of_the_message">תוכן הודעה</string>
+    <string name="failed_to_transfer_units">העברה נכשלה</string>
+    <string name="successfully_transferred">העברה הצליחה</string>
 </resources>

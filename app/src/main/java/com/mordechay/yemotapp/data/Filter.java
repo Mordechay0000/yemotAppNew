@@ -50,29 +50,30 @@ public class Filter {
         return instance;
     }
 
-    public Drawable getTypeImage(@NonNull String type){
+    public Drawable getTypeImage(@NonNull String type) {
         String url = sp.getString(TYPE_IMAGE + type, DEFAULT_IMAGE_TYPE);
-        if(url.equals(DEFAULT_IMAGE_TYPE)) {
-            return  ResourcesCompat.getDrawable(ctx.getResources(), Integer.parseInt(DEFAULT_IMAGE_TYPE), ctx.getTheme());
-        }else {
-            return loadImageFromPrivateStorage(url);
+        if (url.equals(DEFAULT_IMAGE_TYPE)) {
+            return ResourcesCompat.getDrawable(ctx.getResources(), Integer.parseInt(DEFAULT_IMAGE_TYPE), ctx.getTheme());
+        } else {
+            return loadImageFromPrivateStorage(url, ResourcesCompat.getDrawable(ctx.getResources(), Integer.parseInt(DEFAULT_IMAGE_TYPE), ctx.getTheme()));
         }
     }
 
-    public String getTypeMIME(String type){
+    public String getTypeMIME(String type) {
         return sp.getString(TYPE_MIME + type, DEFAULT_MIME_TYPE);
     }
-    public Drawable getResellerImage(String reseller){
+
+    public Drawable getResellerImage(String reseller) {
         String url = sp.getString(RESELLER_IMAGE + reseller, DEFAULT_RESELLER_IMAGE);
-        if(url.equals(DEFAULT_RESELLER_IMAGE)) {
-            return  ResourcesCompat.getDrawable(ctx.getResources(), Integer.parseInt(DEFAULT_RESELLER_IMAGE), ctx.getTheme());
-        }else {
-            return loadImageFromPrivateStorage(url);
+        if (url.equals(DEFAULT_RESELLER_IMAGE)) {
+            return ResourcesCompat.getDrawable(ctx.getResources(), Integer.parseInt(DEFAULT_RESELLER_IMAGE), ctx.getTheme());
+        } else {
+            return loadImageFromPrivateStorage(url, ResourcesCompat.getDrawable(ctx.getResources(), Integer.parseInt(DEFAULT_RESELLER_IMAGE), ctx.getTheme()));
         }
     }
 
 
-    public Drawable loadImageFromPrivateStorage(String fileName) {
+    /*public Drawable loadImageFromPrivateStorage(String fileName) {
             // get the private storage directory
             File privateStorageDir = ctx.getApplicationContext().getFilesDir();
 
@@ -93,5 +94,19 @@ public class Filter {
             // create a drawable from the bitmap and return it
             return drawable;
     }
+     */
 
+    private Drawable loadImageFromPrivateStorage(String fileName, Drawable defaultImage) {
+        return getImageByValue(fileName, defaultImage);
+    }
+
+
+    private Drawable getImageByValue(@NonNull String fileName, @NonNull Drawable defaultImage) {
+
+        String uri = "drawable/" + fileName.substring(0, fileName.length() -4);
+
+        int imageResource = ctx.getResources().getIdentifier(uri, "drawable", ctx.getPackageName());
+
+        return imageResource != 0x0 ? ctx.getResources().getDrawable(imageResource, ctx.getTheme()) : defaultImage;
+    }
 }

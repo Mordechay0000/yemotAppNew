@@ -165,31 +165,31 @@ refresh();
                     String strForIsDeliveryText;
                     switch (isDelivery) {
                         case "null":
-                            strForIsDeliveryText = "לא התקבל מידע על מסירת ההודעה";
+                            strForIsDeliveryText = getString(R.string.no_information_was_received_about_the_delivery_of_the_message);
                             break;
                         case "DELIVRD":
-                            strForIsDeliveryText = "נמסר";
+                            strForIsDeliveryText = getString(R.string.delivered);
                             break;
                         case "ESME_ROK":
-                            strForIsDeliveryText = "הועבר לשליחה בהצלחה";
+                            strForIsDeliveryText = getString(R.string.successfully_sent);
                             break;
                         case "EXPIRED":
-                            strForIsDeliveryText = "פג תוקף מעקב המסירה";
+                            strForIsDeliveryText = getString(R.string.delivery_tracking_has_expired);
                             break;
                         case "ESME_RINVDSTADR":
-                            strForIsDeliveryText = "יעד לא נגיש";
+                            strForIsDeliveryText = getString(R.string.unreachable_destination);
                             break;
                         case "ESME_RINVMSGLEN":
-                            strForIsDeliveryText = "אורך לא חוקי";
+                            strForIsDeliveryText = getString(R.string.invalid_length);
                             break;
                         case "ESME_RINVCMDLEN":
-                            strForIsDeliveryText = "אורך פקודה שגוי";
+                            strForIsDeliveryText = getString(R.string.invalid_command_length);
                             break;
                         case "ESME_RMSGQFUL":
-                            strForIsDeliveryText = "תור ההודעות מלא";
+                            strForIsDeliveryText = getString(R.string.the_message_queue_is_full);
                             break;
                         case "ESME_RINVNUMDESTS":
-                            strForIsDeliveryText = "מספר יעדים לא חוקי";
+                            strForIsDeliveryText = getString(R.string.invalid_destination_number);
                             break;
                         default:
                             strForIsDeliveryText = isDelivery;
@@ -204,47 +204,47 @@ refresh();
             swprl.setRefreshing(false);
         }else if(type == Network.SEND_SMS){
             lnrProgress.setVisibility(View.GONE);
-            digSendSMS.setTitle("סיכום");
+            digSendSMS.setTitle(getString(R.string.conclusion));
 
             try {
                 JSONObject jsb = new JSONObject(result);
 
                 String rspStatus = jsb.getString("responseStatus");
                 if(rspStatus.equals("OK")){
-                    rspStatus = "הצלחה";
+                    rspStatus = getString(R.string.success);
                 }else if (rspStatus.equals("ERROR")){
-                    rspStatus = "שגיאה";
+                    rspStatus = getString(R.string.error);
                 }
 
                 try {
                     String strMessage = jsb.getString("message");
                     if(strMessage.equalsIgnoreCase("Low unit balance")){
-                        strMessage = "אין מספיק יחידות";
+                        strMessage = getString(R.string.not_enough_units);
                     }
                     String strFrom = jsb.getString("from");
                     String strSendCount = String.valueOf(jsb.getInt("sendCount"));
                     String strBilling = String.valueOf(jsb.getInt("Billing"));
 
                     digSendSMS.setMessage(
-                            "סטטוס הפעולה: " + rspStatus + "\n" + "\n" +
-                                    "תוכן ההודעה: " + "\n" +
+                            getString(R.string.action_status) + " " + rspStatus + "\n" + "\n" +
+                                    getString(R.string.content_of_the_message_with_colon)+ " " + "\n" +
                                     strMessage + "\n" + "\n" +
-                                    "הזיהוי ממנו יצאה ההודעה: " + strFrom + "\n" +
-                                    "כמה הודעות נשלחו: " + strSendCount + "\n" +
-                                    "תשלום: " + strBilling + "\n");
+                                    getString(R.string.the_id_from_which_the_message_originated) + " " + strFrom + "\n" +
+                                    getString(R.string.how_many_messages_have_been_sent) + " " + strSendCount + "\n" +
+                                    getString(R.string.payment) + " " + strBilling + "\n");
                 }catch (JSONException e) {
                     e.printStackTrace();
                     Log.e("error parse json", e.getMessage());
 
-                    digSendSMS.setMessage("שגיאה: " + "\n" + "\n" +
-                            "סטטוס הפעולה: " + rspStatus + "\n" +
-                            "סיבה:" + "\n" + "\n" + jsb.getString("message") + "\n" + "\n" +
-                            "ההודעה לא נשלחה");
+                    digSendSMS.setMessage(getString(R.string.error_with_colon) + " " + "\n" + "\n" +
+                            getString(R.string.action_status) + " " + rspStatus + "\n" +
+                            getString(R.string.cause) + " " + "\n" + "\n" + jsb.getString("message") + "\n" + "\n" +
+                            getString(R.string.the_message_was_not_sent));
 
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                digSendSMS.setMessage("שגיאה בניתוח תגובת השרת.");
+                digSendSMS.setMessage(getString(R.string.error_parsing_server_response));
             }
             digSendSMS.show();
         }
@@ -263,8 +263,8 @@ refresh();
         if(view == btn){
             View v = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_send_sms,null);
             MaterialAlertDialogBuilder digSendSMSBuilder = new MaterialAlertDialogBuilder(requireActivity())
-                    .setTitle("שליחת סמס")
-                    .setMessage("טופס לשליחת סמס")
+                    .setTitle(R.string.sending_sms)
+                    .setMessage(R.string.sms_sending_form)
                     .setView(v);
             edtFrom = v.findViewById(R.id.editTextNumber100);
             edtMessage = v.findViewById(R.id.editTextNumber22);

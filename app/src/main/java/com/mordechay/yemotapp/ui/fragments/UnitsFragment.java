@@ -33,7 +33,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 
@@ -108,8 +110,8 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
         if(view == btnTrans){
             View v = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_transfer_units,null);
             dialog = new MaterialAlertDialogBuilder(requireActivity())
-                    .setTitle("העברת יחידות")
-                    .setMessage("העברת יחידות למערכת אחרת: \n אנא הזן מספר מערכת היעד וכמות יחידות להעברה")
+                    .setTitle(R.string.transfer_units)
+                    .setMessage(R.string.transferring_units_to_another_system_please_enter_the_destination_system_number_and_amount_of_units_to_transfer)
                     .setView(v);
             lnrDialogTrans = v.findViewById(R.id.lnr_dialog_transfer_units);
             lnrDialogProgress = v.findViewById(R.id.lnr_dialog_transfer_units_progress);
@@ -133,7 +135,7 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
     }else if (view == btnFilter){
             View v = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_filter_units,null);
             dialog = new MaterialAlertDialogBuilder(getActivity())
-                    .setTitle("סינון")
+                    .setTitle(R.string.filter)
                     .setView(v);
             edtDialogFilterFrom = v.findViewById(R.id.edt_dialog_from);
             edtDialogFilterLimit = v.findViewById(R.id.edt_dialog_limit);
@@ -148,12 +150,24 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
             String body = "";
             text = "";
             if(!from.isEmpty()){
-                body +=  "&from=" + URLEncoder.encode(from);
-                text +=  "מציג תוצאות מ: " + from +" ";
+                try {
+                    body +=  "&from=" + URLEncoder.encode(from, StandardCharsets.UTF_8.name());
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
+                text +=  getString(R.string.showing_results_from) + " " + from +" ";
             }
             if (!limit.isEmpty()){
-                body += "&limit=" + URLEncoder.encode(limit);
-                text +=  "מספר תוצאות מוגבל ל: " + limit;
+                try {
+                    body += "&limit=" + URLEncoder.encode(limit, StandardCharsets.UTF_8.name());
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
+                text +=  getString(R.string.number_of_results_limited_to) + " " + limit;
+            }
+
+            if (from.isEmpty() && limit.isEmpty()){
+                text =  getString(R.string.all);
             }
 
             txtFilter.setText(text);
@@ -205,13 +219,13 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
                                 if (!jsonObject1.isNull("description")) {
                                     description = jsonObject1.getString("description");
                                     if(description.equals("Start"))
-                                        description = "חיוב עבור הפעלת קמפיין";
+                                        description = getString(R.string.billing_for_running_a_campaign);
                                     else if(description.equals("transfer to"))
-                                        description = "חיוב עבור העברת יחידות למערכת אחרת";
+                                        description = getString(R.string.charge_for_transferring_units_to_another_system);
                                     else if(description.equals("transfer from"))
-                                        description = "זיכוי עבור העברת יחידות ממערכת אחרת";
+                                        description = getString(R.string.credit_for_transferring_units_from_another_system);
                                     else if(description.equals("Units expired"))
-                                        description = "פג תוקף היחידות";
+                                        description = getString(R.string.units_have_expired);
                                 }
                                 String who = "";
                                 if (!jsonObject1.isNull("who")) {
@@ -243,22 +257,22 @@ public class UnitsFragment extends Fragment implements View.OnClickListener, Swi
             try {
                 JSONObject jsb = new JSONObject(result);
                 lnrDialogProgress.setVisibility(View.GONE);
-                dialogBuilder.setTitle("סיכום");
+                dialogBuilder.setTitle(R.string.conclusion);
 
                 String rspStatus = jsb.getString("responseStatus");
                 String out;
                 if (rspStatus.equals("OK")) {
-                    out =  "הועברו בהצלחה "   +   jsb.getString("amount") + " יחידות למערכת " + jsb.getString("destination") + "\n \n יתרת יחידות מעודכנת: " + jsb.getString("newBalance");
+                    out =  getString(R.string.successfully_transferred) + " "  +   jsb.getString("amount") + " " + getString(R.string.units_to_the_system) + " " + jsb.getString("destination") + "\n \n " +  getString(R.string.updated_unit_balance)  + " " + jsb.getString("newBalance");
                 } else {
                     String ErrorMessage = jsb.getString("message");
                     if(ErrorMessage.equalsIgnoreCase("Bad_destination"))
-                        ErrorMessage = "המערכת אינה קיימת או שאינה מורשית לקבל יחידות ממערכת זו";
+                        ErrorMessage = getString(R.string.the_system_does_not_exist_or_is_not_authorized_to_receive_units_from_this_system);
                     else if(ErrorMessage.equalsIgnoreCase("Bad_amount"))
-                        ErrorMessage = "סכום היחידות להעברה אינו חוקי";
+                        ErrorMessage = getString(R.string.the_amount_of_units_to_transfer_is_invalid);
                     else if(ErrorMessage.equalsIgnoreCase("Not_enough balance"))
-                        ErrorMessage = "אין יחידות מספיקות במערכת";
+                        ErrorMessage = getString(R.string.there_are_not_enough_units_in_the_system);
 
-                    out = "העברת יחידות נכשלה" + "\n סיבה: \n" + ErrorMessage;
+                    out = getString(R.string.failed_to_transfer_units) + "\n "+ getString(R.string.cause) +" \n" + ErrorMessage;
                 }
                 dialogBuilder.setMessage(out);
             } catch (JSONException e) {

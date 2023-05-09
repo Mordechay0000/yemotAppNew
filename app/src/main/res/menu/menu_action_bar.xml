@@ -18,16 +18,16 @@
     <item
         android:id="@+id/paste"
         android:icon="@drawable/ic_baseline_content_paste_24"
-        android:title="ckv"
+        android:title=""
         android:visibility="invisible"
         app:showAsAction="always" />
 
 
     <item
         android:id="@+id/logout"
-        android:title="התנתקות מהמערכת" />
+        android:title="@string/system_logout" />
     <item
         android:id="@+id/settings"
-        android:title="הגדרות"
+        android:title="@string/settings"
          />
 </menu>

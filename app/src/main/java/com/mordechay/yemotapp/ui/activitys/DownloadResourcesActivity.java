@@ -159,7 +159,7 @@ public class DownloadResourcesActivity extends AppCompatActivity implements View
         outputStream.close();
 
         prg.setVisibility(View.GONE);
-        btnDownload.setText("התקנה");
+        btnDownload.setText(R.string.installation);
         btnDownload.setVisibility(View.VISIBLE);
     }
 
@@ -203,7 +203,7 @@ public class DownloadResourcesActivity extends AppCompatActivity implements View
 
             runOnUiThread(() -> {
                 prg.setVisibility(View.GONE);
-                btnDownload.setText("המשך");
+                btnDownload.setText(R.string.next);
                 btnDownload.setVisibility(View.VISIBLE);
             });
             getSharedPreferences(Constants.DEFAULT_SHARED_PREFERENCES_DATA, 0)
@@ -336,7 +336,7 @@ public class DownloadResourcesActivity extends AppCompatActivity implements View
                     int columnIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
                     if (DownloadManager.STATUS_SUCCESSFUL == cursor.getInt(columnIndex)) {
                         prg.setVisibility(View.GONE);
-                        btnDownload.setText("התקנה");
+                        btnDownload.setText(R.string.installation);
                         btnDownload.setVisibility(View.VISIBLE);
                     }else {
                         prg.setVisibility(View.GONE);

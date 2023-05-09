@@ -19,7 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:text="הפונקציה לא פעילה"
+            android:text="@string/the_function_is_not_active"
             android:textSize="16sp" />
 
         <ListView

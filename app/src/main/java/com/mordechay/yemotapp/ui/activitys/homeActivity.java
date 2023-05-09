@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -40,6 +41,7 @@ import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.interfaces.onBackPressedFilesExplorer;
+import com.mordechay.yemotapp.network.testIsExitsUser;
 import com.mordechay.yemotapp.ui.fragments.extExplorerFragments.ExtExplorerMangerFilesFragment;
 
 import java.util.List;
@@ -66,7 +68,7 @@ public class homeActivity extends AppCompatActivity implements MenuProvider, Vie
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(xmlView);
+        setContentView(Constants.DEFAULT_VIEW_CHECKING_ACCOUNT_DETAILS);
 
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
@@ -75,47 +77,46 @@ public class homeActivity extends AppCompatActivity implements MenuProvider, Vie
 
         addMenuProvider(this);
 
-        nvgv = findViewById(R.id.nvgv);
-        nvgv.setItemIconTintList(null);
+        testIsExitsUser.getInstance(this, new testIsExitsUser.RespondsListener() {
+            @Override
+            public void onSuccess() {
+                setContentView(xmlView);
+                nvgv = findViewById(R.id.nvgv);
+                nvgv.setItemIconTintList(null);
 
-        nvc = Navigation.findNavController(this, R.id.nvgv_fragment);
-        NavigationUI.setupWithNavController(nvgv, nvc);
-        drw = findViewById(R.id.drw);
+                nvc = Navigation.findNavController(homeActivity.this, R.id.nvgv_fragment);
+                NavigationUI.setupWithNavController(nvgv, nvc);
+                drw = findViewById(R.id.drw);
 
-        txtUserName = nvgv.getHeaderView(0).findViewById(R.id.header_user_name);
-        txtUserName.setText(mAuth.getCurrentUser().getEmail());
+                txtUserName = nvgv.getHeaderView(0).findViewById(R.id.header_user_name);
+                assert mAuth.getCurrentUser() != null;
+                txtUserName.setText(mAuth.getCurrentUser().getEmail());
 
-        imgUserImage = nvgv.getHeaderView(0).findViewById(R.id.header_user_image);
-        downloadAndSetImage(mAuth.getCurrentUser().getPhotoUrl());
+                imgUserImage = nvgv.getHeaderView(0).findViewById(R.id.header_user_image);
+                downloadAndSetImage(mAuth.getCurrentUser().getPhotoUrl());
 
-        btnLogout = nvgv.getHeaderView(0).findViewById(R.id.header_user_logout_button);
-        btnLogout.setOnClickListener(this);
+                btnLogout = nvgv.getHeaderView(0).findViewById(R.id.header_user_logout_button);
+                btnLogout.setOnClickListener(homeActivity.this);
 
-        MaterialToolbar mtb = findViewById(R.id.topAppBar);
-        setSupportActionBar(mtb);
+                MaterialToolbar mtb = findViewById(R.id.topAppBar);
+                setSupportActionBar(mtb);
 
-        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drw, R.string.open_navigation,R.string.close_navigation);
-        drw.addDrawerListener(actionBarDrawerToggle);
-        actionBarDrawerToggle.syncState();
+                actionBarDrawerToggle = new ActionBarDrawerToggle(homeActivity.this, drw, R.string.open_navigation,R.string.close_navigation);
+                drw.addDrawerListener(actionBarDrawerToggle);
+                actionBarDrawerToggle.syncState();
 
-        // to make the Navigation drawer icon always appear on the action bar
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                // to make the Navigation drawer icon always appear on the action bar
+                assert getSupportActionBar() != null;
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        String lang = sp.getString("language", "default");
-        Configuration config;
-        config = getBaseContext().getResources().getConfiguration();
-        Locale locale;
-        if (!lang.equals("default")) {
-            locale = new Locale(lang);
+            }
 
-        } else {
-            locale = new Locale(Locale.getDefault().getLanguage());
-
-        }
-        Locale.setDefault(locale);
-        config.setLocale(locale);
-
-        getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
+            @Override
+            public void onFailure(int responseCode, String responseMessage) {
+                Toast.makeText(homeActivity.this, responseMessage, Toast.LENGTH_LONG).show();
+                finish();
+            }
+        }).sendTest();
  }
 
     @Override

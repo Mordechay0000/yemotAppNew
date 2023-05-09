@@ -286,17 +286,17 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                         JSONObject jsonObject = new JSONObject(result);
                         if (!jsonObject.isNull("success") && jsonObject.getBoolean("success")) {
                             if (getActivity() != null)
-                                Toast.makeText(getActivity(), "הפעולה בוצעה בהצלחה", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), R.string.the_operation_was_performed_successfully, Toast.LENGTH_LONG).show();
                             refresh();
                         } else if (!jsonObject.isNull("message") && jsonObject.getString("meddsge").equals("simultaneous file operation rejected")) {
                             if (getActivity() != null)
-                                Toast.makeText(getActivity(), "פעולת קובץ בו-זמנית נדחתה", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), R.string.concurrent_file_operation_denied, Toast.LENGTH_LONG).show();
                         } else if (!jsonObject.isNull("message")) {
                             if (getActivity() != null)
-                                Toast.makeText(getActivity(), "שגיאה: \n \n " + jsonObject.getString("message"), Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), getString(R.string.error_with_colon) + " \n \n " + jsonObject.getString("message"), Toast.LENGTH_LONG).show();
                         } else {
                             if (getActivity() != null)
-                                Toast.makeText(getActivity(), "שגיאה לא ידועה: \n \n " + jsonObject.getString("responseStatus"), Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), getString(R.string.unknown_error) + jsonObject.getString("responseStatus"), Toast.LENGTH_LONG).show();
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -324,11 +324,11 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                     if (spPref.getBoolean("delete", true)) {
                         // Create the AlertDialog.Builder
                         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                        builder.setTitle("פעולה");
-                        builder.setMessage("האם אתה בטוח?");
+                        builder.setTitle(R.string.action);
+                        builder.setMessage(R.string.are_you_sure);
 
                         // Add the buttons
-                        builder.setPositiveButton("אישור", (dialog, id) -> {
+                        builder.setPositiveButton(R.string.ok, (dialog, id) -> {
                             // User clicked confirm button
                             String _urlAction = Constants.URL_FILE_ACTION + token + "&action=delete" + whatString;
                             Log.e("urlAction", _urlAction);
@@ -367,11 +367,11 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
             if (spPref.getBoolean("paste", false)) {
                 // Create the AlertDialog.Builder
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("פעולה");
-                builder.setMessage("האם אתה בטוח?");
+                builder.setTitle(R.string.action);
+                builder.setMessage(R.string.are_you_sure);
 
                 // Add the buttons
-                builder.setPositiveButton("אישור", (dialog, id) -> {
+                builder.setPositiveButton(R.string.ok, (dialog, id) -> {
                     String act;
                     if (isCopy) {
                         act = "copy";
@@ -386,7 +386,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
                     isCopy = false;
                     menu.getItem(2).setVisible(false);
                 });
-                builder.setNegativeButton("ביטול", null);
+                builder.setNegativeButton(R.string.cancel, null);
                 // Create and show the AlertDialog
                 AlertDialog dialog = builder.create();
                 dialog.show();
@@ -473,11 +473,11 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
     public void createFolderDialog() {
         edtDialog = new EditText(getActivity());
         dialog = new MaterialAlertDialogBuilder(requireActivity())
-                .setTitle("יצירת תיקייה")
-                .setMessage("אנא הזן שם לתיקייה")
+                .setTitle(R.string.create_a_folder)
+                .setMessage(R.string.please_enter_a_name_for_the_folder)
                 .setView(edtDialog)
-                .setPositiveButton("אישור", this)
-                .setNegativeButton("ביטול", null);
+                .setPositiveButton(R.string.ok, this)
+                .setNegativeButton(R.string.cancel, null);
         dialog.show();
     }
 
@@ -488,11 +488,11 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
         edtRenameDialog = new EditText(getActivity());
         edtRenameDialog.setText(String.valueOf(adapter.getItem(what.get(0)).getTxt()[NAME_POSITION]));
         MaterialAlertDialogBuilder rnmDialog = new MaterialAlertDialogBuilder(requireActivity())
-                .setTitle("שינוי שם")
-                .setMessage("נבחרו " + what.size() + " קבצים לשינוי שם." + "\n" + "\n" + "אנא הזן שם:")
+                .setTitle(R.string.change_name)
+                .setMessage(R.string.selected + " " + what.size() + getString(R.string.files_to_rename)  + " "+ "\n" + "\n" + getString(R.string.please_enter_name))
                 .setView(edtRenameDialog)
-                .setPositiveButton("אישור", (dialogInterface, i) -> applyRename())
-                .setNegativeButton("ביטול", null);
+                .setPositiveButton(R.string.ok, (dialogInterface, i) -> applyRename())
+                .setNegativeButton(R.string.cancel, null);
         rnmDialog.show();
     }
 
@@ -526,7 +526,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
         // Here you can do something when items are selected/de-selected,
         // such as update the title in the CAB
         ArrayList<Integer> cob = getArrayListSelected();
-        mode.setTitle(cob.size() + getString(R.string.selected));
+        mode.setTitle(cob.size() + getString(R.string.selected) + " ");
     }
 
 
@@ -561,7 +561,7 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
             request.setDestinationInExternalFilesDir(requireContext(), Environment.DIRECTORY_DOWNLOADS, url.substring(url.lastIndexOf("/") + 1));
         } else {
             if (getActivity() != null)
-                Toast.makeText(getActivity(), "ההורדה מתבצעת.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), R.string.the_download_is_in_progress, Toast.LENGTH_SHORT).show();
 
             //Set the title of this download, to be displayed in notifications (if enabled).
             request.setTitle(url.substring(url.lastIndexOf("/") + 1));
@@ -736,4 +736,3 @@ public class ExtExplorerMangerFilesFragment extends Fragment implements MenuProv
     }
 
 }
-
