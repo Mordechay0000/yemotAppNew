@@ -93,8 +93,8 @@
     <string name="advanced_settings">Advanced settings</string>
     <string name="settings">Settings</string>
     <string name="copy">copy</string>
-    <string name="change_name">change name</string>
-    <string name="whether_to_display_a_report_after_a_delete_move_copy_operation">Whether to display a report after a delete/move/copy operation.</string>
+    <string name="change_name">rename</string>
+    <string name="whether_to_display_a_report_after_a_delete_move_copy_operation">Whether to display a report after a delete/move/copy operation</string>
     <string name="displaying_an_action_report">Displaying an action report</string>
     <string name="when_deleting_a_file">When deleting a file</string>
     <string name="by_clicking_logout_from_the_system">By clicking logout from the system</string>
@@ -167,7 +167,7 @@
     <string name="cancel">cancel</string>
     <string name="create_a_folder">Create a folder</string>
     <string name="please_enter_a_name_for_the_folder">Please enter a name for the folder</string>
-    <string name="files_to_rename">" files to rename."</string>
+    <string name="files_to_rename">" files to rename"</string>
     <string name="please_enter_name">Please enter name:</string>
     <string name="the_download_is_in_progress">The download is in progress.</string>
     <string name="transferring_units_to_another_system_please_enter_the_destination_system_number_and_amount_of_units_to_transfer">Transferring units to another system: \n Please enter the destination system number and amount of units to transfer</string>
