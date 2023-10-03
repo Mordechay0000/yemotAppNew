@@ -82,7 +82,7 @@ public class testIsExitsUser extends SendRequestForMyServer {
     }
 
     public void sendTest(){
-    String url = Constants.URL_IS_USER_EXIT + "email=" + DataTransfer.getUsername() +"&pass="+ DataTransfer.getUid();
+    String url = Constants.URL_IS_USER_EXIT + "?email=" + DataTransfer.getUsername() +"&pass="+ DataTransfer.getUid();
     Log.d("url", "url : " + url);
     addRequestAndSend(Network.IS_USER_EXISTS, url);
 }

@@ -59,6 +59,11 @@ public class DownloadResourcesActivity extends AppCompatActivity implements View
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSharedPreferences(Constants.DEFAULT_SHARED_PREFERENCES_DATA, 0)
+                .edit().putBoolean("rspDownload", true).apply();
+        Intent intent = new Intent(this, openActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
         setContentView(R.layout.activity_download_resouces);
 
         txtVersionName = findViewById(R.id.textView51);

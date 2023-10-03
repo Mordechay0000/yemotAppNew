@@ -2,25 +2,23 @@ package com.mordechay.yemotapp.ui.fragments;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ActionMode;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.ListView;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.mordechay.yemotapp.R;
 import com.mordechay.yemotapp.data.Constants;
 import com.mordechay.yemotapp.data.DataTransfer;
 import com.mordechay.yemotapp.interfaces.OnRespondsYmtListener;
 import com.mordechay.yemotapp.network.Network;
-import com.mordechay.yemotapp.network.SendRequestForMyServer;
 import com.mordechay.yemotapp.network.SendRequestForYemotServer;
-import com.mordechay.yemotapp.ui.programmatically.list.ItemData;
+import com.mordechay.yemotapp.ui.programmatically.list.CustomAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,15 +27,14 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 
-public class CallInSystemFragment extends Fragment implements AbsListView.MultiChoiceModeListener, OnRespondsYmtListener {
+public class CallInSystemFragment extends Fragment implements OnRespondsYmtListener, SwipeRefreshLayout.OnRefreshListener, CustomAdapter.ViewHolder.ClickListener {
 
 
     private SendRequestForYemotServer snd;
-    private String urlHome;
     private String token;
     private String url;
-    private ListView list;
-    private ArrayList<ItemData> adapter;
+    private RecyclerView recyclerView;
+    private CustomAdapter adapter;
 
     private ArrayList<String> aryNumTo;
     private ArrayList<String> aryNumFrom;
@@ -46,6 +43,7 @@ public class CallInSystemFragment extends Fragment implements AbsListView.MultiC
     private ArrayList<String> aryCallDur;
     private ArrayList<String> aryCallId;
     private String titleApp;
+    private SwipeRefreshLayout swprl;
 
 
     public CallInSystemFragment() {
@@ -66,16 +64,18 @@ public class CallInSystemFragment extends Fragment implements AbsListView.MultiC
         titleApp = (String) requireActivity().getTitle();
         View v = inflater.inflate(R.layout.fragment_call_in_system, container, false);
 
+        swprl = v.findViewById(R.id.CallInSystemSwipe);
+        swprl.setOnRefreshListener(this);
+        swprl.setRefreshing(true);
 
         token = DataTransfer.getToken();
 
+        url = Constants.URL_GET_CALLS + token;
 
-        urlHome = Constants.URL_GET_CALLS + token;
+        recyclerView = v.findViewById(R.id.CallInSystemRecyclerView);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        url = urlHome;
-        list = v.findViewById(R.id.list2222);
-        list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        list.setMultiChoiceModeListener(this);
         snd = SendRequestForYemotServer.getInstance(getActivity(), this);
         snd.addRequestAndSend(Network.GET_CALLS, url);
         return v;
@@ -89,12 +89,18 @@ public class CallInSystemFragment extends Fragment implements AbsListView.MultiC
     @Override
     public void onSuccess(String result, int type) {
         if(type == Network.GET_CALLS){
-            adapter = new ArrayList<>();
+            /*if (actionMode != null) {
+                actionMode.finish();
+            }
+             */
             try {
+                adapter = new CustomAdapter(this, R.layout.item_file_explorer_manger_file, new int[]{R.id.textView1, R.id.textView2, R.id.textView3, R.id.textView4, R.id.textView5});
+
                 JSONObject jsb = new JSONObject(result);
                 try {
-                    if(getActivity() != null)
-                    getActivity().setTitle(getString(R.string.active_calls_in_the_system) + "" + jsb.getString("callsCount"));
+                    if(getActivity() != null) {
+                        getActivity().setTitle(getString(R.string.active_calls_in_the_system) + "" + jsb.getString("callsCount"));
+                    }
                 }catch (NullPointerException e){
                     Log.e("null", e.getMessage());
                 }
@@ -167,32 +173,27 @@ try {
     }
 
 
-
+    @Override
+    public void onRefresh() {
+        swprl.setRefreshing(true);
+        if (getActivity() != null)
+            snd.addRequestAndSend(Network.GET_CALLS, url);
+    }
 
     @Override
-    public void onItemCheckedStateChanged(ActionMode actionMode, int i, long l, boolean b) {
+    public void onItemClicked(int position) {
 
     }
 
     @Override
-    public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+    public boolean onItemLongClicked(int position) {
         return false;
     }
 
-    @Override
-    public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
-        return false;
-    }
 
-    @Override
-    public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
-        return false;
-    }
 
-    @Override
-    public void onDestroyActionMode(ActionMode actionMode) {
+
+    private void fooooooo(){
 
     }
-
-
 }
